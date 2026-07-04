@@ -16,9 +16,9 @@ ApprovalDecision = Literal["approved", "rejected"]
 
 class Approval(PmdfBase):
     kind: Literal["approval"]
-    target: str = Field(pattern=ID_PATTERN)
-    proposer: str = Field(pattern=ID_PATTERN)
-    approver: str = Field(pattern=ID_PATTERN)
+    target: str = Field(pattern=ID_PATTERN, json_schema_extra={"ref_kind": None})
+    proposer: str = Field(pattern=ID_PATTERN, json_schema_extra={"ref_kind": "stakeholder"})
+    approver: str = Field(pattern=ID_PATTERN, json_schema_extra={"ref_kind": "stakeholder"})
     decision: ApprovalDecision
     reason: str
 

@@ -26,13 +26,17 @@ class Priority(BaseModel):
 class StoryLinks(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    objective: str | None = Field(default=None, pattern=ID_PATTERN)
-    decisions: list[str] = []
+    objective: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "objective"}
+    )
+    decisions: list[str] = Field(default=[], json_schema_extra={"ref_kind": "decision"})
 
 
 class Story(PmdfBase):
     kind: Literal["story"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     title: str
     as_a: str
     i_want: str

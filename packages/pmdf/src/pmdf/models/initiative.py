@@ -43,7 +43,9 @@ class Evm(BaseModel):
 
 class Initiative(PmdfBase):
     kind: Literal["initiative"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     charter: str
     approach: Approach
     wbs: list[WbsNode] = []

@@ -18,7 +18,9 @@ class Product(PmdfBase):
     target: str | None = None
     positioning: str | None = None
     lifecycle_stage: LifecycleStage
-    north_star_metric: str | None = Field(default=None, pattern=ID_PATTERN)
+    north_star_metric: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "metric"}
+    )
 
 
 __all__ = ["Product"]

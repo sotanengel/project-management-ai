@@ -32,13 +32,17 @@ class RejectedReason(BaseModel):
 
 class Decision(PmdfBase):
     kind: Literal["decision"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     background: str
     options: list[Option] = Field(min_length=1)
     chosen_option: str
     rationale: str
     rejected_reasons: list[RejectedReason]
-    approver: str | None = Field(default=None, pattern=ID_PATTERN)
+    approver: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "stakeholder"}
+    )
     autonomy_level: AutonomyLevel
 
 

@@ -13,12 +13,14 @@ ResponseStrategy = Literal["avoid", "transfer", "mitigate", "accept"]
 
 class Risk(PmdfBase):
     kind: Literal["risk"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     event: str
     probability_score: int = Field(ge=1, le=5)
     impact_score: int = Field(ge=1, le=5)
     response_strategy: ResponseStrategy
-    owner: str = Field(pattern=ID_PATTERN)
+    owner: str = Field(pattern=ID_PATTERN, json_schema_extra={"ref_kind": "stakeholder"})
 
 
 __all__ = ["Risk"]

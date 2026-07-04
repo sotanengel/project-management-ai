@@ -13,7 +13,9 @@ ExperimentStatus = Literal["planned", "running", "completed", "aborted"]
 
 class Experiment(PmdfBase):
     kind: Literal["experiment"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     hypothesis: str
     design: str
     success_criteria: list[str]

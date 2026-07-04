@@ -13,7 +13,9 @@ HealthAssessment = Literal["green", "yellow", "red"]
 
 class Report(PmdfBase):
     kind: Literal["report"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     period: str
     health_assessment: HealthAssessment
     decisions_needed: list[str]

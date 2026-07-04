@@ -14,9 +14,11 @@ GoNoGo = Literal["go", "no_go", "pending"]
 
 class Release(PmdfBase):
     kind: Literal["release"]
-    product: str | None = Field(default=None, pattern=ID_PATTERN)
+    product: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "product"}
+    )
     name: str
-    scope: list[str]
+    scope: list[str] = Field(json_schema_extra={"ref_kind": "story"})
     go_no_go: GoNoGo
     released_at: datetime | None = None
     actuals: dict[str, Any] = {}

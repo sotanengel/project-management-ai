@@ -22,7 +22,9 @@ class Objective(PmdfBase):
     objective: str
     key_results: list[KeyResult] = Field(min_length=1)
     period: str = Field(pattern=r"^\d{4}-Q[1-4]$")
-    parent_objective: str | None = Field(default=None, pattern=ID_PATTERN)
+    parent_objective: str | None = Field(
+        default=None, pattern=ID_PATTERN, json_schema_extra={"ref_kind": "objective"}
+    )
 
 
 __all__ = ["KeyResult", "Objective"]
