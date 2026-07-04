@@ -27,6 +27,12 @@
   Qdrant投入・PMDFインデクサ・次元切替検証)を実装。E5(agent-core)が
   KB/PMDF横断検索を実装する際に使うインターフェースは本ファイル末尾の
   「kb-ingest 公開インターフェース(E5以降が利用する想定)」を参照。
+- **Phase 3(E5: agent-core)**: **完了**。E5-1〜E5-9(#38〜#46)、
+  親issue #5 全てクローズ済み。`services/agent-core`(LangGraphベースの
+  4業務グラフ・PMDFツール・RAG検索・根拠明示・差戻フィードバック・
+  チャット指示インターフェース)を実装。E7(web-ui)・E8(自己学習ループ)が
+  利用するインターフェースは本ファイル末尾の
+  「agent-core 公開インターフェース(E7/E8以降が利用する想定)」を参照。
 - **アクティブブランチ: `develop`**。全実装作業は `develop` ブランチ上で
   行う。`main` への切替・PRマージはユーザーが手動で行う方針のため、
   実装エージェントは `main` へのswitchや `gh pr merge` を行わない。
@@ -52,7 +58,7 @@
 | E2       | #2        | PMDFパッケージ(packages/pmdf) | phase:1    | **完了**(E2-1〜E2-9 = #18〜#26)                                    |
 | E3       | #3        | pmdf-store + api-server       | phase:2    | **完了**(E3-1〜E3-10 = #27〜#36)                                   |
 | E4       | #4        | model-gateway + compose統合   | phase:2    | 一部完了(E4-1〜3=#37,#83,#84完了。E4-4,#85/E4-5,#86はE7-1後に実施) |
-| E5       | #5        | agent-core                    | phase:3    | 未着手                                                             |
+| E5       | #5        | agent-core                    | phase:3    | **完了**(E5-1〜E5-9 = #38〜#46)                                    |
 | E6       | #6        | 知識ベース                    | phase:3    | **完了**(E6-1〜E6-4 = #47〜#50)                                    |
 | E7       | #7        | web-ui                        | phase:3    | 未着手                                                             |
 | E8       | #8        | 自己学習ループ                | phase:4    | 未着手                                                             |
@@ -224,12 +230,35 @@ require_approval(entity_kind, autonomy_level="L1")`
   未提供はクローズコード1008で拒否)。
 - イベント種別: `pmdf.entity_changed`(`{kind, id, verb}`、PMDF
   create/update時)、`approval.count_changed`(`{count}`、
-  承認起案・決定時のpending件数)、`agent.activity`(E5で配信予定、
-  現時点では未使用)。
+  承認起案・決定時のpending件数)、`agent.activity`(`{task_id, status,
+product_id, intent}`、E5-9のチャットタスク受理/実行中/完了/失敗時。
+  下記チャットAPIを参照)。
 - `api_server.events.bus.get_event_bus()`で共有`InMemoryEventBus`
   シングルトンを取得し`await bus.publish(event_type, data)`で配信
   (単一プロセス前提のasyncio.Queue実装。将来複数レプリカ構成では
   `EventBus` Protocolを満たすRedis pub/sub等に差し替え可能)。
+
+### チャット指示API(`/chat`、E5-9、FR-UI-07バックエンド)
+
+- `POST /chat/instructions`(admin/editor必須、201): UIからの自然文指示
+  を受け付け、`pending`状態のチャットタスクとして登録する。ボディ:
+  `{message, product_id}`。レスポンスは`ChatTask`
+  (`{id, message, product_id, actor, status, result, error, intent}`)。
+  登録時に`agent.activity`(`status: "pending"`)イベントを配信する。
+- `GET /chat/tasks/{task_id}`(認証必須、200): チャットタスクの現在の
+  実行状況を返す。未知のidは404。
+- `POST /chat/tasks/{task_id}/transition`(admin/editor必須、200):
+  agent-coreランナー(`agent_core.chat.handle_chat_instruction`)が
+  タスク状態(`running`/`done`/`failed`)を報告するための内部API。
+  ボディ: `{status, result, error, intent}`(`result`/`error`/`intent`は
+  任意)。許可されない遷移(`done`/`failed`からの再遷移等)は409。
+  遷移毎に`agent.activity`イベントを配信する。
+- 実際のLLMによる意図分類・業務グラフディスパッチはagent-core側
+  (`services/agent-core/src/agent_core/chat.py`)の責務であり、
+  api-server側はタスクの受付・状態永続化(`api_server.chat.task_store`、
+  JSONファイル、`approval.proposal_store`と同様のパターン)・
+  イベント配信のみを担う(api-serverはagent-coreをimportしない、
+  依存方向はagent-core→api-serverのみを維持)。
 
 ### コストAPI(`/costs`、E4-3)
 
@@ -260,7 +289,8 @@ total_tokens, total_cost_jpy, total_latency_ms}`の配列)を返す。
 `EMERGENCY_STOP_PATH`(既定`data/emergency_stop.json`)、
 `PROPOSAL_STORE_PATH`(既定`data/proposals.json`)、
 `BUDGET_MONTHLY_JPY`(既定50000、E4-3)、
-`COST_USAGE_LOG_PATH`(既定`data/costs/usage.jsonl`、E4-3)。
+`COST_USAGE_LOG_PATH`(既定`data/costs/usage.jsonl`、E4-3)、
+`CHAT_TASK_STORE_PATH`(既定`data/chat_tasks.json`、E5-9)。
 
 ## model-gateway 公開インターフェース(E5以降が利用する想定)
 
@@ -408,6 +438,84 @@ fetch_entity, collection)`: api-serverのWebSocketイベント
 - `uv run kb-ingest recreate --collection pdm_kb --dim <n>`:
   埋め込み次元変更時のコレクション再作成。
 
+## agent-core 公開インターフェース(E7/E8以降が利用する想定)
+
+`services/agent-core`(E5で実装完了)は、LangGraphベースの4業務グラフ・
+PMDFツール・RAG検索・根拠明示・差戻フィードバック・チャット指示
+インターフェースを提供する。全PMDF書込はapi-server経由(`PmdfToolClient`、
+直接ストア書込は`scripts/check_agent_core_isolation.py`のCI静的チェックで
+禁止)、全LLM呼び出しはmodel-gateway経由の論理名のみで行う(疎結合の徹底)。
+
+### 業務グラフ(`agent_core.graphs.*`)
+
+- `backlog`(L2): `run_backlog_graph(intake_text, ...)` — ストーリー起票+
+  RICE/WSJF優先順位付け(スコアはコード側`calc_rice_score`/
+  `calc_wsjf_score`で必ず検算、LLM出力の数値は信用しない)。
+- `vision_roadmap_release`(L1): `propose_vision_update`/
+  `propose_roadmap_update`/`propose_release_decision`(起案のみ、
+  `POST /approvals`)、`execute_after_approval`/`call_l1_gated_endpoint`
+  (承認済みの場合のみapi-serverのL1ゲート済みエンドポイントを実行、
+  未承認は`ApprovalNotGrantedError`)。
+- `kpi_dr_review`(L3): `monitor_kpi`(閾値判定はコード側
+  `is_threshold_breached`、超過時のみLLMで原因仮説生成)、
+  `record_decision`(Decision Record自動記録)、`weekly_review`
+  (要判断事項検出時は`POST /approvals`でL1業務へ橋渡し)。
+- `discovery_experiment_stakeholder_initiative`: `run_discovery`/
+  `run_experiment`(L2)、`draft_message`(L2、文案生成のみ)/
+  `send_message`(L1、実送信は承認ゲート必須)、`run_initiative`(L2、
+  EVM(SPI/CPI)は`calc_evm`でコード側決定的計算)。
+
+### 根拠明示・差戻フィードバック(E5-8、`agent_core.evidence`/`feedback_loop`)
+
+- `evidence.attach_evidence(payload, evidence) -> dict`: PMDF書込
+  ペイロードへ`x_evidence`拡張フィールドを付与する。`evidence`が空/Noneの
+  場合は`MissingEvidenceError`を送出する(FR-PD-13: 根拠なし成果物の
+  書込を防ぐ)。`evidence`要素は`agent_core.tools.rag_tool.SearchResult`
+  (`.to_evidence_dict()`でKB/PMDF出典形式に変換)、または
+  `evidence.data_evidence(description, data)`(決定的計算の入力値等
+  「データ」根拠)で組み立てた辞書を渡す。既存4業務グラフの各成果物
+  生成・起案箇所に統合済み(参考実装として利用可能)。
+- `feedback_loop.on_rejection(approval, *, queue_dir, original_draft,
+revised_draft) -> Message | None`: `approval["decision"] ==
+"rejected"`の場合のみ、(1)差戻理由を次回起案コンテキストへ注入する
+  `{"role": "user", "content": "..."}`形式のメッセージを返し、
+  (2)差し戻しペアを`queue_dir`配下へ日付単位のJSONL
+  (`FeedbackRecord.to_dict()`: `approval_id`/`target`/`original_draft`/
+  `reason`/`revised_draft`)として追記する(E8-5の学習データ取込の
+  入力想定)。差し戻し検知そのもの(WebSocket購読・ポーリング等)は
+  呼び出し側の責務。
+
+### チャット指示インターフェース(E5-9、`agent_core.chat`)
+
+- `handle_chat_instruction(*, message, product_id, actor, llm_client,
+pmdf_tool_client, api_server_url, auth_token, dispatch_overrides=None)
+-> TaskHandle`: (1)`POST /chat/instructions`でタスク登録、
+  (2)`classify_intent`(`pdm-main`)で対象業務グラフ(`GraphKind`:
+  `backlog`/`vision_roadmap_release`/`kpi_dr_review`/
+  `discovery_experiment_stakeholder_initiative`。LLMが未知の値を返した
+  場合は`backlog`へフォールバック)を判定、(3)`running`へ状態遷移報告、
+  (4)`dispatch_overrides`(`GraphKind`→実行関数の辞書。実運用では
+  上記4業務グラフの実行関数を束ねる)で対象グラフを実行、
+  (5)成否に応じ`done`(結果付き)/`failed`(エラー内容付き)へ状態遷移
+  報告する。各段階の状態遷移はapi-server側`POST
+/chat/tasks/{id}/transition`経由でHTTP越しに報告し、api-server側が
+  `agent.activity`イベントとしてWebSocket配信する(具体的なAPI仕様は
+  上記「api-server 公開インターフェース」の「チャット指示API」を参照)。
+- E7(web-ui)のチャットUIは`POST /chat/instructions`で指示を送信し、
+  `WS /ws/events`で`agent.activity`イベント(`{task_id, status,
+product_id, intent}`)を購読してリアルタイムに実行状況を表示する
+  想定。実行完了後の詳細は`GET /chat/tasks/{task_id}`で取得できる。
+
+### 常駐ランナー実装時の注意(E7/E8/E9で実プロセス化する際)
+
+現時点(E5)では、4業務グラフ・チャット指示ハンドラは全て「呼び出せば
+1回分実行して結果を返す」関数として実装されており、常駐プロセス
+(スケジューラからの定期起動、チャットタスクキューのポーリング等)は
+未実装。E9(運用機能)またはE7/E8の中で、`agent_core.task_queue.TaskQueue`
+(E5-1)の`dequeue()`ループ、またはapi-serverの`/chat/tasks`をポーリングする
+ワーカープロセスとして実装する想定(本ファイルのAPI仕様・関数シグネチャは
+そのまま利用可能)。
+
 ## 環境メモ
 
 - **OS**: Windows 11。開発は Git Bash 経由のBashツール、または PowerShell
@@ -432,18 +540,21 @@ fetch_entity, collection)`: api-serverのWebSocketイベント
 
 ## 決定事項ログ
 
-| 日付       | 決定内容                                                                                                                                                                                                                                                                                                                                                                                         | 理由                                                                                                                                                                                                                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 2026-07-04 | 全実装を `develop` ブランチ上で行う一本運用に変更。PRマージはユーザーが手動で行う                                                                                                                                                                                                                                                                                                                | 複数セッション・複数エージェントによる並行実装でブランチ管理コストを下げつつ、最終マージの可否判断をユーザーに残すため                                                                                                                                                                     |
-| 2026-07-04 | E1-1〜E1-4の検証はローカル環境(uv 0.10.10, Docker 29.5.3, npm 11.11.0)で実施し、実CIの発火結果もpush後に `gh run list` で確認する運用とした                                                                                                                                                                                                                                                      | ローカル検証のみでは実際のGitHub Actions環境固有の差異(OS、キャッシュ等)を見逃す可能性があるため                                                                                                                                                                                           |
-| 2026-07-04 | E2完了。story.priority等のOptionalフィールドは`entity_to_json_dict()`(`exclude_none=True`)経由でJSON化する規約とした                                                                                                                                                                                                                                                                             | Pydanticの`model_dump(mode="json")`はNoneを明示出力するが、JSON Schema側はnull非許容の型定義が多く、バンドルimportでのスキーマ再検証時に型不一致が発生するため                                                                                                                             |
-| 2026-07-04 | E2-7の`apply_bundle`はストア層を`PmdfStore` Protocol(`save(entity)`のみ)経由で受け取る設計とした                                                                                                                                                                                                                                                                                                 | `packages/pmdf`単体はストアの永続化方式(Git等)に依存させず、E3のpmdf-store層が具象実装を注入できるようにするため                                                                                                                                                                           |
-| 2026-07-04 | CIの`uv run mypy .`(リポジトリ全体)とローカル検証コマンドの乖離により、テストコードのmypyエラーがCIでのみ顕在化しCIが継続的に失敗していた問題を修正(コミット29ea48a)。以降mypy検証は必ず`uv run mypy .`をリポジトリルートから実行する運用とした                                                                                                                                                  | ローカルで`services/api-server/src`のみを対象にmypyを実行しており、testsディレクトリのエラーを見逃していたため。E3-4〜E3-6の3コミット分、CIが赤のまま気づかず進行していた                                                                                                                  |
-| 2026-07-04 | E3-6の承認プロポーザル(決定前`proposed`状態)はPMDFエンティティではなく、api-server独自のJSONファイルストア(`api_server.approval.proposal_store`)で管理する設計とした                                                                                                                                                                                                                             | `Approval`(PMDF)エンティティの`decision`フィールドが必須のため、決定前状態をPMDFエンティティとして表現できない(スキーマ上approved/rejectedのみ許容)ため                                                                                                                                    |
-| 2026-07-04 | E3-9のバンドル適用(`apply_bundle`)は`PmdfStore.save_all`(新規追加した複数エンティティ一括1コミットAPI)へ委譲するアダプタ(`_BatchSaveAdapter`)を介して呼び出す設計とした                                                                                                                                                                                                                          | `apply_bundle`は`save(entity)`をエンティティ毎に呼び出すが、E3-9の要件(バンドル適用は1コミット)を満たすには、save呼び出し中はバッファリングし最後に一括コミットする必要があったため                                                                                                        |
-| 2026-07-04 | E3全10サブイシュー(#27〜#36)完了、親issue #3クローズ。api-server公開インターフェースを本ファイルに追記した                                                                                                                                                                                                                                                                                       | E4(model-gateway+compose統合)・E5(agent-core)・E7(web-ui)実装時に、新規セッションが本ファイルのみで必要なAPI仕様(認証方式、承認ゲートの使い方、L1エンドポイント追加時の必須依存関数等)を把握できるようにするため                                                                           |
-| 2026-07-05 | E4-1〜E4-3(#37, #83, #84)完了。`litellm`パッケージ本体はワークスペースの依存関係解決に追加せず(`packages/pmdf`の`typer>=0.26.8`要件とlitellm 1.90.2の`typer<0.26`要件が衝突するため)、YAML構造検証+respxモックによる軽量参照実装(`model_gateway.router.GatewayRouter`)でルーティング・フォールバック・リトライ契約を検証する方針とした                                                           | ワークスペース全体で単一lockfileを共有するuv workspace構成のため、1サービスがlitellmを追加するとpmdfのCLI依存(typer)が壊れる。実運用のプロキシ処理は公式コンテナイメージが担うため、Python依存としてのlitellm追加は必須ではない                                                            |
-| 2026-07-05 | E4-3のコスト計測は、LiteLLM自体のspend tracking DBに接続せず、api-server側の軽量usage記録ストア(JSONL追記専用、`POST /costs/usage`)で代替する設計とした                                                                                                                                                                                                                                          | イシュー本文が「DB無し構成なら軽量実装で可」を許容しており、Tier-Lの単純運用ではDB(Postgres等)を追加運用するコストを避けつつAR-04(トークン数・レイテンシ・概算コストの記録と月次予算消化率の可視化)を満たせるため                                                                          |
-| 2026-07-05 | E4完了はE4-1〜3のみとし、E4-4(compose統合起動)・E4-5(バックエンド無改修切替検証、#85, #86)はE7-1(web-ui骨格)完成後に着手する方針とし、親issue #4はopenのまま維持した                                                                                                                                                                                                                             | ユーザー指示により、compose統合起動・切替検証はweb-ui完成後にまとめて実施する運用としたため。E4-4/E4-5着手前に誤って親issueをクローズしないよう明記する必要があるため                                                                                                                      |
-| 2026-07-05 | E6(知識ベース)は`services/agent-core`が未実装(E5未着手)の段階で着手したため、KB/PMDF関連の全実装を新設した独立ワークスペースメンバー`services/kb-ingest`に配置する設計とした(イシュー本文が許容する「独立パッケージとして切り出してもよい」選択肢を採用)。KB由来(`source="kb"`)・PMDF由来(`source="pmdf"`)は同一Qdrantコレクション内でペイロードの`source`フィールドにより区別する方式に統一した | E5-3の`search_knowledge`が実装される前に、その依存先となるベクトルストア層を先に用意する必要があった。agent-core本体(LangGraph・タスクキュー等)はE6のスコープ外のため作らず、E5実装時に`kb_ingest`をそのままインポートして`search_knowledge`を組み立てられるようインターフェースを整理した |
-| 2026-07-05 | E6全4サブイシュー(#47〜#50)完了、親issue #6クローズ。kb-ingest公開インターフェースを本ファイルに追記した                                                                                                                                                                                                                                                                                         | E5(agent-core)実装時に、新規セッションが本ファイルのみでKB検索に必要なAPI仕様(チャンク分割・埋め込み・Qdrantストア・PMDFインデクサ・CLI)を把握できるようにするため                                                                                                                         |
+| 日付       | 決定内容                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | 理由                                                                                                                                                                                                                                                                                                          |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-07-04 | 全実装を `develop` ブランチ上で行う一本運用に変更。PRマージはユーザーが手動で行う                                                                                                                                                                                                                                                                                                                                                                                                                  | 複数セッション・複数エージェントによる並行実装でブランチ管理コストを下げつつ、最終マージの可否判断をユーザーに残すため                                                                                                                                                                                        |
+| 2026-07-04 | E1-1〜E1-4の検証はローカル環境(uv 0.10.10, Docker 29.5.3, npm 11.11.0)で実施し、実CIの発火結果もpush後に `gh run list` で確認する運用とした                                                                                                                                                                                                                                                                                                                                                        | ローカル検証のみでは実際のGitHub Actions環境固有の差異(OS、キャッシュ等)を見逃す可能性があるため                                                                                                                                                                                                              |
+| 2026-07-04 | E2完了。story.priority等のOptionalフィールドは`entity_to_json_dict()`(`exclude_none=True`)経由でJSON化する規約とした                                                                                                                                                                                                                                                                                                                                                                               | Pydanticの`model_dump(mode="json")`はNoneを明示出力するが、JSON Schema側はnull非許容の型定義が多く、バンドルimportでのスキーマ再検証時に型不一致が発生するため                                                                                                                                                |
+| 2026-07-04 | E2-7の`apply_bundle`はストア層を`PmdfStore` Protocol(`save(entity)`のみ)経由で受け取る設計とした                                                                                                                                                                                                                                                                                                                                                                                                   | `packages/pmdf`単体はストアの永続化方式(Git等)に依存させず、E3のpmdf-store層が具象実装を注入できるようにするため                                                                                                                                                                                              |
+| 2026-07-04 | CIの`uv run mypy .`(リポジトリ全体)とローカル検証コマンドの乖離により、テストコードのmypyエラーがCIでのみ顕在化しCIが継続的に失敗していた問題を修正(コミット29ea48a)。以降mypy検証は必ず`uv run mypy .`をリポジトリルートから実行する運用とした                                                                                                                                                                                                                                                    | ローカルで`services/api-server/src`のみを対象にmypyを実行しており、testsディレクトリのエラーを見逃していたため。E3-4〜E3-6の3コミット分、CIが赤のまま気づかず進行していた                                                                                                                                     |
+| 2026-07-04 | E3-6の承認プロポーザル(決定前`proposed`状態)はPMDFエンティティではなく、api-server独自のJSONファイルストア(`api_server.approval.proposal_store`)で管理する設計とした                                                                                                                                                                                                                                                                                                                               | `Approval`(PMDF)エンティティの`decision`フィールドが必須のため、決定前状態をPMDFエンティティとして表現できない(スキーマ上approved/rejectedのみ許容)ため                                                                                                                                                       |
+| 2026-07-04 | E3-9のバンドル適用(`apply_bundle`)は`PmdfStore.save_all`(新規追加した複数エンティティ一括1コミットAPI)へ委譲するアダプタ(`_BatchSaveAdapter`)を介して呼び出す設計とした                                                                                                                                                                                                                                                                                                                            | `apply_bundle`は`save(entity)`をエンティティ毎に呼び出すが、E3-9の要件(バンドル適用は1コミット)を満たすには、save呼び出し中はバッファリングし最後に一括コミットする必要があったため                                                                                                                           |
+| 2026-07-04 | E3全10サブイシュー(#27〜#36)完了、親issue #3クローズ。api-server公開インターフェースを本ファイルに追記した                                                                                                                                                                                                                                                                                                                                                                                         | E4(model-gateway+compose統合)・E5(agent-core)・E7(web-ui)実装時に、新規セッションが本ファイルのみで必要なAPI仕様(認証方式、承認ゲートの使い方、L1エンドポイント追加時の必須依存関数等)を把握できるようにするため                                                                                              |
+| 2026-07-05 | E4-1〜E4-3(#37, #83, #84)完了。`litellm`パッケージ本体はワークスペースの依存関係解決に追加せず(`packages/pmdf`の`typer>=0.26.8`要件とlitellm 1.90.2の`typer<0.26`要件が衝突するため)、YAML構造検証+respxモックによる軽量参照実装(`model_gateway.router.GatewayRouter`)でルーティング・フォールバック・リトライ契約を検証する方針とした                                                                                                                                                             | ワークスペース全体で単一lockfileを共有するuv workspace構成のため、1サービスがlitellmを追加するとpmdfのCLI依存(typer)が壊れる。実運用のプロキシ処理は公式コンテナイメージが担うため、Python依存としてのlitellm追加は必須ではない                                                                               |
+| 2026-07-05 | E4-3のコスト計測は、LiteLLM自体のspend tracking DBに接続せず、api-server側の軽量usage記録ストア(JSONL追記専用、`POST /costs/usage`)で代替する設計とした                                                                                                                                                                                                                                                                                                                                            | イシュー本文が「DB無し構成なら軽量実装で可」を許容しており、Tier-Lの単純運用ではDB(Postgres等)を追加運用するコストを避けつつAR-04(トークン数・レイテンシ・概算コストの記録と月次予算消化率の可視化)を満たせるため                                                                                             |
+| 2026-07-05 | E4完了はE4-1〜3のみとし、E4-4(compose統合起動)・E4-5(バックエンド無改修切替検証、#85, #86)はE7-1(web-ui骨格)完成後に着手する方針とし、親issue #4はopenのまま維持した                                                                                                                                                                                                                                                                                                                               | ユーザー指示により、compose統合起動・切替検証はweb-ui完成後にまとめて実施する運用としたため。E4-4/E4-5着手前に誤って親issueをクローズしないよう明記する必要があるため                                                                                                                                         |
+| 2026-07-05 | E6(知識ベース)は`services/agent-core`が未実装(E5未着手)の段階で着手したため、KB/PMDF関連の全実装を新設した独立ワークスペースメンバー`services/kb-ingest`に配置する設計とした(イシュー本文が許容する「独立パッケージとして切り出してもよい」選択肢を採用)。KB由来(`source="kb"`)・PMDF由来(`source="pmdf"`)は同一Qdrantコレクション内でペイロードの`source`フィールドにより区別する方式に統一した                                                                                                   | E5-3の`search_knowledge`が実装される前に、その依存先となるベクトルストア層を先に用意する必要があった。agent-core本体(LangGraph・タスクキュー等)はE6のスコープ外のため作らず、E5実装時に`kb_ingest`をそのままインポートして`search_knowledge`を組み立てられるようインターフェースを整理した                    |
+| 2026-07-05 | E6全4サブイシュー(#47〜#50)完了、親issue #6クローズ。kb-ingest公開インターフェースを本ファイルに追記した                                                                                                                                                                                                                                                                                                                                                                                           | E5(agent-core)実装時に、新規セッションが本ファイルのみでKB検索に必要なAPI仕様(チャンク分割・埋め込み・Qdrantストア・PMDFインデクサ・CLI)を把握できるようにするため                                                                                                                                            |
+| 2026-07-05 | E5-8(根拠明示・差戻フィードバック)は、KB出典・PMDF参照に加え「データ」根拠(決定的計算の入力値・KPI実測値等)を`x_evidence`の第3の`source`種別として追加した(`evidence.data_evidence`)。既存4業務グラフへの統合は各成果物生成・起案ノードの永続化直前に`attach_evidence`呼び出しを1〜数行追加する形とし、グラフの構造自体は変更しなかった                                                                                                                                                            | FR-PD-13の要件文言(「KB出典、PMDF内の参照エンティティ、データ」)がKB/PMDF以外の根拠(RICE/WSJF・EVMの計算入力値、KPI実測値等)も許容しており、これらは検索結果ではなくグラフ内部で既に持っている値であるため、無理にKB/PMDF検索を挟まずデータそのものを根拠として明示する経路を用意する方が実態に即していたため |
+| 2026-07-05 | E5-9(チャット指示インターフェース)は、チャットタスクの永続化・状態遷移・イベント配信をapi-server側(`api_server.chat.task_store`、E3-6の`proposal_store`と同様のJSONファイルストア)に置き、agent-core側の`chat.py`はHTTP経由でタスク登録(`POST /chat/instructions`)と状態遷移報告(`POST /chat/tasks/{id}/transition`)を行うクライアントとして実装する設計とした(agent-coreのE5-1タスクキューはプロセス内実装のため、チャットタスクの実行状況をUIと共有するにはapi-server側の永続化が必要と判断した) | 依存方向(agent-core→api-serverの一方向のみ、api-serverはagent-coreをimportしない)を崩さずにUI⇄api-server⇄agent-coreランナー間でチャットタスクの状態を共有するには、状態の単一の真実源をapi-server側に置く必要があったため                                                                                     |
+| 2026-07-05 | E5全9サブイシュー(#38〜#46)完了、親issue #5クローズ。agent-core公開インターフェースを本ファイルに追記した                                                                                                                                                                                                                                                                                                                                                                                          | E7(web-ui)・E8(自己学習ループ)実装時に、新規セッションが本ファイルのみでagent-coreの業務グラフ・根拠明示・差戻フィードバック・チャット指示APIの仕様を把握できるようにするため                                                                                                                                 |
