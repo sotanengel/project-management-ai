@@ -1,7 +1,13 @@
-"""PMDF CRUD API(`/pmdf/{kind}` 系)のテスト(E3-3)。"""
+"""PMDF CRUD API(`/pmdf/{kind}` 系)のテスト(E3-3)。
+
+E3-4完了に伴い、書込系エンドポイントは認証(admin/editorロール)が
+必要になったため、テスト用ユーザーストアを用意しeditorとしてログイン
+した状態のクライアントを使う。
+"""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -10,8 +16,29 @@ from httpx import ASGITransport, AsyncClient
 
 @pytest.fixture
 def app(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    from api_server.auth.password import hash_password
+
     monkeypatch.setenv("JWT_SECRET", "test-secret")
     monkeypatch.setenv("PMDF_STORE_PATH", str(tmp_path / "pmdf-repo"))
+
+    user_store_path = tmp_path / "users.json"
+    user_store_path.write_text(
+        json.dumps(
+            [
+                {
+                    "id": "user-editor",
+                    "email": "editor@example.com",
+                    "password_hash": hash_password("editor-pass"),
+                    "role": "editor",
+                    "totp_secret": None,
+                    "product_scopes": None,
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("USER_STORE_PATH", str(user_store_path))
+
     from api_server.pmdf_store.store import PmdfStore
 
     PmdfStore.init(tmp_path / "pmdf-repo")
@@ -25,6 +52,11 @@ def app(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
 async def client(app):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
+        login_response = await c.post(
+            "/auth/login", json={"email": "editor@example.com", "password": "editor-pass"}
+        )
+        token = login_response.json()["access_token"]
+        c.headers["Authorization"] = f"Bearer {token}"
         yield c
 
 

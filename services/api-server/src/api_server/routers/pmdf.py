@@ -17,6 +17,8 @@ from pmdf.models.common import PmdfBase
 from pmdf.schema_registry import SchemaNotFoundError, validate_entity
 from pmdf.validate import validate_references
 
+from api_server.auth.dependencies import get_current_user, require_role
+from api_server.auth.models import User
 from api_server.deps import get_pmdf_store_dependency
 from api_server.pmdf_store.store import PmdfStore
 
@@ -25,9 +27,10 @@ router = APIRouter(prefix="/pmdf", tags=["pmdf"])
 #: 削除不可のエンティティ種別(DR-06)。
 _UNDELETABLE_KINDS = frozenset({"approval", "decision"})
 
-# TODO(E3-4完了後): 認証実装後、認証済みユーザー情報から actor
-# (`user:<id>`)を取得するよう差し替える。現時点では暫定的に固定値を使う。
-_PLACEHOLDER_ACTOR = "user:placeholder-until-e3-4"
+
+def _actor_from_user(user: User) -> str:
+    """認証済みユーザーからGitコミットのauthorに用いるactor文字列を組み立てる。"""
+    return f"user:{user.id}"
 
 
 def _get_model_cls(kind: str) -> type[PmdfBase]:
@@ -69,13 +72,14 @@ def create_entity(
     kind: str,
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(require_role("admin", "editor"))],
 ) -> dict[str, Any]:
     payload = {**payload, "kind": kind}
     _validate_schema_and_references(payload, kind, store)
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    created = store.create(entity, actor=_PLACEHOLDER_ACTOR)
+    created = store.create(entity, actor=_actor_from_user(user))
     return entity_to_json_dict(created)
 
 
@@ -83,6 +87,7 @@ def create_entity(
 def list_entities(
     kind: str,
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(get_current_user)],
     product: Annotated[str | None, Query()] = None,
 ) -> list[dict[str, Any]]:
     _get_model_cls(kind)
@@ -97,6 +102,7 @@ def get_entity_history(
     kind: str,
     id: str,
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(get_current_user)],
 ) -> list[dict[str, Any]]:
     _get_model_cls(kind)
     history = store.history(kind, id)
@@ -118,6 +124,7 @@ def get_entity(
     kind: str,
     id: str,
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(get_current_user)],
     ref: Annotated[str | None, Query()] = None,
 ) -> dict[str, Any]:
     _get_model_cls(kind)
@@ -134,6 +141,7 @@ def update_entity(
     id: str,
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(require_role("admin", "editor"))],
 ) -> dict[str, Any]:
     _get_model_cls(kind)
     try:
@@ -146,12 +154,16 @@ def update_entity(
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    updated = store.update(entity, actor=_PLACEHOLDER_ACTOR)
+    updated = store.update(entity, actor=_actor_from_user(user))
     return entity_to_json_dict(updated)
 
 
 @router.delete("/{kind}/{id}")
-def delete_entity(kind: str, id: str) -> None:
+def delete_entity(
+    kind: str,
+    id: str,
+    user: Annotated[User, Depends(require_role("admin", "editor"))],
+) -> None:
     """DR-06: approval/decisionは削除不可。それ以外も物理削除APIは提供しない。"""
     if kind in _UNDELETABLE_KINDS:
         raise HTTPException(
