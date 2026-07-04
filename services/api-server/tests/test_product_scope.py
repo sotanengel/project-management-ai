@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -19,7 +20,7 @@ PRODUCT_B = "prod-01HBBBBBBBBBBBBBBBBBBBBBBB"
 
 
 def _valid_product_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "product",
         "id": PRODUCT_A,
@@ -37,7 +38,7 @@ def _valid_product_payload(**overrides: object) -> dict:
 
 
 def _valid_story_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "story",
         "id": "story-01HZZZZZZZZZZZZZZZZZZZZZZZ",

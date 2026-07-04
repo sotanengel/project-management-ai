@@ -11,7 +11,7 @@ def test_settings_loads_from_env_vars(monkeypatch: pytest.MonkeyPatch, tmp_path)
     monkeypatch.setenv("JWT_SECRET", "test-secret")
     monkeypatch.setenv("PMDF_STORE_PATH", str(tmp_path))
 
-    settings = Settings()
+    settings = Settings()  # type: ignore[call-arg]
 
     assert settings.jwt_secret == "test-secret"
     assert settings.pmdf_store_path == tmp_path
@@ -25,7 +25,7 @@ def test_settings_missing_required_env_var_raises(monkeypatch: pytest.MonkeyPatc
     monkeypatch.delenv("PMDF_STORE_PATH", raising=False)
 
     with pytest.raises(ValidationError):
-        Settings(_env_file=None)
+        Settings(_env_file=None)  # type: ignore[call-arg]
 
 
 def test_settings_has_no_hardcoded_secret_default(
@@ -36,7 +36,7 @@ def test_settings_has_no_hardcoded_secret_default(
 
     monkeypatch.setenv("JWT_SECRET", "another-secret")
     monkeypatch.setenv("PMDF_STORE_PATH", str(tmp_path))
-    settings = Settings()
+    settings = Settings()  # type: ignore[call-arg]
 
     # フィールド定義上、デフォルト値が無い(=必須)ことを型情報から確認する。
     assert Settings.model_fields["jwt_secret"].is_required()
@@ -50,5 +50,5 @@ def test_settings_cors_origins_default(monkeypatch: pytest.MonkeyPatch, tmp_path
     monkeypatch.setenv("PMDF_STORE_PATH", str(tmp_path))
     monkeypatch.delenv("CORS_ORIGINS", raising=False)
 
-    settings = Settings()
+    settings = Settings()  # type: ignore[call-arg]
     assert settings.cors_origins == []

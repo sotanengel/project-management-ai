@@ -30,7 +30,8 @@ def _has_approved_record(store: PmdfStore, target_id: str) -> bool:
     """
     approvals = store.list_all("approval")
     return any(
-        approval.target == target_id and getattr(approval, "decision", None) == "approved"
+        getattr(approval, "target", None) == target_id
+        and getattr(approval, "decision", None) == "approved"
         for approval in approvals
     )
 

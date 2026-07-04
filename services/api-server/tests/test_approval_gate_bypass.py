@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -34,7 +35,7 @@ L1_ENDPOINTS: list[tuple[str, str, str, str]] = [
 
 
 def _valid_product_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "product",
         "id": PRODUCT_ID,
@@ -49,7 +50,7 @@ def _valid_product_payload(**overrides: object) -> dict:
 
 
 def _valid_decision_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "decision",
         "id": DECISION_ID,
@@ -68,7 +69,7 @@ def _valid_decision_payload(**overrides: object) -> dict:
 
 
 def _valid_objective_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "objective",
         "id": OBJECTIVE_ID,
@@ -83,7 +84,7 @@ def _valid_objective_payload(**overrides: object) -> dict:
 
 
 def _valid_roadmap_item_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "roadmap_item",
         "id": ROADMAP_ID,
@@ -101,7 +102,7 @@ def _valid_roadmap_item_payload(**overrides: object) -> dict:
 
 
 def _valid_release_payload(**overrides: object) -> dict:
-    payload = {
+    payload: dict[str, Any] = {
         "pmdf_version": "1.0.0",
         "kind": "release",
         "id": RELEASE_ID,
@@ -281,11 +282,13 @@ async def test_all_l1_router_endpoints_are_covered_by_test_matrix() -> None:
     パラメータ化対象)に網羅されていることを検証する(エンドポイント網羅性チェック)。
     """
     from api_server.routers.l1_execution import router
+    from fastapi.routing import APIRoute
 
     declared = {
         (method, route.path)
         for route in router.routes
-        for method in getattr(route, "methods", set()) or set()
+        if isinstance(route, APIRoute)
+        for method in route.methods or set()
         if method != "HEAD"
     }
     tested = {(method, path_template) for method, path_template, _, _ in L1_ENDPOINTS}
