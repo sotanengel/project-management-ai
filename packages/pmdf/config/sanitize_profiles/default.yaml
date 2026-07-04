@@ -1,0 +1,15 @@
+profile: partner-share-default
+mask_fields:
+  - kind: story
+    fields: ["priority.reach", "provenance.created_by"]
+    strategy: redact
+  - kind: metric
+    fields: ["current_value"]
+    strategy: redact
+  - kind: stakeholder
+    # nameはstakeholderエンティティ自身の個人名フィールドであり、
+    # contact_policy.personal_nameと合わせてAC-08(個人名の非公開)を満たすため
+    # 両方をマスク対象とする(issue #25本文の例はcontact_policy.personal_name
+    # のみを例示していたが、name自体も個人名であるため追加した)。
+    fields: ["name", "contact_policy.personal_name"]
+    strategy: redact

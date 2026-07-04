@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict
 
 from pmdf.io import dict_to_yaml, entity_relative_path, entity_to_json_dict
 from pmdf.models.common import PmdfBase
+from pmdf.sanitize import SanitizeProfile, sanitize_entity
 
 #: 現時点のPMDFスキーマバージョン(マニフェストに記録する)。
 SCHEMA_VERSION = "1.0.0"
@@ -102,6 +103,7 @@ def export_bundle(
     include_attachments: bool = True,
     attachments_dir: Path | None = None,
     generated_env: str = "unknown",
+    sanitize_profile: SanitizeProfile | None = None,
 ) -> Path:
     """PMDFエンティティ群を`output_path`(`*.pmdf.tar.gz`)にエクスポートする。
 
@@ -114,6 +116,8 @@ def export_bundle(
             フィールド(path+sha256の参照)は保持したままバイナリ本体は含めない。
         attachments_dir: 添付ファイルの実体を探索するベースディレクトリ。
         generated_env: 生成環境を表す文字列(呼び出し側から注入)。
+        sanitize_profile: 指定時、バンドル生成前に全エンティティへ
+            サニタイズ(E2-8)を適用する。
 
     Returns:
         書き込んだ`output_path`。
@@ -125,6 +129,8 @@ def export_bundle(
         # tar内のパスはOS非依存にPOSIX形式(`/`区切り)で統一する。
         relpath = entity_relative_path(entity.kind, entity.id).as_posix()
         data = entity_to_json_dict(entity)
+        if sanitize_profile is not None:
+            data = sanitize_entity(data, sanitize_profile)
         entity_yaml_by_relpath[relpath] = dict_to_yaml(data).encode("utf-8")
 
     manifest = _build_manifest(selected, entity_yaml_by_relpath, generated_env)
