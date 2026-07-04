@@ -1,0 +1,101 @@
+# model-gateway: LiteLLM Proxy 設定ファイル(E4-1, E4-2, E4-3)
+#
+# AR-01: エージェントコアは論理名(pdm-main / pdm-teacher / pdm-judge / pdm-embed)
+#        でのみモデルを指定する。実モデル名・実バックエンドの対応関係は
+#        本ファイルにのみ記述し、呼び出し側コードにハードコードしない。
+# AR-02: 最低限 Anthropic API・OpenAI API・AWS Bedrock・OpenAI互換ローカル
+#        サーバ(Ollama / vLLM)をサポートする。
+# AR-03: バックエンド障害時のフォールバック、リトライ、タイムアウトを
+#        設定で定義する(E4-2、router_settings参照)。
+# AR-04: 全呼び出しのトークン数・レイテンシ・概算コストを記録する
+#        (E4-3、general_settings.database_url によるspend tracking)。
+#
+# APIキー・接続情報は必ず `os.environ/VAR_NAME` 形式で環境変数から注入する。
+# 値を直書きしない(SEC-01)。実際の値は `.env`(gitignore対象)で管理する。
+#
+# --- オンラインAPI ⇄ ローカルOllama の切替方針 -------------------------------
+# `pdm-main` は主要合意事項として「オンラインAPI(Anthropic)」と
+# 「ローカルOllama(OpenAI互換エンドポイント http://ollama:11434)」の
+# 2エントリを常時定義する。どちらを実際に使うかは `.env` の
+# `PDM_MAIN_ACTIVE_MODEL` / `PDM_MAIN_ACTIVE_API_BASE` 等の値を空にする/
+# 埋めるかで制御し、YAML自体は編集しない(E4-5で無改修切替を検証)。
+# LiteLLM Routerは同一 model_name の複数エントリをロードバランス対象として
+# 扱うため、Tier-Lの単純運用では「使わない側」の環境変数を未設定のまま
+# にしてデプロイ側で該当バックエンドのコンテナ(ollama等)自体を起動しない
+# 運用とする(compose profile "local-gpu" 参照)。
+
+model_list:
+  # --- pdm-main: 通常のエージェント推論用メインモデル ------------------------
+  - model_name: pdm-main
+    litellm_params:
+      model: os.environ/PDM_MAIN_MODEL
+      api_key: os.environ/ANTHROPIC_API_KEY
+      num_retries: 2
+      timeout: 30
+
+  # ローカル切替例(Ollama, OpenAI互換)。.envでPDM_MAIN_MODELを
+  # "ollama/qwen2.5:7b-instruct-q4_K_M" 、PDM_MAIN_API_BASEを
+  # "http://ollama:11434" に設定することでコード変更なしに切替可能。
+  - model_name: pdm-main-local
+    litellm_params:
+      model: os.environ/PDM_MAIN_LOCAL_MODEL
+      api_base: os.environ/PDM_MAIN_LOCAL_API_BASE
+
+  # フォールバック用: Bedrock経由の同等モデル(E4-2 fallbacks参照)。
+  - model_name: pdm-main-fallback
+    litellm_params:
+      model: os.environ/PDM_MAIN_FALLBACK_MODEL
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      aws_region_name: os.environ/AWS_REGION
+
+  # --- pdm-teacher: 自己学習ループの教師role(高精度・低頻度呼び出し) --------
+  - model_name: pdm-teacher
+    litellm_params:
+      model: os.environ/PDM_TEACHER_MODEL
+      api_key: os.environ/ANTHROPIC_API_KEY
+      num_retries: 2
+      timeout: 60
+
+  # --- pdm-judge: 評価・LLM-as-judge用 ---------------------------------------
+  - model_name: pdm-judge
+    litellm_params:
+      model: os.environ/PDM_JUDGE_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+      num_retries: 2
+      timeout: 30
+
+  # --- pdm-embed: 埋め込み(RAG/知識ベース用) ---------------------------------
+  - model_name: pdm-embed
+    litellm_params:
+      model: os.environ/PDM_EMBED_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+      num_retries: 1
+      timeout: 15
+
+# --- ルーティング・信頼性設定(E4-2, AR-03) ----------------------------------
+router_settings:
+  # 主バックエンド障害時に予備バックエンドへフォールバックする対応表。
+  # 例: pdm-main障害時はpdm-main-fallback(Bedrock経由の同等モデル)へ。
+  fallbacks:
+    - pdm-main: ["pdm-main-fallback"]
+  num_retries: 2
+  timeout: 30
+  # 障害が続いたデプロイメントを一時的にルーティング対象外にする秒数。
+  cooldown_time: 60
+  routing_strategy: simple-shuffle
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  # AR-04: コスト計測(E4-3)。呼び出し毎のspend/tokens/latencyを記録する。
+  success_callback: ["langfuse"] # 実運用ではapi-server側の集計を優先し無効化可
+  request_timeout: 30
+
+# --- コスト計測用データストア(E4-3) -----------------------------------------
+# Tier-Lではファイルベース(SQLite)を既定とする。DB無し構成の場合、
+# api-server側の軽量コスト記録ストア(JSONL、POST /costs/usage)で代替する
+# (詳細はservices/api-server/src/api_server/costs/を参照)。
+general_settings:
+  database_url: os.environ/LITELLM_DATABASE_URL
+  store_model_in_db: false
