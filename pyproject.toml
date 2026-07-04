@@ -36,4 +36,4 @@ exclude = ["scripts/bootstrap_issues"]
 package = false
 
 [tool.pytest.ini_options]
-testpaths = ["packages", "services"]
+testpaths = ["packages", "services", "scripts/tests"]
