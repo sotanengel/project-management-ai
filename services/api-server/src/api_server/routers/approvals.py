@@ -31,6 +31,7 @@ from api_server.auth.dependencies import get_current_user, require_role
 from api_server.auth.models import User
 from api_server.config import Settings, get_settings
 from api_server.deps import get_pmdf_store_dependency
+from api_server.events.bus import InMemoryEventBus, get_event_bus
 from api_server.pmdf_store.store import PmdfStore
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
@@ -61,11 +62,25 @@ def _to_response(proposal: Proposal) -> ProposalResponse:
     return ProposalResponse(**proposal.model_dump())
 
 
+def _pending_count(settings: Settings) -> int:
+    return sum(
+        1
+        for p in load_proposals(settings.proposal_store_path)
+        if p.status == ProposalState.PROPOSED
+    )
+
+
+async def _publish_count_changed(bus: InMemoryEventBus, settings: Settings) -> None:
+    """承認キュー件数の変化をWebSocket購読者へ配信する(FR-UI-11)。"""
+    await bus.publish("approval.count_changed", {"count": _pending_count(settings)})
+
+
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=ProposalResponse)
-def propose(
+async def propose(
     request: ProposeRequest,
     settings: Annotated[Settings, Depends(get_settings)],
     _user: Annotated[User, Depends(require_role("admin", "editor"))],
+    bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
 ) -> ProposalResponse:
     proposal = Proposal(
         id=f"proposal-{uuid.uuid4()}",
@@ -74,6 +89,7 @@ def propose(
         status=ProposalState.PROPOSED,
     )
     add_proposal(settings.proposal_store_path, proposal)
+    await _publish_count_changed(bus, settings)
     return _to_response(proposal)
 
 
@@ -91,12 +107,13 @@ def list_proposals(
 
 
 @router.post("/{proposal_id}/decide", response_model=ProposalResponse)
-def decide(
+async def decide(
     proposal_id: str,
     request: DecideRequest,
     settings: Annotated[Settings, Depends(get_settings)],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(require_role("admin", "editor"))],
+    bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
 ) -> ProposalResponse:
     proposal = find_proposal_by_id(settings.proposal_store_path, proposal_id)
     if proposal is None:
@@ -147,6 +164,7 @@ def decide(
         }
     )
     update_proposal(settings.proposal_store_path, updated)
+    await _publish_count_changed(bus, settings)
     return _to_response(updated)
 
 

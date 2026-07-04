@@ -22,6 +22,7 @@ from api_server.auth.dependencies import check_product_scope, get_current_user, 
 from api_server.auth.models import User
 from api_server.config import Settings, get_settings
 from api_server.deps import get_pmdf_store_dependency
+from api_server.events.bus import InMemoryEventBus, get_event_bus
 from api_server.pmdf_store.store import PmdfStore
 
 router = APIRouter(prefix="/pmdf", tags=["pmdf"])
@@ -97,13 +98,21 @@ def _validate_schema_and_references(data: dict[str, Any], kind: str, store: Pmdf
         raise HTTPException(status_code=422, detail=f"参照整合エラー: {detail}")
 
 
+async def _publish_entity_changed(
+    bus: InMemoryEventBus, *, kind: str, entity_id: str, verb: str
+) -> None:
+    """PMDFエンティティ変更をWebSocket購読者へ配信する(FR-UI-11)。"""
+    await bus.publish("pmdf.entity_changed", {"kind": kind, "id": entity_id, "verb": verb})
+
+
 @router.post("/{kind}", status_code=status.HTTP_201_CREATED)
-def create_entity(
+async def create_entity(
     kind: str,
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(require_role("admin", "editor"))],
     settings: Annotated[Settings, Depends(get_settings)],
+    bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
 ) -> dict[str, Any]:
     payload = {**payload, "kind": kind}
     _validate_schema_and_references(payload, kind, store)
@@ -113,6 +122,7 @@ def create_entity(
     actor = _actor_from_user(user)
     created = store.create(entity, actor=actor)
     _record_pmdf_audit(settings=settings, actor=actor, verb="create", entity=created)
+    await _publish_entity_changed(bus, kind=kind, entity_id=created.id, verb="create")
     return entity_to_json_dict(created)
 
 
@@ -176,13 +186,14 @@ def get_entity(
 
 
 @router.put("/{kind}/{id}")
-def update_entity(
+async def update_entity(
     kind: str,
     id: str,
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(require_role("admin", "editor"))],
     settings: Annotated[Settings, Depends(get_settings)],
+    bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
 ) -> dict[str, Any]:
     _get_model_cls(kind)
     try:
@@ -198,6 +209,7 @@ def update_entity(
     actor = _actor_from_user(user)
     updated = store.update(entity, actor=actor)
     _record_pmdf_audit(settings=settings, actor=actor, verb="update", entity=updated)
+    await _publish_entity_changed(bus, kind=kind, entity_id=updated.id, verb="update")
     return entity_to_json_dict(updated)
 
 

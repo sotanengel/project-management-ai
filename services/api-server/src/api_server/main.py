@@ -17,6 +17,7 @@ from api_server.routers import (
     health,
     l1_execution,
     pmdf,
+    ws,
 )
 
 
@@ -49,6 +50,7 @@ def create_app() -> FastAPI:
     app.include_router(bundles.router)
     app.include_router(l1_execution.router)
     app.include_router(pmdf.router)
+    app.include_router(ws.router)
 
     return app
 
