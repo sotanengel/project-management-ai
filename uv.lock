@@ -1,0 +1,25 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[manifest]
+members = [
+    "pmdf",
+    "project-management-ai",
+]
+
+[[package]]
+name = "pmdf"
+version = "0.1.0"
+source = { editable = "packages/pmdf" }
+
+[[package]]
+name = "project-management-ai"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "pmdf" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pmdf", editable = "packages/pmdf" }]
