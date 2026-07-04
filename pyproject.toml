@@ -45,3 +45,4 @@ package = false
 
 [tool.pytest.ini_options]
 testpaths = ["packages", "services", "scripts/tests"]
+asyncio_mode = "auto"

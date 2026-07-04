@@ -148,3 +148,20 @@ def test_lock_timeout_raises_lock_timeout_error(store_path: Path, monkeypatch) -
 def test_delete_is_not_provided(store_path: Path) -> None:
     store = PmdfStore(store_path)
     assert not hasattr(store, "delete")
+
+
+def test_list_all_returns_all_entities_of_kind(store_path: Path) -> None:
+    store = PmdfStore(store_path)
+    story1 = make_story(id="story-01HHHHHHHHHHHHHHHHHHHHHHHH", title="one")
+    story2 = make_story(id="story-01HJJJJJJJJJJJJJJJJJJJJJJJ", title="two")
+    store.create(story1, actor="user:alice")
+    store.create(story2, actor="user:alice")
+
+    results = store.list_all("story")
+
+    assert {e.id for e in results} == {story1.id, story2.id}
+
+
+def test_list_all_returns_empty_list_when_kind_dir_missing(store_path: Path) -> None:
+    store = PmdfStore(store_path)
+    assert store.list_all("story") == []

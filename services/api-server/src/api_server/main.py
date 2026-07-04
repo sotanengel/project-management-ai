@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api_server.config import get_settings
 from api_server.exceptions import register_exception_handlers
 from api_server.logging import configure_logging
-from api_server.routers import health
+from api_server.routers import health, pmdf
 
 
 def create_app() -> FastAPI:
@@ -33,6 +33,7 @@ def create_app() -> FastAPI:
     register_exception_handlers(app)
 
     app.include_router(health.router)
+    app.include_router(pmdf.router)
 
     return app
 

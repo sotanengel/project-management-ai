@@ -98,6 +98,19 @@ class PmdfStore:
         model = KIND_TO_MODEL[kind]
         return model.model_validate(data)
 
+    def list_all(self, kind: str) -> list[PmdfBase]:
+        """指定`kind`配下の全エンティティ(作業ツリー上の最新版)を返す。
+
+        `<kind>/` ディレクトリが存在しない場合は空リストを返す。
+        """
+        kind_dir = self.repo_path / kind
+        if not kind_dir.exists():
+            return []
+        entities: list[PmdfBase] = []
+        for path in sorted(kind_dir.glob("*.yaml")):
+            entities.append(load_entity(path))
+        return entities
+
     def history(self, kind: str, id: str) -> list[CommitInfo]:
         """対象ファイルの全コミット履歴を新しい順で返す。"""
         relative_path = entity_relative_path(kind, id).as_posix()
