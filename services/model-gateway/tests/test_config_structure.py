@@ -61,9 +61,9 @@ def test_no_hardcoded_api_keys() -> None:
         api_key = params.get("api_key")
         if api_key is not None:
             assert isinstance(api_key, str)
-            assert api_key.startswith(
-                "os.environ/"
-            ), f"{entry['model_name']}: api_keyは環境変数参照のみ許可されます: {api_key!r}"
+            assert api_key.startswith("os.environ/"), (
+                f"{entry['model_name']}: api_keyは環境変数参照のみ許可されます: {api_key!r}"
+            )
 
 
 def test_no_plausible_hardcoded_secret_values() -> None:
@@ -118,9 +118,9 @@ def test_env_driven_backend_switch_uses_env_var_placeholders() -> None:
 
     for entry in config["model_list"]:
         model = entry["litellm_params"]["model"]
-        assert model.startswith(
-            "os.environ/"
-        ), f"{entry['model_name']}: modelは環境変数参照であること: {model!r}"
+        assert model.startswith("os.environ/"), (
+            f"{entry['model_name']}: modelは環境変数参照であること: {model!r}"
+        )
         api_base = entry["litellm_params"].get("api_base")
         if api_base is not None:
             assert api_base.startswith("os.environ/")

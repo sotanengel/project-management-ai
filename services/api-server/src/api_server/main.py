@@ -14,6 +14,7 @@ from api_server.routers import (
     auth,
     autonomy,
     bundles,
+    costs,
     health,
     l1_execution,
     pmdf,
@@ -48,6 +49,7 @@ def create_app() -> FastAPI:
     app.include_router(approvals.router)
     app.include_router(autonomy.router)
     app.include_router(bundles.router)
+    app.include_router(costs.router)
     app.include_router(l1_execution.router)
     app.include_router(pmdf.router)
     app.include_router(ws.router)

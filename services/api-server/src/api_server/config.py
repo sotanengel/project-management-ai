@@ -56,6 +56,12 @@ class Settings(BaseSettings):
     #: 緊急停止フラグの状態ファイルのパス。
     emergency_stop_path: Path = Path("data/emergency_stop.json")
 
+    #: 月次予算(日本円)。コストAPI(/costs)の消化率算出に使う(E4-3, AR-04)。
+    budget_monthly_jpy: float = 50_000
+
+    #: LLM呼び出しusage(トークン数・レイテンシ・概算コスト)記録のJSONLパス。
+    cost_usage_log_path: Path = Path("data/costs/usage.jsonl")
+
 
 @lru_cache
 def get_settings() -> Settings:
