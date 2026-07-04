@@ -1,0 +1,26 @@
+pmdf_version: "1.0.0"
+kind: decision
+id: dec-01JZX3DDDD01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  approved_by: "user:vp-hanako"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+product: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+background: "非会員購入者から注文履歴確認の問い合わせが増えている"
+options:
+  - name: "メールリンク方式"
+    description: "注文完了メールに履歴参照用リンクを埋め込む"
+    pros: ["実装が軽量", "会員登録を強制しない"]
+    cons: ["リンク漏えいリスク"]
+  - name: "簡易アカウント方式"
+    description: "購入時に簡易アカウントを自動発行する"
+    pros: ["継続利用を促せる"]
+    cons: ["実装コストが高い"]
+chosen_option: "メールリンク方式"
+rationale: "リードタイムとコストを踏まえ、軽量な方式を優先した"
+rejected_reasons:
+  - option: "簡易アカウント方式"
+    reason: "今四半期のスコープでは実装コストが見合わない"
+approver: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF
+autonomy_level: L1

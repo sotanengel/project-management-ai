@@ -1,0 +1,11 @@
+pmdf_version: "1.0.0"
+kind: roadmap_item
+id: roadmap-01JZX1RRRR01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+theme: "注文履歴の非会員向け提供"
+period: "2026-Q3"
+status: planned
+# objective (必須)が欠落している

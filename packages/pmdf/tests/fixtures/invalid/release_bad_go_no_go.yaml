@@ -1,0 +1,12 @@
+pmdf_version: "1.0.0"
+kind: release
+id: release-01JZX4RSEA01BBBBCCCCDDDDAB
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "2026-Q3 第1弾リリース"
+scope:
+  - story-01JZX4T8G2K9V6R5N4M3P2Q1R0
+# go_no_go がenumに存在しない値
+go_no_go: "maybe"

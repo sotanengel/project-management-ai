@@ -1,0 +1,14 @@
+pmdf_version: "1.0.0"
+kind: decision
+id: dec-01JZX3DDDD01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+background: "非会員購入者から注文履歴確認の問い合わせが増えている"
+options:
+  - name: "メールリンク方式"
+chosen_option: "メールリンク方式"
+rationale: "リードタイムとコストを踏まえ、軽量な方式を優先した"
+# rejected_reasons (必須)が欠落している
+autonomy_level: L1

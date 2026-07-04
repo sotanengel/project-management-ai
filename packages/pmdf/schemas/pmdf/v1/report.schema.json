@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/report.schema.json",
+  "title": "PMDF Report",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "report" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "period": {
+      "type": "string",
+      "description": "対象期間(例: 2026-Q3、または任意の期間文字列)。"
+    },
+    "health_assessment": {
+      "type": "string",
+      "enum": ["green", "yellow", "red"],
+      "description": "健全性評価。"
+    },
+    "decisions_needed": {
+      "type": "array",
+      "description": "要判断事項一覧。",
+      "items": { "type": "string" }
+    },
+    "summary": {
+      "type": ["string", "null"],
+      "default": null
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "period",
+    "health_assessment",
+    "decisions_needed"
+  ],
+  "additionalProperties": false
+}

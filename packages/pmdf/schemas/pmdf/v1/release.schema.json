@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/release.schema.json",
+  "title": "PMDF Release",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "release" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "name": { "type": "string" },
+    "scope": {
+      "type": "array",
+      "description": "本リリースに含まれるstoryのid一覧。",
+      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "x_ref_kind": "story"
+    },
+    "go_no_go": {
+      "type": "string",
+      "enum": ["go", "no_go", "pending"]
+    },
+    "released_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "actuals": {
+      "type": "object",
+      "description": "実績(遅延・不具合件数等)。",
+      "additionalProperties": true
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "name",
+    "scope",
+    "go_no_go"
+  ],
+  "additionalProperties": false
+}

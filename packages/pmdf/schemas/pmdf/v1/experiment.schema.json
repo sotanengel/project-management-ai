@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/experiment.schema.json",
+  "title": "PMDF Experiment",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "experiment" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "hypothesis": { "type": "string" },
+    "design": { "type": "string" },
+    "success_criteria": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "running", "completed", "aborted"]
+    },
+    "results": {
+      "type": ["string", "null"],
+      "default": null
+    },
+    "learnings": {
+      "type": ["string", "null"],
+      "default": null
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "hypothesis",
+    "design",
+    "success_criteria",
+    "status"
+  ],
+  "additionalProperties": false
+}

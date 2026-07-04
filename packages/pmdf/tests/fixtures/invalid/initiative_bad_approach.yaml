@@ -1,0 +1,10 @@
+pmdf_version: "1.0.0"
+kind: initiative
+id: initiative-01JZX6NTNT01BBBBCCCCDDDABC
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+charter: "非会員購入体験改善プロジェクト憲章"
+# approach がenumに存在しない値
+approach: "waterfall"

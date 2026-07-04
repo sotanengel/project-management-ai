@@ -1,0 +1,16 @@
+pmdf_version: "1.0.0"
+kind: release
+id: release-01JZX4RSEA01BBBBCCCCDDDDAB
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+product: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+name: "2026-Q3 第1弾リリース"
+scope:
+  - story-01JZX4T8G2K9V6R5N4M3P2Q1R0
+go_no_go: go
+released_at: "2026-07-15T10:00:00+09:00"
+actuals:
+  incidents: 0
+  delay_days: 0
