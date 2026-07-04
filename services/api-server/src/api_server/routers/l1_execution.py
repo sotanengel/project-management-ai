@@ -30,6 +30,7 @@ L1_GATED_ENDPOINTS: list[tuple[str, str]] = [
     ("POST", "/pmdf/decision/{id}/execute"),
     ("POST", "/roadmap/{id}/confirm"),
     ("POST", "/release/{id}/go-no-go"),
+    ("POST", "/stakeholder/{id}/send-message"),
 ]
 
 
@@ -79,6 +80,26 @@ def release_go_no_go(
     except (FileNotFoundError, KeyError) as exc:
         raise HTTPException(status_code=404, detail=f"release:{id} が見つかりません") from exc
     return {"go": True, "target": entity.id}
+
+
+@router.post("/stakeholder/{id}/send-message")
+def send_stakeholder_message(
+    id: str,
+    store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
+    user: Annotated[User, Depends(get_current_user)],
+    _approval: Annotated[None, Depends(require_approval("stakeholder", autonomy_level="L1"))],
+    _not_stopped: Annotated[None, Depends(check_not_stopped)],
+) -> dict[str, Any]:
+    """ステークホルダーへのメッセージ送信実行(L1、E5-7)。承認ゲート通過後、対象stakeholderを返す。
+
+    文案生成(draft)自体はL2で承認不要だが、実際の送信(外部送信相当の
+    アクション)はL1として本エンドポイント経由でのみ実行可能とする。
+    """
+    try:
+        entity = store.get("stakeholder", id)
+    except (FileNotFoundError, KeyError) as exc:
+        raise HTTPException(status_code=404, detail=f"stakeholder:{id} が見つかりません") from exc
+    return {"sent": True, "target": entity.id}
 
 
 __all__ = ["L1_GATED_ENDPOINTS", "router"]
