@@ -72,21 +72,38 @@ def require_product_scope(product_id: str | None) -> Callable[[User], User]:
     """
 
     def _dependency(user: Annotated[User, Depends(get_current_user)]) -> User:
-        if product_id is None:
-            return user
-        if user.product_scopes is None:
-            return user
-        if product_id not in user.product_scopes:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"プロダクト {product_id!r} へのアクセス権がありません",
-            )
+        check_product_scope(user, product_id)
         return user
 
     return _dependency
 
 
+def check_product_scope(user: User, product_id: str | None) -> None:
+    """`user`が`product_id`にアクセス可能か検証し、不可なら403を送出する。
+
+    エンティティ取得後(store.getの後)など、ルートハンドラ内で対象の
+    プロダクトIDが判明した時点で呼び出す用途を想定する
+    (`require_product_scope`はパスパラメータから直接product_idが
+    得られる場合向けの依存関数版)。
+
+    - `product_id`が`None`(プロダクト非依存のエンティティ、または
+      対象kindに`product`フィールドが無い場合)はチェックしない。
+    - `user.product_scopes`が`None`(既定: 管理者/編集者)は全プロダクトへ
+      アクセス可能。
+    """
+    if product_id is None:
+        return
+    if user.product_scopes is None:
+        return
+    if product_id not in user.product_scopes:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"プロダクト {product_id!r} へのアクセス権がありません",
+        )
+
+
 __all__ = [
+    "check_product_scope",
     "get_current_user",
     "oauth2_scheme",
     "require_product_scope",

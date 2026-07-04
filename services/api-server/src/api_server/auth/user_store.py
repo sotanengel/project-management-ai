@@ -29,6 +29,14 @@ def find_user_by_email(path: Path, email: str) -> User | None:
     return None
 
 
+def find_user_by_id(path: Path, user_id: str) -> User | None:
+    """idに一致するユーザーを返す(存在しない場合はNone)。"""
+    for user in load_users(path):
+        if user.id == user_id:
+            return user
+    return None
+
+
 def save_users(path: Path, users: list[User]) -> None:
     """ユーザー一覧をJSONファイルへ書き込む(管理者API等から利用)。"""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -36,4 +44,37 @@ def save_users(path: Path, users: list[User]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-__all__ = ["find_user_by_email", "load_users", "save_users"]
+def add_user(path: Path, user: User) -> User:
+    """新規ユーザーを追加して永続化する(同一emailが既存の場合はValueError)。"""
+    users = load_users(path)
+    if any(existing.email == user.email for existing in users):
+        raise ValueError(f"メールアドレス {user.email!r} は既に登録されています")
+    users.append(user)
+    save_users(path, users)
+    return user
+
+
+def update_user_scopes(path: Path, user_id: str, product_scopes: list[str] | None) -> User:
+    """指定ユーザーの`product_scopes`を更新して永続化する。
+
+    Raises:
+        KeyError: 対象ユーザーが存在しない場合。
+    """
+    users = load_users(path)
+    for index, existing in enumerate(users):
+        if existing.id == user_id:
+            updated = existing.model_copy(update={"product_scopes": product_scopes})
+            users[index] = updated
+            save_users(path, users)
+            return updated
+    raise KeyError(f"ユーザー {user_id!r} が見つかりません")
+
+
+__all__ = [
+    "add_user",
+    "find_user_by_email",
+    "find_user_by_id",
+    "load_users",
+    "save_users",
+    "update_user_scopes",
+]

@@ -17,7 +17,7 @@ from pmdf.models.common import PmdfBase
 from pmdf.schema_registry import SchemaNotFoundError, validate_entity
 from pmdf.validate import validate_references
 
-from api_server.auth.dependencies import get_current_user, require_role
+from api_server.auth.dependencies import check_product_scope, get_current_user, require_role
 from api_server.auth.models import User
 from api_server.deps import get_pmdf_store_dependency
 from api_server.pmdf_store.store import PmdfStore
@@ -31,6 +31,20 @@ _UNDELETABLE_KINDS = frozenset({"approval", "decision"})
 def _actor_from_user(user: User) -> str:
     """認証済みユーザーからGitコミットのauthorに用いるactor文字列を組み立てる。"""
     return f"user:{user.id}"
+
+
+def _resolve_product_id(kind: str, entity: PmdfBase) -> str | None:
+    """エンティティが属するプロダクトIDを解決する(E3-5 プロダクトスコープ認可)。
+
+    `product`エンティティ自身はそのidがプロダクトIDそのもの。`product`
+    フィールドを持つkind(story/roadmap_item/release/risk/initiative/
+    report/experiment/decision)はそのフィールド値を用いる。それ以外
+    (objective/metric/persona/stakeholder/approval等、プロダクト非依存の
+    グローバルなエンティティ)は`None`を返し、スコープチェック対象外とする。
+    """
+    if kind == "product":
+        return entity.id
+    return getattr(entity, "product", None)
 
 
 def _get_model_cls(kind: str) -> type[PmdfBase]:
@@ -94,6 +108,12 @@ def list_entities(
     entities = store.list_all(kind)
     if product is not None:
         entities = [e for e in entities if getattr(e, "product", None) == product]
+    if user.product_scopes is not None:
+        entities = [
+            e
+            for e in entities
+            if (pid := _resolve_product_id(kind, e)) is None or pid in user.product_scopes
+        ]
     return [entity_to_json_dict(e) for e in entities]
 
 
@@ -132,6 +152,7 @@ def get_entity(
         entity = store.get(kind, id, ref=ref)
     except (FileNotFoundError, KeyError) as exc:
         raise HTTPException(status_code=404, detail=f"{kind}:{id} が見つかりません") from exc
+    check_product_scope(user, _resolve_product_id(kind, entity))
     return entity_to_json_dict(entity)
 
 
