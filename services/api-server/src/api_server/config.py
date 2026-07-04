@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     #: 自律レベル設定ファイルのパス。
     autonomy_config_path: Path = Path("data/autonomy.json")
 
+    #: 緊急停止フラグの状態ファイルのパス。
+    emergency_stop_path: Path = Path("data/emergency_stop.json")
+
 
 @lru_cache
 def get_settings() -> Settings:

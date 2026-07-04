@@ -17,6 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from api_server.approval.gate import require_approval
 from api_server.auth.dependencies import get_current_user
 from api_server.auth.models import User
+from api_server.autonomy.emergency_stop import check_not_stopped
 from api_server.deps import get_pmdf_store_dependency
 from api_server.pmdf_store.store import PmdfStore
 
@@ -38,6 +39,7 @@ def execute_decision(
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(get_current_user)],
     _approval: Annotated[None, Depends(require_approval("decision", autonomy_level="L1"))],
+    _not_stopped: Annotated[None, Depends(check_not_stopped)],
 ) -> dict[str, Any]:
     """decisionの実行(L1)。承認ゲート通過後、対象decisionを返す(実行内容自体はE5で拡張)。"""
     try:
@@ -53,6 +55,7 @@ def confirm_roadmap_item(
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(get_current_user)],
     _approval: Annotated[None, Depends(require_approval("roadmap_item", autonomy_level="L1"))],
+    _not_stopped: Annotated[None, Depends(check_not_stopped)],
 ) -> dict[str, Any]:
     """roadmap_itemの確定(L1)。承認ゲート通過後、対象roadmap_itemを返す。"""
     try:
@@ -68,6 +71,7 @@ def release_go_no_go(
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(get_current_user)],
     _approval: Annotated[None, Depends(require_approval("release", autonomy_level="L1"))],
+    _not_stopped: Annotated[None, Depends(check_not_stopped)],
 ) -> dict[str, Any]:
     """releaseのgo/no-go判定実行(L1)。承認ゲート通過後、対象releaseを返す。"""
     try:
