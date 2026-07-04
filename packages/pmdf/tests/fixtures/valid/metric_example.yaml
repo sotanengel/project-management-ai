@@ -1,0 +1,20 @@
+pmdf_version: "1.0.0"
+kind: metric
+id: metric-01JZX0MMMM01BBBBCCCCDDDDEE
+provenance:
+  created_by: "agent:analytics-bot@v1.2.0"
+  approved_by: null
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "月次リピート率"
+definition: "当月購入者のうち過去90日以内に購入経験がある割合"
+calculation_method: "repeat_orders / total_orders (90日ウィンドウ)"
+target_value: 0.55
+threshold_value: 0.40
+current_value: 0.45
+time_series:
+  - timestamp: "2026-06-01T00:00:00Z"
+    value: 0.44
+  - timestamp: "2026-07-01T00:00:00Z"
+    value: 0.45
+external_source_url: null

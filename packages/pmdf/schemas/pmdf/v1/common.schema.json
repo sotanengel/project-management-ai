@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/common.schema.json",
+  "title": "PMDF Common",
+  "description": "全PMDFエンティティが共有する共通定義(pmdf_version/kind/id/provenance/attachments)。",
+  "$defs": {
+    "pmdf_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "PMDFスキーマのsemverバージョン(例: 1.0.0)。"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "product",
+        "stakeholder",
+        "persona",
+        "objective",
+        "metric",
+        "roadmap_item",
+        "story",
+        "experiment",
+        "decision",
+        "release",
+        "risk",
+        "initiative",
+        "report",
+        "approval"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "接頭辞付きULID(例: story-01JZX4T8G2K9V6R5N4M3P2Q1R0)。"
+    },
+    "nullable_id": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "provenance": {
+      "type": "object",
+      "description": "作成者・承認者・更新日時の来歴情報。",
+      "properties": {
+        "created_by": {
+          "type": "string",
+          "pattern": "^(agent:[^@]+@v.+|user:.+)$",
+          "description": "agent:<name>@v<version> または user:<id> 形式。"
+        },
+        "approved_by": {
+          "type": ["string", "null"],
+          "default": null
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["created_by", "updated_at"],
+      "additionalProperties": false
+    },
+    "attachment": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "attachments/配下からの相対パス。"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": ["path", "sha256"],
+      "additionalProperties": false
+    },
+    "attachments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attachment" },
+      "default": []
+    },
+    "base_properties": {
+      "pmdf_version": { "$ref": "#/$defs/pmdf_version" },
+      "kind": { "$ref": "#/$defs/kind" },
+      "id": { "$ref": "#/$defs/id" },
+      "provenance": { "$ref": "#/$defs/provenance" },
+      "attachments": { "$ref": "#/$defs/attachments" }
+    },
+    "base_required": ["pmdf_version", "kind", "id", "provenance"]
+  }
+}

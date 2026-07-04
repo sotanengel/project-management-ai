@@ -1,0 +1,186 @@
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 5s
+  retries: 5
+  start_period: 10s
+
+networks:
+  pmai-net:
+    driver: bridge
+
+volumes:
+  pmdf-store-data:
+  qdrant-data:
+  minio-data:
+  mlflow-data:
+  ollama-data:
+
+services:
+  # --- 常時稼働サービス(全profile共通) -----------------------------------
+
+  web-ui:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    ports:
+      - "${WEB_UI_HOST_PORT:-8080}:80"
+    environment:
+      API_BASE_URL: ${API_BASE_URL:-http://api-server:8000}
+    depends_on:
+      - api-server
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  api-server:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    ports:
+      - "${API_SERVER_HOST_PORT:-8000}:8000"
+    environment:
+      MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
+      QDRANT_URL: ${QDRANT_URL}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - model-gateway
+      - qdrant
+      - pmdf-store
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  agent-core:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    # 非公開(SEC-02): 外部公開ポートなし
+    environment:
+      MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
+      QDRANT_URL: ${QDRANT_URL}
+      PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+    depends_on:
+      - model-gateway
+      - qdrant
+      - pmdf-store
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  pmdf-store:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    # 非公開(SEC-02): Git bare + ファイル領域、外部公開ポートなし
+    volumes:
+      - pmdf-store-data:${PMDF_STORE_PATH:-/data/pmdf}
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  model-gateway:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    # 非公開(SEC-02): LiteLLM Proxy、外部公開ポートなし(内部ネットワークのみ)
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MODEL_GATEWAY_PORT: ${MODEL_GATEWAY_PORT:-4000}
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    networks: [pmai-net]
+    # 非公開(SEC-02): vector-db、外部公開ポートなし
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  minio:
+    image: minio/minio:latest
+    command: ["server", "/data"]
+    networks: [pmai-net]
+    # 非公開(SEC-02): tracking用オブジェクトストレージ、外部公開ポートなし
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  mlflow:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    # 非公開(SEC-02): tracking、外部公開ポートなし
+    environment:
+      MLFLOW_BACKEND_STORE_URI: ${MLFLOW_BACKEND_STORE_URI:-sqlite:////data/mlflow.db}
+      MLFLOW_ARTIFACT_ROOT: ${MLFLOW_ARTIFACT_ROOT:-/data/artifacts}
+    volumes:
+      - mlflow-data:/data
+    depends_on:
+      - minio
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  scheduler:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    networks: [pmai-net]
+    # 非公開: cronベースオーケストレーション、外部公開ポートなし
+    environment:
+      API_BASE_URL: http://api-server:8000
+    depends_on:
+      - api-server
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  # --- local-gpu profile: ローカルGPU推論 -----------------------------------
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local-gpu"]
+    networks: [pmai-net]
+    # 非公開: model-gateway経由でのみ利用、外部公開ポートなし
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "true"]
+
+  # --- train profile: 学習・評価バッチ(常時稼働しない) -----------------------
+
+  trainer:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    profiles: ["train"]
+    networks: [pmai-net]
+    environment:
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+    depends_on:
+      - mlflow
+      - pmdf-store
+
+  eval-runner:
+    image: python:3.12-slim
+    command: ["sleep", "infinity"]
+    profiles: ["train"]
+    networks: [pmai-net]
+    environment:
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
+      MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
+    depends_on:
+      - mlflow
+      - model-gateway

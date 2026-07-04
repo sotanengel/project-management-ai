@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/stakeholder.schema.json",
+  "title": "PMDF Stakeholder",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "stakeholder" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "name": { "type": "string" },
+    "role": { "type": "string" },
+    "organization": { "type": "string" },
+    "interests": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "influence": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "contact_policy": {
+      "type": "object",
+      "properties": {
+        "personal_name": { "type": "string" },
+        "channel": { "type": "string" },
+        "frequency": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "name",
+    "role",
+    "influence"
+  ],
+  "additionalProperties": false
+}

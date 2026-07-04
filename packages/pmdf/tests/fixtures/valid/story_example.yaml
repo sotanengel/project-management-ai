@@ -1,0 +1,33 @@
+# 要件定義書 §6.2 のstory記述例(E2-2 issue本文引用)をそのまま用いたフィクスチャ。
+#
+# 元の記述例のid(`story-01JZX4T8G2K9`, `prod-01JZX0AAAA01`)は文書内での
+# 簡略表記であり、E2-1で定めた `^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$`
+# (26文字ULID)には長さが満たない。ここでは実装済みのIDパターンとの整合を
+# 優先し、同じ接頭辞・同じ先頭文字列を保った26文字ULIDに展開している。
+# また、スキーマ上必須の i_want / so_that / acceptance_criteria /
+# provenance は記述例に含まれていなかったため追加した。
+# それ以外(title, as_a, priority.*, status の値)は記述例のとおり。
+pmdf_version: "1.0.0"
+kind: story
+id: story-01JZX4T8G2K9V6R5N4M3P2Q1R0
+product: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+provenance:
+  created_by: "user:pdm-taro"
+  approved_by: null
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+title: "ゲスト購入でも注文履歴をメールから参照できる"
+as_a: "会員登録をしていない購入者"
+i_want: "注文完了メールのリンクから注文履歴を確認したい"
+so_that: "再度会員登録することなく購入内容を追跡できる"
+acceptance_criteria:
+  - "注文完了メールに履歴参照用の一意なリンクが含まれる"
+  - "リンクは発行から30日間有効である"
+priority:
+  method: RICE
+  reach: 4200
+  impact: 2
+  confidence: 0.8
+  effort: 3
+  score: 2240
+status: ready

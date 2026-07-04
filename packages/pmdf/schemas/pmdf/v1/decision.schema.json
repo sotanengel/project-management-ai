@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/decision.schema.json",
+  "title": "PMDF Decision",
+  "description": "Decision Record。背景/選択肢/採用案/根拠/却下理由を必須項目として持つ。",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "decision" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "background": {
+      "type": "string",
+      "description": "背景・課題設定。"
+    },
+    "options": {
+      "type": "array",
+      "description": "検討した選択肢一覧。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "pros": { "type": "array", "items": { "type": "string" } },
+          "cons": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "chosen_option": {
+      "type": "string",
+      "description": "採用した選択肢名(optionsのnameのいずれかと対応)。"
+    },
+    "rationale": {
+      "type": "string",
+      "description": "採用案の根拠。"
+    },
+    "rejected_reasons": {
+      "type": "array",
+      "description": "却下した選択肢とその理由。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "option": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["option", "reason"],
+        "additionalProperties": false
+      }
+    },
+    "approver": {
+      "$ref": "common.schema.json#/$defs/nullable_id",
+      "x_ref_kind": "stakeholder"
+    },
+    "autonomy_level": {
+      "type": "string",
+      "enum": ["L0", "L1", "L2", "L3"],
+      "description": "本決定を下した自律レベル。"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "background",
+    "options",
+    "chosen_option",
+    "rationale",
+    "rejected_reasons",
+    "autonomy_level"
+  ],
+  "additionalProperties": false
+}

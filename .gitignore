@@ -1,0 +1,44 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.uv-cache/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Node / web ---
+node_modules/
+.pnpm-store/
+dist/
+.next/
+.turbo/
+coverage/
+
+# --- Docker volumes / ローカルデータ ---
+docker/volumes/
+data/
+*.db
+*.sqlite3
+
+# --- 環境変数・シークレット ---
+.env
+.env.*
+!.env.example
+
+# --- Claude Code ローカル設定 ---
+.claude/settings.local.json
+
+# --- OS / エディタ ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

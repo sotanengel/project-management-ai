@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/initiative.schema.json",
+  "title": "PMDF Initiative",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "initiative" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "charter": {
+      "type": "string",
+      "description": "プロジェクト憲章。"
+    },
+    "approach": {
+      "type": "string",
+      "enum": ["predictive", "adaptive", "hybrid"],
+      "description": "予測型/適応型/ハイブリッド。"
+    },
+    "wbs": {
+      "type": "array",
+      "description": "WBS(階層構造)のトップレベル要素一覧。",
+      "items": { "$ref": "#/$defs/wbs_node" }
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" }
+      },
+      "additionalProperties": false
+    },
+    "evm": {
+      "type": "object",
+      "description": "EVM値(PV/EV/AC/SPI/CPI相当)。",
+      "properties": {
+        "planned_value": { "type": "number" },
+        "earned_value": { "type": "number" },
+        "actual_cost": { "type": "number" },
+        "spi": { "type": "number" },
+        "cpi": { "type": "number" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "charter",
+    "approach"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "wbs_node": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/wbs_node" },
+          "default": []
+        }
+      },
+      "required": ["id", "name"],
+      "additionalProperties": false
+    }
+  }
+}

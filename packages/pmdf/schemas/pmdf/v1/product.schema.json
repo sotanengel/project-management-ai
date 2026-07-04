@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/product.schema.json",
+  "title": "PMDF Product",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "product" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "name": { "type": "string" },
+    "vision": {
+      "type": "string",
+      "description": "プロダクトビジョン。"
+    },
+    "target": {
+      "type": "string",
+      "description": "ターゲット市場・顧客層。"
+    },
+    "positioning": {
+      "type": "string",
+      "description": "ポジショニングステートメント。"
+    },
+    "lifecycle_stage": {
+      "type": "string",
+      "enum": ["introduction", "growth", "maturity", "decline"]
+    },
+    "north_star_metric": {
+      "$ref": "common.schema.json#/$defs/nullable_id",
+      "description": "北極星指標(metric)へのid参照。",
+      "x_ref_kind": "metric"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "name",
+    "vision",
+    "lifecycle_stage"
+  ],
+  "additionalProperties": false
+}

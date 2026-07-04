@@ -1,0 +1,18 @@
+pmdf_version: "1.0.0"
+kind: persona
+id: persona-01JZX0PPPP01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  approved_by: null
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "忙しい共働き世帯の母"
+attributes:
+  age_range: "30-40"
+  occupation: "会社員"
+pain_points:
+  - "買い物に割ける時間が少ない"
+jobs:
+  - situation: "夕食の買い物をする時間がない"
+    motivation: "家族に温かい食事を用意したい"
+    outcome: "短時間で必要な食材を揃えられる"

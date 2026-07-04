@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/objective.schema.json",
+  "title": "PMDF Objective",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "objective" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "objective": {
+      "type": "string",
+      "description": "目標(Objective)本文。"
+    },
+    "key_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "target_value": { "type": "number" },
+          "current_value": { "type": "number" }
+        },
+        "required": ["description", "target_value"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "period": {
+      "type": "string",
+      "pattern": "^\\d{4}-Q[1-4]$",
+      "description": "四半期粒度の期間(例: 2026-Q3)。"
+    },
+    "parent_objective": {
+      "$ref": "common.schema.json#/$defs/nullable_id",
+      "x_ref_kind": "objective"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "objective",
+    "key_results",
+    "period"
+  ],
+  "additionalProperties": false
+}

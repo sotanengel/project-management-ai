@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/story.schema.json",
+  "title": "PMDF Story",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "story" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "title": { "type": "string" },
+    "as_a": { "type": "string" },
+    "i_want": { "type": "string" },
+    "so_that": { "type": "string" },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "priority": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["RICE", "WSJF", "MoSCoW"]
+        },
+        "reach": { "type": "number" },
+        "impact": { "type": "number" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "effort": { "type": "number" },
+        "score": { "type": "number" }
+      },
+      "required": ["method"],
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready", "in_progress", "done", "dropped"]
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "objective": {
+          "$ref": "common.schema.json#/$defs/nullable_id",
+          "x_ref_kind": "objective"
+        },
+        "decisions": {
+          "type": "array",
+          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "default": [],
+          "x_ref_kind": "decision"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "title",
+    "as_a",
+    "i_want",
+    "so_that",
+    "acceptance_criteria",
+    "priority",
+    "status"
+  ],
+  "additionalProperties": false
+}

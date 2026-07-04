@@ -1,0 +1,13 @@
+pmdf_version: "1.0.0"
+kind: risk
+id: risk-01JZX5RSRS01BBBBCCCCDDDDAB
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+event: "メールリンクの有効期限切れによる問い合わせ増加"
+# probability_score は1-5の範囲のはずが範囲外
+probability_score: 9
+impact_score: 2
+response_strategy: mitigate
+owner: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/approval.schema.json",
+  "title": "PMDF Approval",
+  "description": "監査用の承認記録。運用上は追記専用(E3-7で強制)とする前提のスキーマ。",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "approval" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "target": {
+      "$ref": "common.schema.json#/$defs/id",
+      "description": "承認対象エンティティへの参照。"
+    },
+    "proposer": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "stakeholder"
+    },
+    "approver": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "stakeholder"
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["approved", "rejected"]
+    },
+    "reason": {
+      "type": "string",
+      "description": "承認/却下の理由(必須、監査用)。"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "target",
+    "proposer",
+    "approver",
+    "decision",
+    "reason"
+  ],
+  "additionalProperties": false
+}

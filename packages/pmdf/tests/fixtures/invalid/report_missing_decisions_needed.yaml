@@ -1,0 +1,10 @@
+pmdf_version: "1.0.0"
+kind: report
+id: report-01JZX7RPRP01BBBBCCCCDDDABC
+provenance:
+  created_by: "agent:report-bot@v0.3.0"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+period: "2026-Q3"
+health_assessment: yellow
+# decisions_needed (必須)が欠落している

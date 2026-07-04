@@ -1,0 +1,10 @@
+pmdf_version: "1.0.0"
+kind: not_a_valid_kind
+id: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "サンプルEC"
+vision: "誰もが安心して使える購買体験を提供する"
+lifecycle_stage: growth

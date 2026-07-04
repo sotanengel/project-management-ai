@@ -1,0 +1,16 @@
+pmdf_version: "1.0.0"
+kind: story
+id: story-01JZX4T8G2K9V6R5N4M3P2Q1R0
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+title: "ゲスト購入でも注文履歴をメールから参照できる"
+as_a: "会員登録をしていない購入者"
+i_want: "注文完了メールのリンクから注文履歴を確認したい"
+so_that: "再度会員登録することなく購入内容を追跡できる"
+# acceptance_criteria (必須)が欠落している
+priority:
+  method: RICE
+  reach: 4200
+status: ready

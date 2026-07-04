@@ -1,0 +1,11 @@
+pmdf_version: "1.0.0"
+kind: stakeholder
+id: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF
+provenance:
+  created_by: "agent:pm-copilot@v0.1.0"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "山田太郎"
+role: "営業部長"
+# influence は文字列enumのはずが数値になっている(型不一致)
+influence: 3

@@ -1,0 +1,13 @@
+pmdf_version: "1.0.0"
+kind: objective
+id: obj-01JZX0KKKK01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+objective: "購買体験の摩擦を減らし継続利用を増やす"
+key_results:
+  - description: "月次リピート率を10%改善する"
+    target_value: 0.55
+# period のフォーマットが不正(四半期パターンに一致しない)
+period: "2026年第3四半期"

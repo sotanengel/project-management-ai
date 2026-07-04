@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/roadmap_item.schema.json",
+  "title": "PMDF RoadmapItem",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "roadmap_item" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "product": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "product"
+    },
+    "theme": { "type": "string" },
+    "period": {
+      "type": "string",
+      "pattern": "^\\d{4}-Q[1-4]$",
+      "description": "四半期粒度の時期(例: 2026-Q3)。"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "in_progress", "done", "cancelled"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "default": [],
+      "x_ref_kind": "roadmap_item"
+    },
+    "objective": {
+      "$ref": "common.schema.json#/$defs/id",
+      "x_ref_kind": "objective"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "theme",
+    "period",
+    "status",
+    "objective"
+  ],
+  "additionalProperties": false
+}
