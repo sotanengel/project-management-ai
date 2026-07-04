@@ -102,6 +102,20 @@ def entity_relative_path(kind: str, entity_id: str) -> Path:
     return Path(kind) / f"{entity_id}{ENTITY_FILE_SUFFIX}"
 
 
+def entity_to_json_dict(entity: PmdfBase) -> dict[str, Any]:
+    """エンティティをJSON互換dictへ変換する(`None`値のフィールドは省略する)。
+
+    JSON Schema上、オプショナルなフィールドは「存在しない」ことを許容する
+    設計であり、「存在するが値がnull」であることまでは許容していないものが
+    多い(例: `story.priority.reach`は`{"type": "number"}`で`null`非許容)。
+    Pydanticの`model_dump`は既定でNone値のフィールドも明示的に出力するため、
+    ここで`exclude_none=True`を用いて「値が無いフィールドは省略する」という
+    JSON Schema側の意味論に合わせる。これにより、YAML保存→スキーマ再検証
+    (バンドルimport等)の往復でも型不一致が発生しない。
+    """
+    return entity.model_dump(mode="json", exclude_none=True)
+
+
 def load_entity(path: Path) -> PmdfBase:
     """YAMLファイル1件を読み、`kind`に応じたPydanticモデルへ変換する。
 
@@ -124,7 +138,7 @@ def save_entity(entity: PmdfBase, base_dir: Path) -> Path:
     Returns:
         書き込んだファイルの絶対パス。
     """
-    data = entity.model_dump(mode="json")
+    data = entity_to_json_dict(entity)
     text = dict_to_yaml(data)
     relative_path = entity_relative_path(entity.kind, entity.id)
     path = base_dir / relative_path
@@ -138,6 +152,7 @@ __all__ = [
     "KEY_ORDER",
     "dict_to_yaml",
     "entity_relative_path",
+    "entity_to_json_dict",
     "load_entity",
     "save_entity",
     "yaml_to_dict",

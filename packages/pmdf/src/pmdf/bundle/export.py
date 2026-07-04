@@ -17,7 +17,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from pmdf.io import dict_to_yaml, entity_relative_path
+from pmdf.io import dict_to_yaml, entity_relative_path, entity_to_json_dict
 from pmdf.models.common import PmdfBase
 
 #: 現時点のPMDFスキーマバージョン(マニフェストに記録する)。
@@ -61,7 +61,7 @@ def _select_entities(entities: list[PmdfBase], scope: ExportScope) -> list[PmdfB
     return sorted(selected, key=lambda e: (e.kind, e.id))
 
 
-def _compute_content_hash(entity_yaml_by_relpath: dict[str, bytes]) -> str:
+def compute_content_hash(entity_yaml_by_relpath: dict[str, bytes]) -> str:
     """全エンティティYAMLの内容から決定的なSHA-256ハッシュを算出する。"""
     hasher = hashlib.sha256()
     for relpath in sorted(entity_yaml_by_relpath):
@@ -91,7 +91,7 @@ def _build_manifest(
         "entity_count": {"total": len(selected), "by_kind": by_kind},
         "generated_env": generated_env,
         "generated_at": datetime.now().astimezone().isoformat(),
-        "content_hash": _compute_content_hash(entity_yaml_by_relpath),
+        "content_hash": compute_content_hash(entity_yaml_by_relpath),
     }
 
 
@@ -124,7 +124,7 @@ def export_bundle(
     for entity in selected:
         # tar内のパスはOS非依存にPOSIX形式(`/`区切り)で統一する。
         relpath = entity_relative_path(entity.kind, entity.id).as_posix()
-        data = entity.model_dump(mode="json")
+        data = entity_to_json_dict(entity)
         entity_yaml_by_relpath[relpath] = dict_to_yaml(data).encode("utf-8")
 
     manifest = _build_manifest(selected, entity_yaml_by_relpath, generated_env)
@@ -157,4 +157,4 @@ def _add_bytes(tar: tarfile.TarFile, arcname: str, content: bytes) -> None:
     tar.addfile(info, BytesIO(content))
 
 
-__all__ = ["SCHEMA_VERSION", "ExportScope", "export_bundle"]
+__all__ = ["SCHEMA_VERSION", "ExportScope", "compute_content_hash", "export_bundle"]
