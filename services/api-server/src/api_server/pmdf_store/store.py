@@ -76,6 +76,24 @@ class PmdfStore:
         self._commit(entity, actor, "update")
         return entity
 
+    def save_all(self, entities: list[PmdfBase], actor: str, message: str) -> list[PmdfBase]:
+        """複数エンティティをまとめて1コミットとして書き込む(E3-9 バンドル適用向け)。
+
+        バンドルimport等、多数のエンティティを一括適用する操作を1コミットに
+        まとめたい場合に用いる(`create`/`update`は1エンティティ=1コミット)。
+        """
+        if not entities:
+            return entities
+        with repo_write_lock(self.repo_path, timeout_seconds=self.lock_timeout_seconds):
+            relative_paths = []
+            for entity in entities:
+                save_entity(entity, self.repo_path)
+                relative_paths.append(entity_relative_path(entity.kind, entity.id).as_posix())
+            self.repo.index.add(relative_paths)
+            author = git.Actor(actor, _git_actor_email(actor))
+            self.repo.index.commit(message, author=author, committer=author)
+        return entities
+
     def get(self, kind: str, id: str, ref: str | None = None) -> PmdfBase:
         """エンティティを取得する。`ref` 省略時はHEAD(作業ツリー上の最新)を返す。"""
         relative_path = entity_relative_path(kind, id)

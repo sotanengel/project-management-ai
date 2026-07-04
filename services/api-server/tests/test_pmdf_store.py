@@ -165,3 +165,30 @@ def test_list_all_returns_all_entities_of_kind(store_path: Path) -> None:
 def test_list_all_returns_empty_list_when_kind_dir_missing(store_path: Path) -> None:
     store = PmdfStore(store_path)
     assert store.list_all("story") == []
+
+
+def test_save_all_writes_multiple_entities_in_one_commit(store_path: Path) -> None:
+    store = PmdfStore(store_path)
+    baseline = make_story(id="story-01HPPPPPPPPPPPPPPPPPPPPPPP", title="baseline")
+    store.create(baseline, actor="user:alice")
+
+    story1 = make_story(id="story-01HKKKKKKKKKKKKKKKKKKKKKKK", title="one")
+    story2 = make_story(id="story-01HMMMMMMMMMMMMMMMMMMMMMMM", title="two")
+
+    store.save_all([story1, story2], actor="user:bulk", message="bundle apply: 2 entities")
+
+    assert (store_path / "story" / f"{story1.id}.yaml").exists()
+    assert (store_path / "story" / f"{story2.id}.yaml").exists()
+    commit_count = sum(1 for _ in store.repo.iter_commits())
+    assert commit_count == 2
+
+
+def test_save_all_with_empty_list_creates_no_additional_commit(store_path: Path) -> None:
+    store = PmdfStore(store_path)
+    story = make_story(id="story-01HNNNNNNNNNNNNNNNNNNNNNNN")
+    store.create(story, actor="user:alice")
+
+    store.save_all([], actor="user:bulk", message="no-op")
+
+    commit_count = sum(1 for _ in store.repo.iter_commits())
+    assert commit_count == 1
