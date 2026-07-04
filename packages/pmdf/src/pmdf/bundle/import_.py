@@ -106,6 +106,23 @@ def validate_bundle(bundle_path: Path) -> BundleValidationResult:
         )
     manifest = json.loads(members["manifest.json"])
 
+    required_manifest_fields = (
+        "schema_version",
+        "product_ids",
+        "entity_count",
+        "generated_env",
+        "generated_at",
+        "content_hash",
+    )
+    missing_manifest_fields = [f for f in required_manifest_fields if f not in manifest]
+    if missing_manifest_fields:
+        errors.append(
+            BundleValidationError(
+                "manifest.json",
+                f"manifest.jsonに必須フィールドがありません: {missing_manifest_fields}",
+            )
+        )
+
     entity_relpaths = sorted(
         name for name in members if name.startswith("entities/") and name.endswith(".yaml")
     )
