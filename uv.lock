@@ -81,6 +81,18 @@ wheels = [
 ]
 
 [[package]]
+name = "hypothesis"
+version = "6.155.7"
+source = { registry = "https://pypi.flatt.tech/simple/" }
+dependencies = [
+    { name = "sortedcontainers" },
+]
+sdist = { url = "https://pypi.flatt.tech/files/packages/f2/55/983b6bc1b6b343a5ff6020388f9d0680ab477be59a731517e6c4a0387100/hypothesis-6.155.7.tar.gz", hash = "sha256:d8d6091753d0669db3c90c5e5b346cb37c72f3dd9378c8413acb1fd5da63f7ea", size = 478291, upload-time = "2026-06-21T05:54:31.573Z" }
+wheels = [
+    { url = "https://pypi.flatt.tech/files/packages/01/f8/c151e196d4f397ed9436a071e52666c70a2f021138dea828b0a461e245db/hypothesis-6.155.7-py3-none-any.whl", hash = "sha256:9f634bdb1f9e9b8ab6ba09431cf2deedb750c96978125a6fb3c5a0f6c6db4131", size = 544762, upload-time = "2026-06-21T05:54:29.506Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.3.0"
 source = { registry = "https://pypi.flatt.tech/simple/" }
@@ -263,16 +275,20 @@ name = "pmdf"
 version = "0.1.0"
 source = { editable = "packages/pmdf" }
 dependencies = [
+    { name = "hypothesis" },
     { name = "jsonschema" },
     { name = "pydantic" },
     { name = "pyyaml" },
+    { name = "ruamel-yaml" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "hypothesis", specifier = ">=6.155.7" },
     { name = "jsonschema", specifier = ">=4.26.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "ruamel-yaml", specifier = ">=0.19.1" },
 ]
 
 [[package]]
@@ -572,6 +588,15 @@ wheels = [
 ]
 
 [[package]]
+name = "ruamel-yaml"
+version = "0.19.1"
+source = { registry = "https://pypi.flatt.tech/simple/" }
+sdist = { url = "https://pypi.flatt.tech/files/packages/c7/3b/ebda527b56beb90cb7652cb1c7e4f91f48649fbcd8d2eb2fb6e77cd3329b/ruamel_yaml-0.19.1.tar.gz", hash = "sha256:53eb66cd27849eff968ebf8f0bf61f46cdac2da1d1f3576dd4ccee9b25c31993", size = 142709, upload-time = "2026-01-02T16:50:31.84Z" }
+wheels = [
+    { url = "https://pypi.flatt.tech/files/packages/b8/0c/51f6841f1d84f404f92463fc2b1ba0da357ca1e3db6b7fbda26956c3b82a/ruamel_yaml-0.19.1-py3-none-any.whl", hash = "sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93", size = 118102, upload-time = "2026-01-02T16:50:29.201Z" },
+]
+
+[[package]]
 name = "ruff"
 version = "0.15.20"
 source = { registry = "https://pypi.flatt.tech/simple/" }
@@ -594,6 +619,15 @@ wheels = [
     { url = "https://pypi.flatt.tech/files/packages/10/9b/5f14927848d2fd4aa891fd88d883788c5a7baba561c7874732364045708c/ruff-0.15.20-py3-none-win32.whl", hash = "sha256:ed65ef510e43a137207e0f01cfcf998aeddb1aeeda5c9d35023e910284d7cf21", size = 10857322, upload-time = "2026-06-25T17:20:28.612Z" },
     { url = "https://pypi.flatt.tech/files/packages/fa/f0/fe47c501f9dea92a26d788ff98bb5d92ed4cb4c88792c5c88af6b697dc8e/ruff-0.15.20-py3-none-win_amd64.whl", hash = "sha256:a525c81c70fb0380344dd1d8745d8cc1c890b7fc94a58d5a07bd8eb9557b8415", size = 11993274, upload-time = "2026-06-25T17:20:31.871Z" },
     { url = "https://pypi.flatt.tech/files/packages/d7/2b/9555445e1201d92b3195f45cdb153a0b68f24e0a4273f6e3d5ab46e212bb/ruff-0.15.20-py3-none-win_arm64.whl", hash = "sha256:2f5b2a6d614e8700388806a14996c40fab2c47b819ef57d790a34878858ed9ca", size = 11343498, upload-time = "2026-06-25T17:20:35.03Z" },
+]
+
+[[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+source = { registry = "https://pypi.flatt.tech/simple/" }
+sdist = { url = "https://pypi.flatt.tech/files/packages/e8/c4/ba2f8066cceb6f23394729afe52f3bf7adec04bf9ed2c820b39e19299111/sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88", size = 30594, upload-time = "2021-05-16T22:03:42.897Z" }
+wheels = [
+    { url = "https://pypi.flatt.tech/files/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0", size = 29575, upload-time = "2021-05-16T22:03:41.177Z" },
 ]
 
 [[package]]

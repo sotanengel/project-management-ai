@@ -5,9 +5,11 @@ description = "プロジェクト管理AI 共通データ基盤パッケージ"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "hypothesis>=6.155.7",
     "jsonschema>=4.26.0",
     "pydantic>=2.13.4",
     "pyyaml>=6.0.3",
+    "ruamel-yaml>=0.19.1",
 ]
 
 [build-system]
