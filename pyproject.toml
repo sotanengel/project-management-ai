@@ -31,6 +31,9 @@ select = ["E", "F", "I", "UP", "B"]
 # typerの規約上、デフォルト引数でtyper.Option()/typer.Argument()を呼ぶ必要があり、
 # B008(関数呼び出しをデフォルト引数にしない)は本ファイルでは意図的に無視する。
 "packages/pmdf/src/pmdf/cli.py" = ["B008"]
+# FastAPIの規約上、デフォルト引数でDepends()を呼ぶ必要があり、
+# B008は本ディレクトリ(APIルータ・依存性注入関数)では意図的に無視する。
+"services/api-server/src/api_server/**" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
