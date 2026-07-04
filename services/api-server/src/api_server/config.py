@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     #: ファイルベースのユーザーストア(JSON/YAML)のパス。
     user_store_path: Path = Path("data/users.json")
 
+    #: 承認プロポーザル(決定前状態)のファイルベースストアのパス。
+    proposal_store_path: Path = Path("data/proposals.json")
+
     #: 監査ログ(JSONL)のパス。
     audit_log_path: Path = Path("data/audit/audit.log.jsonl")
 

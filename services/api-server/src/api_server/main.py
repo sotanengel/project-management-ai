@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api_server.config import get_settings
 from api_server.exceptions import register_exception_handlers
 from api_server.logging import configure_logging
-from api_server.routers import admin, auth, health, pmdf
+from api_server.routers import admin, approvals, auth, health, l1_execution, pmdf
 
 
 def create_app() -> FastAPI:
@@ -35,6 +35,8 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(admin.router)
+    app.include_router(approvals.router)
+    app.include_router(l1_execution.router)
     app.include_router(pmdf.router)
 
     return app
