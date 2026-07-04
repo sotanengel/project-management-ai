@@ -1,0 +1,4274 @@
+epics:
+  # =========================================================================
+  # E1: リポジトリ基盤と開発環境 [phase:0]
+  # =========================================================================
+  - key: E1
+    title: "[E1] リポジトリ基盤と開発環境"
+    labels: [epic, "phase:0"]
+    body: |
+      ## 概要
+      本エピックは、PdM一任型AIエージェント自己学習環境プロジェクトの土台となる
+      モノレポ構成・開発ツールチェーン・CI・Docker Compose骨格・再開手順ドキュメント・
+      サプライチェーンセキュリティ設定を整備する。後続の全エピック(E2〜E11)は
+      本エピックの成果物(uvワークスペース、pre-commit、CI、compose定義)を前提とする。
+
+      ## 技術スタック前提
+      - Python 3.12 + uv workspace
+      - ruff + mypy + pytest
+      - Node 22 + pnpm
+      - React 18 + Vite + TypeScript + Vitest + Playwright
+      - FastAPI + Pydantic v2
+      - LangGraph
+      - LiteLLM
+      - Qdrant
+      - MLflow + MinIO
+
+      ## 含まれるサブイシュー
+      - E1-1 モノレポ骨格とuvワークスペース
+      - E1-2 pre-commit設定
+      - E1-3 GitHub Actions CI
+      - E1-4 docker-compose骨格とprofiles
+      - E1-5 再開手順ドキュメントとCLAUDE.md
+      - E1-6 Takumi Guard(Shisho)レジストリ設定と検証
+
+      ## トレーサビリティ
+      NFR-04(可搬性), SEC-01(シークレット管理) / 要件定義書 §4.1, §4.2, §9, §12
+    subs:
+      - key: E1-1
+        title: "[E1-1] モノレポ骨格とuvワークスペース"
+        labels: ["phase:0"]
+        body: |
+          ## 概要
+          プロジェクト全体をuvワークスペースによるPython モノレポとして初期化する。
+          後続の全Pythonパッケージ(packages/pmdf, services/api-server,
+          services/agent-core, services/model-gateway 等)はこのワークスペース配下に
+          追加されることを前提とする。
+
+          ## 対象ファイル
+          - `pyproject.toml`(ルート): `[tool.uv.workspace]` で `packages/*` と
+            `services/*` をメンバーとして宣言。Python要求バージョン `>=3.12`。
+          - `.gitattributes`: `* text=auto eol=lf` を基本とし、Windows開発者が
+            混在してもリポジトリ内はLF統一されるようにする。
+          - `.editorconfig`: `indent_style = space`, `indent_size = 2`(YAML/JSON/TS)
+            および `indent_size = 4`(Python)、`end_of_line = lf`、`charset = utf-8`、
+            `insert_final_newline = true`、`trim_trailing_whitespace = true`。
+          - `README.md`: プロジェクト概要、ディレクトリ構成、`uv sync` によるセットアップ手順。
+          - `packages/.gitkeep`, `services/.gitkeep`(ディレクトリの雛形として)。
+
+          ## 受け入れ条件
+          - [ ] ルートで `uv sync` がエラーなく完了する(ワークスペースメンバーが0件でも可)
+          - [ ] `.gitattributes` によりテキストファイルがLF強制されることを、
+                `git check-attr text eol -- README.md` 等で確認できる
+          - [ ] `.editorconfig` が主要エディタ(VSCode等)から認識される形式で構文的に正しい
+          - [ ] README.mdに `uv sync` によるセットアップ手順が明記されている
+
+          ## 依存
+          なし(最初のイシュー)
+
+          ## 成果物
+          `pyproject.toml`, `.gitattributes`, `.editorconfig`, `README.md`,
+          `packages/`, `services/` ディレクトリ
+
+          ## トレーサビリティ
+          NFR-04, AC-01 / 要件定義書 §4.1(設計原則4:同一定義・差分プロファイル)
+
+          ## 要件書引用
+          > 4. **同一定義・差分プロファイル**:Tier-S / Tier-L は同一の `docker-compose.yml` を
+          > 共有し、`profiles`(`local-gpu` / `api-only` / `train`)と `.env` の差分のみで
+          > 切替える。
+          > NFR-04 可搬性: Docker Compose v2のみで全環境起動。CUDAはNVIDIA Container
+          > Toolkitで抽象化
+
+      - key: E1-2
+        title: "[E1-2] pre-commit設定"
+        labels: ["phase:0"]
+        body: |
+          ## 概要
+          コミット前に静的解析・フォーマット・秘密情報検知を強制する pre-commit
+          フックを導入する。ユーザーのグローバルCLAUDE.md指示(pre-commit必須)に
+          準拠する。
+
+          ## 対象ファイル
+          - `.pre-commit-config.yaml`: 以下のフックを設定
+            - `ruff`(lintおよび `ruff-format`) — Pythonコード
+            - `prettier` — TS/JS/YAML/Markdown(web-ui, docs)
+            - `detect-secrets` — 秘密情報スキャン(baseline: `.secrets.baseline`)
+            - `mixed-line-ending`(引数 `--fix=lf`) — LF強制
+            - `check-yaml` — YAML構文検証
+          - `.secrets.baseline`: `detect-secrets scan > .secrets.baseline` で生成した
+            初期ベースライン(空リポジトリ相当)。
+
+          ## 受け入れ条件
+          - [ ] `pre-commit run --all-files` がクリーン(exit code 0)で完了する
+          - [ ] 意図的に秘密情報らしき文字列(例: `AKIA` で始まるダミーAWSキー、
+                `sk-` で始まるダミーAPIキー)を含むテスト用ファイルをステージすると
+                `detect-secrets` フックが検知してコミットをブロックすることを確認する
+                (確認後、テストファイルは削除しコミットしない)
+          - [ ] CRLFファイルを混入させた場合、`mixed-line-ending` フックがLFへ修正する
+
+          ## 依存
+          [E1-1] 完了後
+
+          ## 成果物
+          `.pre-commit-config.yaml`, `.secrets.baseline`
+
+          ## トレーサビリティ
+          NFR-04 / ユーザー標準(CI/pre-commit必須) / 要件定義書 §12 SEC-01関連
+
+          ## 要件書引用
+          > SEC-01:APIキー・クラウド認証情報はDocker Secrets / SSM Parameter Storeで
+          > 管理し、リポジトリ・イメージに含めない。
+
+      - key: E1-3
+        title: "[E1-3] GitHub Actions CI"
+        labels: ["phase:0"]
+        body: |
+          ## 概要
+          Python / Web / Docker Compose の3系統についてCIワークフローを整備する。
+          パスフィルタとconcurrency制御によりCI実行を最適化する。
+
+          ## 対象ファイル
+          - `.github/workflows/ci-python.yml`:
+            - トリガー: `pull_request`, `push`(main)。`paths`フィルタで
+              `packages/**`, `services/**/*.py`, `pyproject.toml`, `uv.lock` に限定。
+            - ジョブ: `uv sync` → `uv run ruff check .` → `uv run ruff format --check .`
+              → `uv run mypy .`(対象パッケージが存在する場合)→ `uv run pytest`。
+            - `concurrency: group: ci-python-${{ github.ref }}, cancel-in-progress: true`
+          - `.github/workflows/ci-web.yml`:
+            - トリガー: `pull_request`, `push`(main)。`paths`フィルタで
+              `services/web-ui/**` に限定。
+            - ジョブ: `pnpm install --frozen-lockfile` → `pnpm lint` → `pnpm vitest run`
+              → `pnpm build`。Node 22セットアップ、pnpmキャッシュ有効化。
+            - `concurrency` 設定も同様に付与。
+          - `.github/workflows/ci-compose.yml`:
+            - トリガー: `pull_request`, `push`(main)。`paths`フィルタで
+              `docker-compose.yml`, `.env.example` に限定。
+            - ジョブ: `docker compose -f docker-compose.yml --profile api-only config`
+              (構文・変数解決の検証のみ、実起動はしない)。
+
+          ## 受け入れ条件
+          - [ ] 各ワークフローが、対応するファイルが存在しない/空テストの状態でも
+                成功(緑)になることを確認する(E1-1時点でダミーテスト1件を
+                `packages/pmdf` 等に置くか、testsディレクトリが空でもpytestが
+                exit 0で終わるよう `--no-tests-are-errors` 相当の設定、または
+                `continue-on-error` を使わずpytestの `--collect-only` で代替する等、
+                CIが「テストなしで失敗する」状態を避ける設計とすること)
+          - [ ] 3ワークフローとも `paths` フィルタが機能し、無関係な変更でジョブが
+                スキップされることをPR上で確認する
+          - [ ] concurrencyにより同一ブランチの多重実行が自動キャンセルされる
+
+          ## 依存
+          [E1-1] 完了後
+
+          ## 成果物
+          `.github/workflows/ci-python.yml`, `.github/workflows/ci-web.yml`,
+          `.github/workflows/ci-compose.yml`
+
+          ## トレーサビリティ
+          ユーザー標準(CI必須) / 要件定義書 §4.1, NFR-04
+
+          ## 要件書引用
+          > 4.1 設計原則: 4. 同一定義・差分プロファイル。Tier-S / Tier-L は同一の
+          > docker-compose.yml を共有し、profiles と .env の差分のみで切替える。
+
+      - key: E1-4
+        title: "[E1-4] docker-compose骨格とprofiles"
+        labels: ["phase:0"]
+        body: |
+          ## 概要
+          要件定義書§4.2のコンテナ構成に基づき、全サービスのプレースホルダ定義を
+          含む `docker-compose.yml` を作成する。この段階では各サービスのDockerfileは
+          最小限(後続エピックで実装を積み上げる、E4-4で本稼働化)。
+
+          ## 対象ファイル
+          - `docker-compose.yml`: 以下のサービスを定義
+            - `web-ui`(常時稼働、React+Vite+Nginx想定、ポート80/443相当)
+            - `api-server`(常時稼働、FastAPI、ポート8000)
+            - `agent-core`(常時稼働、Python+LangGraph)
+            - `pmdf-store`(常時稼働、Git bare + ファイル領域。ボリュームマウント)
+            - `model-gateway`(常時稼働、LiteLLM Proxy、ポート4000)
+            - `qdrant`(常時稼働、公式イメージ `qdrant/qdrant`)
+            - `minio`(常時稼働、tracking用オブジェクトストレージ)
+            - `mlflow`(常時稼働、実験管理)
+            - `scheduler`(常時稼働、cronベースオーケストレーション)
+            - `ollama`(`local-gpu` profile限定、ローカル推論)
+            - `trainer`(`train` profile限定、バッチジョブ、常時稼働しない)
+            - `eval-runner`(`train` profile限定、バッチジョブ)
+          - `profiles` 定義:
+            - `api-only`: オンラインAPI利用構成(ollama等GPU依存を除外)
+            - `local-gpu`: ローカルGPU推論を含む構成(ollama有効)
+            - `train`: 学習・評価バッチを含む構成(trainer, eval-runner有効)
+          - `.env.example`: 全環境変数を網羅(ダミー値のみ、実キーは含めない)。
+            例: `ANTHROPIC_API_KEY=dummy`, `OPENAI_API_KEY=dummy`,
+            `AWS_ACCESS_KEY_ID=dummy`, `QDRANT_URL=http://qdrant:6333`,
+            `MINIO_ROOT_USER=dummy`, `MINIO_ROOT_PASSWORD=dummy_password_1234`,
+            `MLFLOW_TRACKING_URI=http://mlflow:5000`,
+            `MODEL_GATEWAY_URL=http://model-gateway:4000`,
+            `JWT_SECRET=dummy_secret`, `POSTGRES_*`(必要な場合)等。
+
+          ## 受け入れ条件
+          - [ ] `docker compose --profile api-only config` がエラーなく解決される
+                (未定義変数の警告が出ない、`.env.example` を `.env` にコピーした状態で検証)
+          - [ ] `docker compose --profile local-gpu config` および
+                `docker compose --profile train config` も同様にエラーなく解決される
+          - [ ] `.env.example` に全サービスが参照する環境変数が過不足なく列挙されている
+          - [ ] 非公開であるべきサービス(gateway/tracking/vector-db/pmdf-store)は
+                外部公開ポートをホストにバインドしない設定(内部ネットワークのみ)
+
+          ## 依存
+          [E1-1] 完了後
+
+          ## 成果物
+          `docker-compose.yml`, `.env.example`
+
+          ## トレーサビリティ
+          NFR-04 / 要件定義書 §4.2(コンテナ構成)
+
+          ## 要件書引用
+          > | web-ui | 監督UI。SPA配信 | ○ | React + Vite(Nginx配信) |
+          > | api-server | 認証認可、PMDF CRUD、承認ゲート強制、監査ログ、
+          > import/export API、エージェント制御 | ○ | FastAPI |
+          > | model-gateway | 全LLM/埋め込み呼び出しの単一窓口 | ○ | LiteLLM Proxy |
+          > SEC-02:外部公開はweb-ui(および同一経路のapi-server)のみ。
+          > gateway/tracking/vector-db/pmdf-store(Git)は非公開。
+
+      - key: E1-5
+        title: "[E1-5] 再開手順ドキュメントとCLAUDE.md"
+        labels: ["phase:0"]
+        body: |
+          ## 概要
+          長期にわたる複数セッション開発を前提に、新しいエージェントセッションが
+          最小限の情報で作業を再開できるようにする状態管理ドキュメントと、
+          リポジトリ固有の開発規約を定めるCLAUDE.mdを整備する。
+
+          ## 対象ファイル
+          - `docs/IMPLEMENTATION_STATE.md`: 以下のセクションを持つ
+            - 現フェーズ(phase:0〜5のうちどこまで完了か)
+            - アクティブブランチ一覧
+            - 再開手順コマンド(例: `git fetch origin && git switch main && git pull`,
+              `uv sync`, `pnpm install` 等)
+            - エピック→GitHub issue番号 対応表(E1〜E11、本エピック実行時点では
+              空欄または「未登録」とし、E12(本タスク)完了後に埋める運用とする)
+            - 環境メモ(Windows特有の注意点: longpaths, LF強制, パス長制限等)
+            - 決定事項ログ(日付・決定内容・理由を追記していく形式)
+          - `CLAUDE.md`(リポジトリルート): 以下を明記
+            - TDD規約: 仕様に沿ったテストを先に追加・修正し、失敗を確認してから
+              実装する(Red→Green→Refactor)
+            - コミット規約: Conventional Commits準拠(`feat:`, `fix:`, `chore:`,
+              `docs:`, `test:` 等)、末尾に `Co-Authored-By: Claude Fable 5
+              <noreply@anthropic.com>` を付与
+            - イシュー運用: 実装前にissue化、親issue+sub-issue構造、受け入れ条件を
+              チェックリストとして明記してから着手
+            - モック方針: 外部LLM API呼び出しは単体テストでは全てモック
+              (respx等)し、実APIキーを要するテストはCIで実行しない
+
+          ## 受け入れ条件
+          - [ ] 新規セッション(このドキュメントの内容以外の記憶を持たない想定)が
+                `docs/IMPLEMENTATION_STATE.md` と `CLAUDE.md` の2ファイルのみを読んで、
+                「今何のフェーズで、次に何をすべきか」を判断できる記述になっている
+          - [ ] エピック→issue番号対応表のテーブル構造が用意されている(値は
+                本タスク完了後に埋まる想定でプレースホルダ可)
+
+          ## 依存
+          [E1-1] 完了後
+
+          ## 成果物
+          `docs/IMPLEMENTATION_STATE.md`, `CLAUDE.md`
+
+          ## トレーサビリティ
+          ユーザー標準(issue管理、TDD、CI/pre-commit) / 要件定義書 §4.1
+
+      - key: E1-6
+        title: "[E1-6] Takumi Guard(Shisho)レジストリ設定と検証"
+        labels: ["phase:0", "needs-human"]
+        body: |
+          ## 概要
+          サプライチェーン攻撃対策として、Takumi Guard(Shisho)のクイックスタート
+          (https://shisho.dev/docs/ja/t/guard/quickstart/index.md)に従い、
+          パッケージレジストリをTakumi Guard経由のミラーへ切り替える手順を
+          ドキュメント化し、切り替えが機能していることを検証するスクリプトを
+          用意する。
+
+          **重要**: トークン(`tg_anon_` プレフィックス)はメール認証レベルで
+          取得するものであり、**ユーザーがuser-level設定(`~/.npmrc` 等)に
+          別途配置済みの前提**とする。トークン自体・実際のレジストリ認証情報は
+          リポジトリにもissueにも一切含めない。
+
+          ## 対象ファイル
+          - `docs/takumi-guard.md`:
+            - npm/pnpm/yarn/bun向け: レジストリを `https://npm.flatt.tech/` に
+              向け、`_authToken` をクイックリファレンスに従い設定する手順
+              (プロジェクトの `.npmrc` にレジストリURLのみ記載し、トークンは
+              コミットしないことを明記)
+            - pip/uv/poetry向け: PyPIミラーURLとトークン設定手順
+              (`pip.conf` / `uv.toml` 等、値はプレースホルダで記載)
+            - Bundler向け: RubyGemsミラーと `bundle config` 設定手順
+              (本プロジェクトはRuby未使用のため参考情報として記載)
+          - `scripts/verify_registry_guard.py`:
+            - `@panda-guard/test-malicious` パッケージのインストールを試み、
+              **403 Forbidden** で失敗することを確認する検証スクリプト
+              (subprocessで `npm install --no-save @panda-guard/test-malicious`
+              相当を実行し、標準エラー出力に403が含まれることをassertする)
+            - レジストリ未設定環境では検証をスキップし、その旨を出力する
+              (needs-humanのため、実行環境にトークンが無い場合は失敗ではなく
+              「未検証」として扱う)
+            - 適切なエラーハンドリング: レジストリ未到達、タイムアウト、
+              トークン未設定を区別してメッセージを出す
+
+          ## 受け入れ条件
+          - [ ] `docs/takumi-guard.md` にnpm/pip双方の設定手順が明記されている
+          - [ ] `scripts/verify_registry_guard.py` が、トークン設定済み環境では
+                `@panda-guard/test-malicious` のインストールが403 Forbiddenになる
+                ことを確認して成功終了する
+          - [ ] `detect-secrets` でスキャンし、トークン文字列(`tg_anon_` 等)が
+                リポジトリに含まれていないことを確認する
+          - [ ] トークン未設定環境でスクリプトを実行した場合、失敗ではなく
+                「未検証・要人手確認」の状態で終了する(exit codeを分ける)
+
+          ## 依存
+          [E1-2] 完了後
+
+          ## 成果物
+          `docs/takumi-guard.md`, `scripts/verify_registry_guard.py`
+
+          ## トレーサビリティ
+          ユーザー標準(Takumi Guardクイックスタート) / 要件定義書 §12 SEC-01
+
+          ## 要件書引用
+          > SEC-01:APIキー・クラウド認証情報はDocker Secrets / SSM Parameter Storeで
+          > 管理し、リポジトリ・イメージに含めない。
+
+          ## 備考
+          本イシューは人手確認(needs-human)を要する。実際のトークン配置・
+          レジストリ切替の最終確認はユーザー環境で行うこと。
+
+  # =========================================================================
+  # E2: PMDFパッケージ(packages/pmdf) [phase:1]
+  # =========================================================================
+  - key: E2
+    title: "[E2] PMDFパッケージ(packages/pmdf)"
+    labels: [epic, "phase:1"]
+    body: |
+      ## 概要
+      PMDF(Product Management Data Format)は、プロダクト管理の全構造化情報を
+      YAML/JSONで表現する統一フォーマットである。本エピックでは、JSON Schema・
+      Pydanticモデル・YAML⇄JSON変換・ID採番・参照整合検証・バンドルexport/import・
+      サニタイズ・CLIまでを含む `packages/pmdf` パッケージを実装する。
+
+      PMDFはプロダクトの真実の状態を表す唯一のマスターであり(設計原則2)、
+      後続の全エピック(api-server, agent-core, web-ui)はこのパッケージが定義する
+      スキーマとPythonモデルに依存する。
+
+      ## 含まれるサブイシュー
+      - E2-1 JSON Schema v1 共通+基本エンティティ
+      - E2-2 JSON Schema v1 実行系エンティティ
+      - E2-3 Pydanticモデルとスキーマ整合テスト
+      - E2-4 YAML⇄JSON無損失変換とファイルI/O
+      - E2-5 ULID採番と参照整合チェック
+      - E2-6 バンドルexport
+      - E2-7 バンドルimport検証と差分プレビュー
+      - E2-8 共有プロファイルサニタイズ+CSV/MD変換
+      - E2-9 pmdf CLIとマイグレーション枠組
+
+      ## トレーサビリティ
+      FR-DF-01〜04, FR-EX-01〜06, NFR-09, AC-07/08 / 要件定義書 §6
+    subs:
+      - key: E2-1
+        title: "[E2-1] JSON Schema v1 共通+基本エンティティ"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          PMDF v1スキーマのうち、全エンティティ共通の基盤部分と基本エンティティ
+          (product/stakeholder/persona/objective/metric)のJSON Schemaを定義する。
+
+          ## 対象ファイル
+          `packages/pmdf/schemas/pmdf/v1/` 配下に以下を作成:
+          - `common.schema.json`: 全エンティティが継承・参照する共通定義
+            - `pmdf_version`: semver文字列(正規表現 `^\d+\.\d+\.\d+$`)、必須
+            - `kind`: enum(14種別: product/stakeholder/persona/objective/metric/
+              roadmap_item/story/experiment/decision/release/risk/initiative/
+              report/approval)
+            - `id`: 接頭辞付きULID文字列(正規表現 `^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$`、
+              例 `story-01JZX4T8G2K9...`)
+            - `provenance`: オブジェクト
+              - `created_by`: 文字列(`agent:<name>@v<version>` または `user:<id>` 形式)
+              - `approved_by`: 文字列(nullable)
+              - `updated_at`: date-time文字列(ISO8601、タイムゾーン付き)
+            - `attachments`: 配列(各要素: `path`(相対パス文字列)、`sha256`
+              (64桁16進文字列))
+            - 拡張フィールド: プロパティ名が `x_` で始まるキーを
+              `additionalProperties` パターンで許可(`patternProperties`:
+              `^x_` はスキーマ制約なしで許可、それ以外の未知プロパティは拒否
+              `additionalProperties: false` の方針とし、拡張は必ず `x_` 接頭辞を
+              強制する)
+          - `product.schema.json`: ビジョン、ターゲット、ポジショニング、
+            ライフサイクル段階(enum: `introduction/growth/maturity/decline`)、
+            北極星指標への参照(`metric` id)
+          - `stakeholder.schema.json`: 役割、所属組織、関心事、影響度
+            (enum等でスコア化)、連絡ポリシー
+          - `persona.schema.json`: 属性、課題、ジョブ(JTBD形式の配列)
+          - `objective.schema.json`: OKR — 目標、キーリザルト(配列)、期間、
+            上位objectiveへの参照(`parent_objective` id、nullable)
+          - `metric.schema.json`: 定義、算出方法、目標値/閾値、現在値系列
+            (時系列配列 or 外部データソース参照URL)
+
+          全スキーマは `common.schema.json` の `$ref` で共通部分を参照し、
+          `pmdf_version`, `kind`, `id`, `provenance` を必須プロパティとする。
+
+          ## 受け入れ条件
+          - [ ] `packages/pmdf/tests/fixtures/valid/` に各エンティティ種別の
+                正常フィクスチャ(YAML)を最低1件ずつ配置し、jsonschemaライブラリ
+                (`jsonschema.validate`)で検証が通ることをpytestで確認する
+          - [ ] `packages/pmdf/tests/fixtures/invalid/` に、必須フィールド欠落・
+                型不一致・`kind`不正値などの異常フィクスチャを配置し、
+                `ValidationError` が送出されることを確認する
+          - [ ] `x_` 接頭辞以外の未知プロパティを含むデータが拒否される
+                (`additionalProperties: false` の効果)テストがある
+
+          ## 依存
+          [E1-3] 完了後
+
+          ## 成果物
+          `packages/pmdf/schemas/pmdf/v1/common.schema.json` および
+          `product/stakeholder/persona/objective/metric.schema.json`、
+          `packages/pmdf/tests/fixtures/{valid,invalid}/`
+
+          ## トレーサビリティ
+          FR-DF-02, NFR-09 / 要件定義書 §6.1, §6.2
+
+          ## 要件書引用
+          > 3. **IDと参照**:全エンティティは接頭辞付きULID(例:`story-01J...`)を持ち、
+          > エンティティ間参照はIDで行う。組織間で衝突しないこと。
+          > 4. **スキーマバージョン**:各ファイルは `pmdf_version`(semver)を必須とし、
+          > 後方互換の変換ツールを提供する。
+          > 5. **バイナリは対象外**:画像・動画・デザインファイル等は `attachments/`
+          > 配下に置き、エンティティからは相対パス+SHA-256ハッシュで参照する。
+
+      - key: E2-2
+        title: "[E2-2] JSON Schema v1 実行系エンティティ"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          E2-1で整備した共通基盤を用い、PdM業務の実行系エンティティ9種の
+          JSON Schemaを定義する。要件定義書§6.2の記述例(story)がそのまま
+          検証を通過することを実装の正しさの根拠とする。
+
+          ## 対象ファイル
+          `packages/pmdf/schemas/pmdf/v1/` 配下に以下を追加:
+          - `roadmap_item.schema.json`: テーマ、時期(四半期粒度、例
+            `"2026-Q3"` 形式の文字列パターン)、状態、依存(id配列)、
+            対応objective参照
+          - `story.schema.json`: `title`, `as_a`, `i_want`, `so_that`,
+            `acceptance_criteria`(文字列配列)、`priority`(オブジェクト:
+            `method`(enum: RICE/WSJF/MoSCoW等)、`reach`/`impact`/`confidence`/
+            `effort`/`score`。method=RICEの場合の数値項目)、
+            `status`(enum: draft/ready/in_progress/done/dropped)、
+            `links`(objective/decisions参照)
+          - `experiment.schema.json`: 仮説、設計、成功基準、結果、学び
+          - `decision.schema.json`: 背景、選択肢(配列)、採用案と根拠、
+            却下理由、承認者、自律レベル(enum: L0/L1/L2/L3)
+          - `release.schema.json`: スコープ(story id配列)、Go/No-Go判断、実績
+          - `risk.schema.json`: 事象、確率×影響(PMBOKリスク領域準拠の
+            確率スコア×影響スコア)、対応戦略(enum: 回避/転嫁/軽減/受容 等)、
+            オーナー
+          - `initiative.schema.json`: 憲章、アプローチ(enum: 予測型/適応型/
+            ハイブリッド)、WBS(階層構造)、スケジュール、EVM値
+            (PV/EV/AC/SPI/CPI相当のフィールド)
+          - `report.schema.json`: 期間、健全性評価、要判断事項(配列)
+          - `approval.schema.json`: 対象エンティティ参照、起案者、承認者、
+            判断(enum: approved/rejected)、理由(必須、監査用・改変不可の
+            前提でスキーマ上は追記専用の運用をE3-7で強制)
+
+          ## 受け入れ条件
+          - [ ] 要件定義書§6.2の記述例(story、`story-01JZX4T8G2K9`)をYAMLの
+                まま `packages/pmdf/tests/fixtures/valid/story_example.yaml`
+                として配置し、スキーマ検証をpytestで確認する
+          - [ ] 9種すべてについて正常・異常フィクスチャを用意し検証する
+          - [ ] `decision.schema.json` は「背景/選択肢/根拠/却下案」に対応する
+                フィールドが必須項目として定義されている(E5-6のDR自動記録の
+                前提となるため)
+
+          ## 依存
+          [E2-1] 完了後
+
+          ## 成果物
+          `packages/pmdf/schemas/pmdf/v1/{roadmap_item,story,experiment,decision,
+          release,risk,initiative,report,approval}.schema.json`
+
+          ## トレーサビリティ
+          FR-DF-02, DR-06 / 要件定義書 §6.2
+
+          ## 要件書引用
+          ```yaml
+          pmdf_version: "1.0.0"
+          kind: story
+          id: story-01JZX4T8G2K9
+          product: prod-01JZX0AAAA01
+          title: ゲスト購入でも注文履歴をメールから参照できる
+          as_a: 会員登録をしていない購入者
+          priority:
+            method: RICE
+            reach: 4200
+            impact: 2
+            confidence: 0.8
+            effort: 3
+            score: 2240
+          status: ready
+          ```
+
+      - key: E2-3
+        title: "[E2-3] Pydanticモデルとスキーマ整合テスト"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          E2-1/E2-2で定義した14エンティティ分のJSON SchemaをPythonから型安全に
+          扱うため、Pydantic v2モデルを実装し、モデルとスキーマの自動整合テストを
+          用意する。以降のAPI・エージェント実装は本モデルを介してPMDFを操作する。
+
+          ## 対象ファイル
+          `packages/pmdf/src/pmdf/models/` 配下:
+          - `common.py`: `PmdfBase`(共通フィールドを持つ基底モデル。
+            `pmdf_version: str`, `kind: Literal[...]`, `id: str`,
+            `provenance: Provenance`, `attachments: list[Attachment] = []`)、
+            `Provenance`, `Attachment` モデル
+          - `product.py`, `stakeholder.py`, `persona.py`, `objective.py`,
+            `metric.py`(E2-1対応)
+          - `roadmap_item.py`, `story.py`, `experiment.py`, `decision.py`,
+            `release.py`, `risk.py`, `initiative.py`, `report.py`,
+            `approval.py`(E2-2対応)
+          - `__init__.py`: `KIND_TO_MODEL: dict[str, type[PmdfBase]]` の
+            マッピングをエクスポート(E2-4のI/O層、E3のAPI層で共通利用)
+
+          モデル実装方針:
+          - Pydantic v2の `model_config = ConfigDict(extra="forbid")` を基本とし、
+            `x_` 接頭辞のフィールドのみ許可する場合は `model_validator` で
+            カスタム検証を行う
+          - `story.priority` 等のネストしたオブジェクトはサブモデル
+            (`Priority(BaseModel)`)として定義
+
+          ## 受け入れ条件
+          - [ ] `packages/pmdf/tests/test_schema_model_parity.py` で、各Pydantic
+                モデルの `model_json_schema()` 出力と `schemas/pmdf/v1/*.schema.json`
+                の必須フィールド集合が一致することを自動検証する(完全一致が
+                難しい場合は「モデルが要求する必須フィールド ⊆ JSON Schemaの
+                必須フィールド」の包含関係を検証する形でも可、ただし理由を
+                コード内コメントで明記する)
+          - [ ] E2-1/E2-2の全フィクスチャ(正常系)がPydanticモデルの
+                `model_validate()` でエラーなくパースできる
+          - [ ] 異常フィクスチャは `ValidationError` を送出する
+
+          ## 依存
+          [E2-2] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/models/*.py`,
+          `packages/pmdf/tests/test_schema_model_parity.py`
+
+          ## トレーサビリティ
+          FR-DF-02 / 要件定義書 §6.1, §6.2
+
+      - key: E2-4
+        title: "[E2-4] YAML⇄JSON無損失変換とファイルI/O"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          リポジトリ内表現(YAML)とAPI入出力表現(JSON)の間で無損失の相互変換を
+          行うモジュールと、1エンティティ1ファイル規約に基づくファイルI/Oを実装する。
+
+          ## 対象ファイル
+          - `packages/pmdf/src/pmdf/io.py`:
+            - `ruamel.yaml`(`YAML(typ="rt")`: round-trip モード)を用いて
+              コメント・キー順序・改行を可能な限り保持しつつYAML⇄JSON(Python dict)
+              変換する `yaml_to_dict(text: str) -> dict` / `dict_to_yaml(data: dict) -> str`
+            - `load_entity(path: Path) -> PmdfBase`: YAMLファイル1件を読み、
+              `kind` に応じたPydanticモデルへ変換(E2-3の `KIND_TO_MODEL` 利用)
+            - `save_entity(entity: PmdfBase, base_dir: Path) -> Path`: 1エンティティ
+              1ファイル規約(ファイル名 `<kind>/<id>.yaml` 等のディレクトリ規約を
+              定義しコード内定数化)でYAML書き込み
+            - JSONへの変換は `entity.model_dump(mode="json")` を用い、YAML側は
+              ruamel経由でキー順序を固定(`pmdf_version, kind, id` を先頭に
+              並べる等、diffの可読性を高める順序ルールをコード化)
+
+          ## 受け入れ条件
+          - [ ] `hypothesis` を用いたプロパティベーステストで、ランダム生成した
+                PMDFエンティティ(各kind)について
+                `dict_to_yaml → yaml_to_dict → dict_to_yaml` が冪等であること
+                (2回目以降のYAML文字列が変化しないこと)を検証する
+          - [ ] JSON変換についても `model_dump(mode="json") → model_validate` の
+                往復でデータが完全一致することをプロパティテストで検証する
+          - [ ] `save_entity` で書き出したファイルを `load_entity` で読み戻すと
+                元のPydanticモデルと等価(`==`)になることを確認する
+
+          ## 依存
+          [E2-3] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/io.py`, 関連プロパティテスト
+          (`packages/pmdf/tests/test_io_roundtrip.py`)
+
+          ## トレーサビリティ
+          FR-DF-01 / 要件定義書 §6.1
+
+          ## 要件書引用
+          > 1. **YAMLを正、JSONを等価表現とする**:リポジトリ内はYAML(人間の
+          > レビュー・Git diff に適する)、API入出力はJSONを既定とし、両者は
+          > 無損失で相互変換可能であること。
+          > 2. **エンティティ=1ファイル**:1エンティティ(1ストーリー、1決定記録
+          > など)を1ファイルとし、Git上で変更履歴と作者(人間/エージェント)を
+          > 追跡する。
+
+      - key: E2-5
+        title: "[E2-5] ULID採番と参照整合チェック"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          全エンティティで用いる接頭辞付きULIDの生成機構と、エンティティ間参照
+          (例: story.links.objective が実在するobjectiveのidを指しているか)の
+          整合性を検証するバリデータを実装する。
+
+          ## 対象ファイル
+          - `packages/pmdf/src/pmdf/ids.py`:
+            - `python-ulid` 等のライブラリを用い、`generate_id(kind: str) -> str`
+              で `<kind_prefix>-<ULID26文字>` 形式の文字列を生成
+              (kind_prefixのマッピング: story→story, decision→dec,
+              objective→obj, product→prod 等、E2-1のパターン
+              `^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$` に適合させる)
+            - ULIDは時刻順ソート可能なため、組織間衝突を避けるためモノトニック
+              生成(`ulid.monotonic()`相当)を用いる
+          - `packages/pmdf/src/pmdf/validate.py`:
+            - `validate_references(entities: list[PmdfBase]) -> list[ReferenceError]`:
+              エンティティ集合を受け取り、各エンティティが持つ参照フィールド
+              (story.links.objective, story.links.decisions,
+              release.scope(story参照), roadmap_item.links.objective,
+              decision.approval参照 等)が実在するidを指しているか、
+              かつ参照先の `kind` が期待される種別と一致しているかを検証する
+            - 参照フィールドの定義は、各Pydanticモデルにフィールドメタデータ
+              (例: `Field(json_schema_extra={"ref_kind": "objective"})`)として
+              埋め込み、`validate.py` がモデル定義から動的に参照フィールドを
+              収集する設計とする(ハードコードした参照リストの保守コストを避ける)
+
+          ## 受け入れ条件
+          - [ ] `generate_id("story")` が `story-` で始まる26文字のULIDを含む
+                文字列を返し、E2-1のスキーマパターンに合致することをテストする
+          - [ ] 短時間に大量生成してもソート順が単調増加することを確認する
+                (モノトニック性のテスト)
+          - [ ] 存在しないid(例: 削除済みまたはタイポ)を参照するエンティティ
+                集合を与えると `validate_references` が該当エラーを返す
+                ことを確認する
+          - [ ] 参照先の `kind` が期待と異なる場合(例: objective参照に
+                story idを指定)もエラーとして検出されることを確認する
+
+          ## 依存
+          [E2-3] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/ids.py`, `packages/pmdf/src/pmdf/validate.py`
+
+          ## トレーサビリティ
+          FR-DF-01 / 要件定義書 §6.1
+
+          ## 要件書引用
+          > 3. **IDと参照**:全エンティティは接頭辞付きULID(例:`story-01J...`)を
+          > 持ち、エンティティ間参照はIDで行う。組織間で衝突しないこと。
+
+      - key: E2-6
+        title: "[E2-6] バンドルexport"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          PMDFエンティティ群を `*.pmdf.tar.gz` 形式のバンドルとしてエクスポート
+          する機能を実装する。マニフェストにはスキーマ版・対象プロダクト・
+          エンティティ数・生成環境・生成日時・内容ハッシュを含める。
+
+          ## 対象ファイル
+          `packages/pmdf/src/pmdf/bundle/export.py`:
+          - `export_bundle(entities: list[PmdfBase], scope: ExportScope,
+            output_path: Path, include_attachments: bool = True) -> Path`
+          - `ExportScope`: プロダクトid、エンティティ種別のフィルタ(省略可)、
+            期間指定(`updated_at` の範囲、省略可)を持つモデル
+          - マニフェスト(`manifest.json`)フィールド:
+            - `schema_version`(例 "1.0.0")
+            - `product_ids`(対象プロダクトid配列)
+            - `entity_count`(kind別内訳を含むオブジェクト)
+            - `generated_env`(例 "tier-l-windows", 呼び出し側から注入)
+            - `generated_at`(ISO8601)
+            - `content_hash`(全エンティティファイルの内容から算出したSHA-256、
+              決定的な順序でソートしてから連結ハッシュ化)
+          - tarball構造: `manifest.json` + `entities/<kind>/<id>.yaml` +
+            (`include_attachments=True` の場合)`attachments/<id>/...`
+          - 添付を除外する場合(`include_attachments=False`)は、エンティティ側の
+            `attachments` フィールド(パス+ハッシュ)は保持したままバイナリ本体を
+            同梱しない(参照のみ)
+
+          ## 受け入れ条件
+          - [ ] 複数プロダクト・複数種別のエンティティを含むテストデータで
+                exportし、生成されたtarballを展開すると `manifest.json` と
+                エンティティYAMLファイル群が期待通り含まれることを確認する
+          - [ ] `product_ids` スコープ指定でエクスポートすると、指定外の
+                プロダクトに属するエンティティが含まれないことを確認する
+          - [ ] エンティティ種別スコープ指定(例: storyのみ)で絞り込みが
+                機能することを確認する
+          - [ ] 期間指定スコープで `updated_at` が範囲外のエンティティが
+                除外されることを確認する
+          - [ ] `include_attachments=False` の場合、tarball内に添付バイナリの
+                実体が含まれず、参照(path+sha256)のみ残ることを確認する
+          - [ ] `content_hash` が同一入力に対し決定的(再現可能)であることを
+                確認する
+
+          ## 依存
+          [E2-4], [E2-5] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/bundle/export.py`,
+          `packages/pmdf/tests/test_bundle_export.py`
+
+          ## トレーサビリティ
+          FR-EX-01, FR-EX-02, §6.3 / 要件定義書 §6.4
+
+          ## 要件書引用
+          > FR-EX-01 バンドル形式:`*.pmdf.tar.gz`(マニフェスト+エンティティYAML群
+          > +添付)。マニフェストにはスキーマ版、対象プロダクト、エンティティ数、
+          > 生成環境、生成日時、内容ハッシュを含む。
+          > FR-EX-02 スコープ指定:プロダクト単位/エンティティ種別単位/期間指定
+          > でのエクスポートが可能であること。
+
+      - key: E2-7
+        title: "[E2-7] バンドルimport検証と差分プレビュー"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          E2-6で作成したバンドルをインポートする際の、スキーマ検証→ID衝突・
+          参照整合チェック→差分プレビュー→適用、という手順を実装する
+          (FR-EX-04)。適用はdry-run(プレビューのみ)と実適用を分離する。
+
+          ## 対象ファイル
+          `packages/pmdf/src/pmdf/bundle/import_.py`(モジュール名は
+          `import` が予約語のため `import_.py` とし、パッケージからは
+          `from pmdf.bundle import import_ as pmdf_import` 等でエクスポート):
+          - `validate_bundle(bundle_path: Path) -> BundleValidationResult`:
+            tarball展開→各エンティティのJSON Schema検証(E2-1/E2-2利用)→
+            manifest記載のエンティティ数・content_hashとの整合確認
+          - `diff_preview(bundle_path: Path, existing_entities: list[PmdfBase])
+            -> list[EntityDiff]`:
+            - ID衝突検出(バンドル内idと既存ストア内idが一致する場合)
+            - 参照整合チェック(E2-5の `validate_references` を、既存+バンドル
+              の合併集合に対して実行)
+            - 差分種別: `new`(新規追加)、`conflict`(同一idで内容相違)、
+              `identical`(同一idで内容一致、適用不要)
+            - `conflict` の場合、フィールド単位の差分(取込側の値 vs 既存側の値)
+              を返す(UIでの2者択一表示に必要な形式)
+          - `apply_bundle(bundle_path: Path, resolutions: dict[str, Resolution],
+            store: PmdfStore, dry_run: bool = False) -> ApplyResult`:
+            - `resolutions`: 各conflict idに対し `incoming`(取込側採用)/
+              `existing`(既存側維持)を指定するdict
+            - `dry_run=True` の場合は実際の書き込みを行わずシミュレーション結果
+              のみ返す
+            - `dry_run=False` の場合、E3-2のpmdf-store層(1操作=1コミット)を
+              通じて適用する(本パッケージ単体では、ストア層への依存は
+              インターフェース(Protocol)経由とし、E3側で具象実装を注入する
+              設計とする)
+
+          ## 受け入れ条件
+          - [ ] 不正スキーマを含むバンドルは `validate_bundle` の時点で
+                エラーとして検出され、以降の処理に進まないことを確認する
+          - [ ] 既存ストアと同一idで内容が異なるエンティティを含むバンドルは
+                `conflict` として検出され、フィールド単位の差分が取得できる
+                ことを確認する
+          - [ ] `dry_run=True` で `apply_bundle` を呼んでも、渡した
+                `store`(モック)への書き込みメソッドが呼ばれないことを確認する
+          - [ ] `resolutions` で `existing` を指定したエンティティが、実適用
+                (`dry_run=False`)後も既存の値のまま変化しないことを確認する
+
+          ## 依存
+          [E2-6] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/bundle/import_.py`,
+          `packages/pmdf/tests/test_bundle_import.py`
+
+          ## トレーサビリティ
+          FR-EX-04, FR-EX-05, AC-07 / 要件定義書 §6.4
+
+          ## 要件書引用
+          > FR-EX-04 インポート検証:スキーマ検証→ID衝突・参照整合チェック→
+          > 差分プレビュー→適用、の手順を踏み、適用は1コミットとして履歴に
+          > 残ること。
+          > FR-EX-05 競合解決:同一IDの相違はUI上で「取込側/既存側/手動マージ」
+          > を選択できること(初期実装は3-wayマージまでは不要、2者択一+手動編集
+          > で可)。
+
+      - key: E2-8
+        title: "[E2-8] 共有プロファイルサニタイズ+CSV/MD変換"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          他社共有向けにPMDFデータをマスキングする「共有プロファイル」機能と、
+          一般ツールとの相互運用のためのCSV/Markdown変換出力を実装する。
+
+          ## 対象ファイル
+          - `packages/pmdf/src/pmdf/sanitize.py`:
+            - マスキング定義をYAMLで表現(`packages/pmdf/config/
+              sanitize_profiles/default.yaml`)。例:
+              ```yaml
+              profile: partner-share-default
+              mask_fields:
+                - kind: story
+                  fields: ["priority.reach", "provenance.created_by"]
+                  strategy: redact  # 値を "***MASKED***" 等に置換
+                - kind: metric
+                  fields: ["current_value"]
+                  strategy: redact
+                - kind: stakeholder
+                  fields: ["contact_policy.personal_name"]
+                  strategy: redact
+              ```
+            - `sanitize_entity(entity: dict, profile: SanitizeProfile) -> dict`:
+              指定フィールド(内部コスト、個人名、非公開指標値等)をマスクした
+              コピーを返す(元データは変更しない)
+            - E2-6の `export_bundle` にオプション引数
+              `sanitize_profile: SanitizeProfile | None` を追加し、指定時は
+              バンドル生成前に全エンティティへ適用する
+          - `packages/pmdf/src/pmdf/convert/csv_.py`:
+            - `story_to_csv(stories: list[Story]) -> str`,
+              `roadmap_item_to_csv(items: list[RoadmapItem]) -> str`
+          - `packages/pmdf/src/pmdf/convert/markdown.py`:
+            - `decision_to_markdown(decision: Decision) -> str`(背景/選択肢/
+              採用案/却下理由をMarkdown見出し構造で出力)
+            - `report_to_markdown(report: Report) -> str`
+
+          ## 受け入れ条件
+          - [ ] `default.yaml` プロファイルを適用したエンティティで、指定
+                フィールド(例: story.priority.reach)が `***MASKED***` 等の
+                固定値に置換され、他のフィールドは変化しないことを確認する
+          - [ ] サニタイズ済みバンドルをexportし、展開後のYAMLに個人名・
+                内部コスト・非公開指標値が平文で含まれないことを確認する
+                (AC-08相当のユニットテスト)
+          - [ ] `story_to_csv` の出力をPythonの`csv`モジュールで再パースでき、
+                ヘッダ行と各storyのtitle/priority.score等が正しく列挙される
+                ことを確認する
+          - [ ] `decision_to_markdown` の出力に「背景」「選択肢」「採用案」
+                「却下理由」の見出しが含まれることを確認する
+
+          ## 依存
+          [E2-6] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/sanitize.py`,
+          `packages/pmdf/config/sanitize_profiles/default.yaml`,
+          `packages/pmdf/src/pmdf/convert/{csv_,markdown}.py`
+
+          ## トレーサビリティ
+          FR-EX-03, FR-EX-06, AC-08 / 要件定義書 §6.4, §11.4
+
+          ## 要件書引用
+          > FR-EX-03 共有用サニタイズ:他社共有向けに、指定フィールド
+          > (内部コスト、個人名、非公開指標値等)をマスキングした「共有
+          > プロファイル」でエクスポートできること。
+          > FR-EX-06 相互運用:一般的ツールとの往復を想定し、最低限CSV
+          > (story/roadmap_item)およびMarkdown(decision/report)への変換出力
+          > を提供すること。
+
+      - key: E2-9
+        title: "[E2-9] pmdf CLIとマイグレーション枠組"
+        labels: ["phase:1"]
+        body: |
+          ## 概要
+          `typer` を用いたコマンドラインインターフェースを実装し、
+          `pmdf validate/export/import/convert/migrate` サブコマンドとして
+          E2-1〜E2-8の機能を公開する。あわせて、PMDFスキーマバージョン改訂に
+          備えたマイグレーションツール枠組を整備する(NFR-09)。
+
+          ## 対象ファイル
+          - `packages/pmdf/src/pmdf/cli.py`:
+            - `pmdf validate <path>`: ファイルまたはディレクトリ配下のPMDF
+              エンティティをスキーマ検証(E2-1/E2-2/E2-3利用)し、結果を
+              人間可読に出力。異常時はexit code 1。
+            - `pmdf export --product <id> --kind <kind> --since <date>
+              --output <path.pmdf.tar.gz> [--sanitize <profile>]`:
+              E2-6/E2-8を呼び出す
+            - `pmdf import <bundle path> --store <path> [--dry-run]
+              [--resolve <id>=incoming|existing ...]`: E2-7を呼び出す
+            - `pmdf convert --to csv|markdown --kind <kind> <input> <output>`:
+              E2-8の変換関数を呼び出す
+            - `pmdf migrate <path> --from <version> --to <version>`:
+              下記マイグレーション機構を呼び出す
+          - `packages/pmdf/src/pmdf/migrate/__init__.py`:
+            - `semver` ライブラリ(または自前の軽量パーサ)でバージョン比較
+            - `MIGRATIONS: dict[tuple[str, str], Callable[[dict], dict]]`
+              形式のレジストリ(例: `("1.0.0", "1.1.0")` キーで変換関数を登録)
+            - `migrate_entity(data: dict, target_version: str) -> dict`:
+              現在バージョンから目標バージョンまでの変換関数チェーンを
+              適用する
+          - `packages/pmdf/src/pmdf/migrate/v1_0_0_to_v1_1_0.py`:
+            動作確認用のダミーマイグレーション(例: 将来追加想定の
+            `x_migrated: true` フラグを付与するだけの変換関数)を1件実装し、
+            機構が動くことを示す
+
+          ## 受け入れ条件
+          - [ ] `pmdf validate` / `export` / `import` / `convert` / `migrate`
+                各サブコマンドの統合テスト(`typer.testing.CliRunner` 利用)が
+                用意され、正常系・異常系(不正パス、スキーマ違反等)双方で
+                期待するexit codeとメッセージが得られることを確認する
+          - [ ] ダミーマイグレーション `1.0.0 → 1.1.0` を用いて、
+                `pmdf migrate` コマンドが正しく変換関数を適用し、
+                `pmdf_version` フィールドが更新されることを確認する
+          - [ ] 未定義のバージョン間変換(登録されていない組み合わせ)を
+                指定した場合、明確なエラーメッセージで失敗することを確認する
+
+          ## 依存
+          [E2-7], [E2-8] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/cli.py`, `packages/pmdf/src/pmdf/migrate/*.py`,
+          `packages/pmdf/tests/test_cli.py`
+
+          ## トレーサビリティ
+          FR-DF-03, NFR-09 / 要件定義書 §5.4, §7
+
+          ## 要件書引用
+          > FR-DF-03:バンドル単位のimport/export(§6.4)をUIとCLIの双方から
+          > 実行できること。
+          > NFR-09 保守性:モデル・ライブラリ更新はイメージタグ変更のみ。
+          > PMDFスキーマ改訂はマイグレーションツール同梱を必須とする。
+
+  # =========================================================================
+  # E3: pmdf-store + api-server [phase:2]
+  # =========================================================================
+  - key: E3
+    title: "[E3] pmdf-store + api-server"
+    labels: [epic, "phase:2"]
+    body: |
+      ## 概要
+      本エピックは、PMDFの永続化層(pmdf-store、Git管理)と、認証認可・
+      PMDF CRUD・承認ゲート強制・追記専用監査ログ・自律レベル制御・
+      import/export API・WebSocketイベント配信を担うapi-serverを実装する。
+      api-serverは「エージェント側の実装不備やプロンプト注入によって承認を
+      迂回できない構造」(設計原則3)を担保する要となるコンポーネントである。
+
+      ## 含まれるサブイシュー
+      - E3-1 FastAPI骨格
+      - E3-2 pmdf-store Git永続化層
+      - E3-3 PMDF CRUD API
+      - E3-4 認証とロール
+      - E3-5 プロダクトスコープ認可
+      - E3-6 承認ゲート(L1強制)
+      - E3-7 追記専用監査ログ
+      - E3-8 自律レベル設定と緊急停止
+      - E3-9 import/export API
+      - E3-10 WebSocketイベント配信
+
+      ## トレーサビリティ
+      FR-AU-01〜05, FR-UI-09, FR-DF-02, SEC-03/04, AC-06 / 要件定義書 §5.2, §4.2
+    subs:
+      - key: E3-1
+        title: "[E3-1] FastAPI骨格"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          api-serverサービスの土台となるFastAPIアプリケーション骨格を実装する。
+          設定管理・ロギング・ヘルスチェック・例外処理・OpenAPI出力を整備する。
+
+          ## 対象ファイル
+          - `services/api-server/pyproject.toml`: FastAPI, uvicorn,
+            pydantic-settings, structlog, python-multipart 等の依存を宣言
+          - `services/api-server/src/api_server/main.py`: FastAPIアプリ
+            エントリポイント、ルータ登録
+          - `services/api-server/src/api_server/config.py`: `pydantic-settings`
+            の `BaseSettings` を用い、設定値は**環境変数のみ**から読む
+            (SEC-01準拠、設定ファイルへの秘密情報直書き禁止)。
+            `DATABASE_URL` は使わず(pmdf-storeはGitベースのためE3-2参照)、
+            `JWT_SECRET`, `PMDF_STORE_PATH`, `CORS_ORIGINS` 等を定義
+          - `services/api-server/src/api_server/logging.py`: `structlog` の
+            JSON構造化ログ設定
+          - `services/api-server/src/api_server/routers/health.py`:
+            `GET /healthz` — 依存先(pmdf-store読み書き可否等)の簡易チェックを
+            含み `{"status": "ok"}` を返す
+          - `services/api-server/src/api_server/exceptions.py`: 共通例外
+            ハンドラ(`ValidationError` → 422、`PermissionError` → 403、
+            未捕捉例外 → 500、いずれもJSON形式でエラーコード・メッセージを返す)
+          - OpenAPI: FastAPI標準の `/openapi.json` をそのまま利用
+            (E7-1でのクライアント型生成の入力となる)
+
+          ## 受け入れ条件
+          - [ ] `uv run uvicorn api_server.main:app` でサーバが起動し、
+                `GET /healthz` が200と `{"status": "ok"}` を返す
+          - [ ] 秘密情報を要する設定値がコード中にハードコードされておらず、
+                すべて環境変数経由であることをコードレビュー観点でテスト
+                (例: 設定値が未設定の場合エラーになることを確認するテスト)
+                で担保する
+          - [ ] 未捕捉例外発生時にスタックトレースがレスポンスボディに漏洩
+                せず、構造化ログにのみ出力されることを確認する
+          - [ ] `/openapi.json` が取得でき、有効なOpenAPI 3.x文書であることを
+                確認する
+
+          ## 依存
+          [E1-3] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/{main,config,logging,
+          exceptions}.py`, `services/api-server/src/api_server/routers/health.py`
+
+          ## トレーサビリティ
+          SEC-01, SEC-02 / 要件定義書 §4.2, §12
+
+          ## 要件書引用
+          > SEC-01:APIキー・クラウド認証情報はDocker Secrets / SSM Parameter Store
+          > で管理し、リポジトリ・イメージに含めない。
+          > SEC-02:外部公開はweb-ui(および同一経路のapi-server)のみ。
+
+      - key: E3-2
+        title: "[E3-2] pmdf-store Git永続化層"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          PMDFエンティティのCRUD操作を、Gitリポジトリへのコミットとして
+          永続化する層を実装する。1操作=1コミットとし、任意時点の版取得・
+          履歴取得を可能にする。Windows環境での同時書き込みに備えたファイル
+          ロック機構を含む。
+
+          ## 対象ファイル
+          `services/api-server/src/api_server/pmdf_store/`:
+          - `store.py`: `PmdfStore` クラス
+            - `create(entity: PmdfBase, actor: str) -> PmdfBase`:
+              E2-4の `save_entity` でYAML書き込み→
+              `git add` + `git commit -m "create(<kind>): <id> by <actor>"`
+              (authorは `user:<id>` または `agent:<name>` を
+              `--author="<actor> <actor@local>"` としてGitコミットに埋め込む)
+            - `update(entity: PmdfBase, actor: str) -> PmdfBase`: 同様に更新
+              コミット
+            - `get(kind: str, id: str, ref: str | None = None) -> PmdfBase`:
+              `ref` 省略時はHEAD、指定時は `git show <ref>:<path>` 相当で
+              任意版取得
+            - `history(kind: str, id: str) -> list[CommitInfo]`: `git log
+              --follow` 相当でファイルの全コミット履歴(hash, author, date,
+              message)を取得
+            - `delete` は提供しない(DR-06により approval/decision は削除不可。
+              他エンティティも本層では論理削除相当の `status` フィールド更新
+              を推奨し、物理削除APIは用意しない)
+          - `lock.py`: Windows環境でのファイルロック対策。`filelock` ライブラリ
+            (クロスプラットフォーム)を用い、書き込み系操作(create/update)は
+            リポジトリ単位の排他ロックを取得してから実行する
+            (`with FileLock(repo_path / ".pmdf.lock"): ...`)。同時書き込み要求は
+            直列化されるため、待機タイムアウト(例: 10秒)を超えた場合は
+            `LockTimeoutError` を送出し、呼び出し側(E3-3)が503を返せるようにする
+          - Gitリポジトリ初期化: `PmdfStore.init(path: Path)` で `git init`
+            (bare不可、作業ツリー同梱、コミット追跡が目的のため通常のリポジトリ
+            として初期化)
+
+          ## 受け入れ条件
+          - [ ] `create` 1回につきコミットが1件生成され、`git log` で確認できる
+          - [ ] `update` を複数回行った後、`history` で全版を取得し、
+                各版を `get(..., ref=<commit_hash>)` で復元すると、対応する
+                時点の内容と一致することを確認する(NFR-05: 再現性)
+          - [ ] 同時に複数スレッド/プロセスから `create`/`update` を呼び出す
+                並行テストで、ロックにより操作が直列化され、Gitリポジトリが
+                破損しない(コミット数が呼び出し回数と一致する)ことを確認する
+          - [ ] ロック取得タイムアウト時に `LockTimeoutError` が送出されることを
+                確認する
+
+          ## 依存
+          [E2-4] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/pmdf_store/{store,lock}.py`,
+          関連テスト
+
+          ## トレーサビリティ
+          NFR-05 / 要件定義書 §4.2, §6.1, §7
+
+          ## 要件書引用
+          > NFR-05 再現性:実験はseed・データセット版・モデル版・設定の組で
+          > 再現可能。PMDFは全変更がGit履歴で復元可能
+          > 2. **エンティティ=1ファイル**:1エンティティを1ファイルとし、Git上で
+          > 変更履歴と作者(人間/エージェント)を追跡する。
+
+      - key: E3-3
+        title: "[E3-3] PMDF CRUD API"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          E3-2のpmdf-store層をHTTP REST APIとして公開する。書込前に必ず
+          PMDFスキーマ検証を行い、不正データを422で拒否する(FR-DF-02)。
+
+          ## 対象ファイル
+          `services/api-server/src/api_server/routers/pmdf.py`:
+          - `POST /pmdf/{kind}`: エンティティ作成。リクエストボディをE2-3の
+            Pydanticモデルでバリデーション(FastAPIの自動バリデーションで
+            型不一致は422になるが、加えてE2-5の参照整合チェックも実行し、
+            参照エラーも422で返す)
+          - `GET /pmdf/{kind}/{id}`: 取得(クエリパラメータ `?ref=<commit>` で
+            任意版取得、E3-2の `get` を利用)
+          - `PUT /pmdf/{kind}/{id}`: 更新(同様にスキーマ+参照検証後、E3-2の
+            `update` を呼ぶ)
+          - `GET /pmdf/{kind}/{id}/history`: 履歴一覧(E3-2の `history`)
+          - `GET /pmdf/{kind}`: 一覧(クエリパラメータでproduct絞り込み等)
+          - レスポンスは既定でJSON(FR-DF-01に基づきAPI入出力はJSON)
+          - 全書込系エンドポイントは、リクエストの認証済みユーザー情報
+            (E3-4実装後に有効化、本イシュー時点では暫定的に固定actor文字列で
+            実装しE3-4完了後に差し替えるTODOをコード内に明記)を
+            `actor` としてE3-2へ渡す
+
+          ## 受け入れ条件
+          - [ ] 正常なstoryデータで `POST /pmdf/story` が201を返し、
+                レスポンスボディに生成されたidが含まれる
+          - [ ] 必須フィールド欠落データで422が返り、エラーメッセージに
+                欠落フィールド名が含まれる
+          - [ ] 存在しないobjective idを参照するstoryデータで422が返る
+                (参照整合エラー)
+          - [ ] `GET /pmdf/story/{id}?ref=<past_commit>` で過去版が取得できる
+          - [ ] `GET /pmdf/story/{id}/history` でコミット履歴一覧が取得できる
+
+          ## 依存
+          [E3-1], [E3-2] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/routers/pmdf.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-DF-02 / 要件定義書 §5.4
+
+          ## 要件書引用
+          > FR-DF-02:PMDFはJSON Schemaで機械検証可能であり、api-serverは
+          > 不正なデータの書込みを拒否すること。
+
+      - key: E3-4
+        title: "[E3-4] 認証とロール"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          メール+パスワードによる認証と、3種のロール(管理者/編集者/閲覧者)
+          による認可を実装する。TOTPはオプション機能としてフラグで有効化可能
+          にする。
+
+          注: グローバル開発標準により、AWSへデプロイするアプリケーションでは
+          メールアドレスによる認証方式が求められている。本システムはTier-L
+          (ローカル)を主眼とするが、認証方式自体をメールアドレスベースで
+          設計することで、E11(Tier-S AWSデプロイ、将来実装)への転用を
+          容易にする。
+
+          ## 対象ファイル
+          `services/api-server/src/api_server/auth/`:
+          - `models.py`: `User`(email, password_hash, role, totp_secret
+            (nullable), product_scopes(E3-5で利用))
+          - `password.py`: `argon2-cffi` を用いたハッシュ化・検証
+            (`hash_password`, `verify_password`)
+          - `jwt.py`: `PyJWT` を用いたトークン発行・検証(`JWT_SECRET`は
+            E3-1の環境変数設定から取得、有効期限を設定)
+          - `totp.py`: `pyotp` を用いたTOTP検証(フラグ
+            `TOTP_ENABLED`(環境変数)がtrueの場合のみログインフローに組み込む)
+          - `dependencies.py`: FastAPI依存性注入
+            `get_current_user(token: str = Depends(oauth2_scheme)) -> User`、
+            `require_role(*roles: Role)` デコレータ/依存関数
+          - `services/api-server/src/api_server/routers/auth.py`:
+            `POST /auth/login`(email+password、TOTP有効時は追加で
+            `totp_code`)、`POST /auth/refresh`
+          - ロール定義: `admin`(管理者、全権限)、`editor`(編集者、PMDF CRUD
+            可・承認不可)、`viewer`(閲覧者、読み取りのみ)
+
+          ## 受け入れ条件
+          - [ ] 正しいemail+passwordで `POST /auth/login` が200とJWTを返す
+          - [ ] 誤ったpasswordでログイン試行すると401が返る
+          - [ ] JWTなしで保護されたエンドポイント(例: `POST /pmdf/story`)を
+                呼ぶと401が返る
+          - [ ] `viewer` ロールのユーザーが `POST /pmdf/story` を呼ぶと403が
+                返る(編集権限がないため)
+          - [ ] TOTP_ENABLED=true環境で、TOTPコード未提供のログインは
+                追加認証要求のレスポンス(またはエラー)を返す
+          - [ ] パスワードは平文で保存されず、argon2ハッシュとしてのみ
+                保持されることをテストで確認する
+
+          ## 依存
+          [E3-1] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/auth/*.py`,
+          `services/api-server/src/api_server/routers/auth.py`
+
+          ## トレーサビリティ
+          SEC-03 / 要件定義書 §5.3, §12
+
+          ## 要件書引用
+          > SEC-03:UIは認証必須(初期:メール+パスワード+TOTP、またはOIDC連携)。
+          > ロールと プロダクトスコープによる認可(FR-UI-09)。
+          > FR-UI-09 閲覧権限:最低限のロール(管理者/編集者/閲覧者)。
+
+      - key: E3-5
+        title: "[E3-5] プロダクトスコープ認可"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          他社パートナー等の閲覧者ロールに対し、特定プロダクトのみに限定した
+          アクセススコープを付与できるようにする。
+
+          ## 対象ファイル
+          - `services/api-server/src/api_server/auth/models.py` の `User` に
+            `product_scopes: list[str] | None`(nullは全プロダクトアクセス可、
+            管理者/編集者向け。viewerには通常特定プロダクトIDのリストを設定)
+            フィールドを追加(E3-4のモデル拡張)
+          - `services/api-server/src/api_server/auth/dependencies.py` に
+            `require_product_scope(product_id: str)` 依存関数を追加。
+            E3-3のCRUDエンドポイントで、対象エンティティの `product` 参照
+            フィールドと現在ユーザーの `product_scopes` を照合し、スコープ外
+            なら403を返す
+          - ユーザー管理API(管理者専用): `POST /admin/users`,
+            `PUT /admin/users/{id}/scopes` でスコープ付与・変更
+
+          ## 受け入れ条件
+          - [ ] `product_scopes: ["prod-A"]` を持つviewerユーザーが
+                `GET /pmdf/story/{id}`(prod-Bに属するstory)を呼ぶと403が返る
+          - [ ] 同ユーザーが `prod-A` に属するエンティティへのアクセスは
+                200で成功する
+          - [ ] `product_scopes: null` の管理者/編集者は全プロダクトへ
+                アクセス可能であることを確認する
+          - [ ] 管理者専用のスコープ変更APIを非管理者が呼ぶと403が返る
+
+          ## 依存
+          [E3-4] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/auth/dependencies.py` 拡張、
+          `services/api-server/src/api_server/routers/admin.py`
+
+          ## トレーサビリティ
+          FR-UI-09 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-09 閲覧権限:最低限のロール(管理者/編集者/閲覧者)。他社
+          > パートナーには閲覧者+特定プロダクト限定のスコープ付与が可能で
+          > あること。
+
+      - key: E3-6
+        title: "[E3-6] 承認ゲート(L1強制)"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          本システムの中核的な安全機構である承認ゲートを実装する。approval
+          エンティティに基づく起案→承認→実行のステートマシンを構築し、
+          L1業務の実行APIは承認レコードが存在しない限り呼び出せないことを
+          ミドルウェアレベルで強制する。これによりエージェント側の実装不備や
+          プロンプト注入があっても承認を迂回できない構造(設計原則3、SEC-05)
+          を実現する。
+
+          ## 対象ファイル
+          - `services/api-server/src/api_server/approval/state_machine.py`:
+            `ProposalState`(enum: `proposed` → `approved`/`rejected`）の
+            遷移ロジック。approvalエンティティ(E2-2)の `決定` フィールドを
+            用いる
+          - `services/api-server/src/api_server/approval/gate.py`:
+            `require_approval(entity_kind: str, entity_id: str,
+            autonomy_level: Literal["L1"])` という**FastAPI依存関数**として
+            実装し、L1指定業務の実行系エンドポイント(例:
+            `POST /pmdf/decision/{id}/execute`, `POST /roadmap/{id}/confirm`,
+            `POST /release/{id}/go-no-go` 等、E5で定義される起案系
+            エンドポイント群)すべてにこの依存関数を付与する
+            - 実装: 対象エンティティに紐づく `approval` エンティティを検索し、
+              `判断 == "approved"` のレコードが存在しなければ
+              `HTTPException(403, "承認レコードがありません")` を送出
+            - この検証はルーティング層(依存性注入)で行うため、エンドポイント
+              の実装者がチェックを書き忘れても、依存関数を宣言していない
+              エンドポイント自体をコードレビュー/lint(カスタムruffルール
+              またはテストでのエンドポイント網羅性チェック)で検出する運用と
+              する
+          - `services/api-server/src/api_server/routers/approvals.py`:
+            `POST /approvals`(起案)、`POST /approvals/{id}/decide`
+            (承認/差し戻し、理由必須)、`GET /approvals?status=pending`
+            (承認キュー一覧、E7-4のバックエンド)
+
+          ## 受け入れ条件(AC-06に直結する最重要テスト)
+          - [ ] L1指定業務のエンドポイントに対し、承認レコードなしでAPIを
+                直接呼び出す(HTTPクライアントで直叩き)と、**全パスで**
+                403が返ることを確認する自動テストを用意する
+                (`services/api-server/tests/test_approval_gate_bypass.py`
+                として、L1エンドポイント一覧を網羅的にパラメータ化した
+                テストにする)
+          - [ ] 承認済み(`判断 == "approved"`)のapprovalレコードが存在する
+                場合のみ、対応するL1エンドポイントが200で成功することを
+                確認する
+          - [ ] 差し戻し(`判断 == "rejected"`)の場合は実行が403のままである
+                ことを確認する
+          - [ ] 承認理由(`reason`)が未入力の場合、`POST /approvals/{id}/decide`
+                自体が422で拒否されることを確認する
+
+          ## 依存
+          [E3-3], [E3-4] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/approval/{state_machine,gate}.py`,
+          `services/api-server/src/api_server/routers/approvals.py`,
+          `services/api-server/tests/test_approval_gate_bypass.py`
+
+          ## トレーサビリティ
+          FR-AU-02, AC-06 / 要件定義書 §5.2, §14
+
+          ## 要件書引用
+          > FR-AU-02:承認ゲートはapi-serverで強制し、L1業務の実行APIは
+          > 承認レコードなしには呼び出せないこと(エージェントからの迂回不可)。
+          > AC-06:L1業務がAPI直叩きを含め承認レコードなしでは実行できない
+          > ことをテストで確認する
+          > 3. **人間監督の内蔵**:承認ゲートと監査ログはエージェントの外側
+          > (APIレイヤ)で強制し、エージェント側の実装不備やプロンプト注入
+          > によって承認を迂回できない構造とする。
+
+      - key: E3-7
+        title: "[E3-7] 追記専用監査ログ"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          全ての書込系操作(および読み取りを含む全エージェント行動)を、
+          改ざん不能な追記専用ログとして記録する。前レコードとのハッシュ連鎖
+          により改ざん検知を可能にし、approval/decisionエンティティの削除を
+          拒否する(DR-06)。
+
+          ## 対象ファイル
+          - `services/api-server/src/api_server/audit/log.py`:
+            - `AuditRecord`: `timestamp`, `actor`, `action`(例:
+              `pmdf.story.create`), `target_kind`, `target_id`, `detail`
+              (dict)、`prev_hash`(前レコードのSHA-256)、`hash`
+              (自レコードのSHA-256、`prev_hash`+他フィールドから算出)
+            - `append_record(record: AuditRecord) -> None`: JSONL形式で
+              `audit/audit.log.jsonl` に追記専用(オープンモード `"a"`)で
+              書き込む。追記のみで既存行の書き換え・削除APIは提供しない
+            - `verify_chain(log_path: Path) -> VerifyResult`: 先頭から
+              順に `prev_hash` の連鎖を検証し、不整合があれば該当行番号を
+              報告するCLI/関数
+          - E3-2/E3-3の全書込メソッドから `append_record` を呼び出す
+            (デコレータまたはミドルウェアとして実装し、書込系エンドポイント
+            すべてに横断的に適用する設計とする)
+          - approval/decisionエンティティに対する削除リクエストは、E3-3の
+            CRUDルータに `DELETE` エンドポイントを実装しないことで拒否する
+            (DR-06)。もし将来的に汎用DELETEを追加する場合は、
+            `kind in ("approval", "decision")` の場合は明示的に405を返す
+            ガードを入れる
+
+          ## 受け入れ条件
+          - [ ] PMDF CRUD操作(create/update)を行うたびに監査ログへ1レコード
+                追記されることを確認する
+          - [ ] `verify_chain` が正常なログファイルに対し「改ざんなし」と
+                判定する
+          - [ ] ログファイルの中間行を意図的に書き換えたテストデータに対し、
+                `verify_chain` が改ざんを検知し該当行を報告する
+          - [ ] `DELETE /pmdf/approval/{id}` や `DELETE /pmdf/decision/{id}`
+                に相当するリクエストが405(またはルート未定義による404だが、
+                意図が明確になるよう405を返す実装とする)になることを確認する
+
+          ## 依存
+          [E3-3] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/audit/log.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-AU-04, SEC-04, DR-06 / 要件定義書 §5.2, §10, §12
+
+          ## 要件書引用
+          > FR-AU-04:全エージェント行動(読み取り含む書き込み系操作)は
+          > 改ざん不能な監査ログ(追記専用)に記録すること。
+          > SEC-04:監査ログは追記専用ストレージに保存し、改ざん検知
+          > (ハッシュチェーン)を行う。
+          > DR-06:PMDFの approval / decision エンティティは削除不可
+          > (訂正は新規レコード追加で表現)。
+
+      - key: E3-8
+        title: "[E3-8] 自律レベル設定と緊急停止"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          業務種別×プロダクト単位で自律レベル(L0〜L3)を設定できるAPIと、
+          緊急停止(エージェントの全自律動作の即時停止)機構を実装する。
+          停止中もUIによる閲覧・編集操作は継続できることを保証する(AR-06)。
+
+          ## 対象ファイル
+          - `services/api-server/src/api_server/autonomy/config.py`:
+            - `AutonomyConfig`: `product_id`, `business_function`
+              (enum: vision/roadmap/discovery/backlog/kpi_monitoring/
+              experiment/release/decision_record/stakeholder/initiative/
+              periodic_review、FR-PD-01〜11に対応)、`level`
+              (enum: L0/L1/L2/L3)
+            - 永続化はPMDFストアとは別に、api-server内の設定ストア
+              (シンプルなJSON設定ファイル、Gitコミットは不要だが変更履歴は
+              監査ログ(E3-7)に記録する)として実装
+          - `services/api-server/src/api_server/routers/autonomy.py`:
+            `GET /autonomy`, `PUT /autonomy/{product_id}/{business_function}`
+            (管理者のみ、E3-4のrequire_role利用)
+          - `services/api-server/src/api_server/autonomy/emergency_stop.py`:
+            - グローバル(または プロダクト単位)の `emergency_stopped: bool`
+              フラグ。`POST /autonomy/emergency-stop`(管理者のみ、1操作で
+              全プロダクトまたは指定プロダクトを停止)、
+              `POST /autonomy/emergency-stop/release`(解除)
+            - エージェント実行系エンドポイント(E5で実装されるタスク実行API)
+              には `check_not_stopped` 依存関数を付与し、停止中は409を返す
+            - PMDF CRUD(E3-3)やUI向け閲覧・手動編集APIには
+              `check_not_stopped` を**付与しない**(AR-06: エージェント非依存
+              でUI・PMDFは稼働し続ける)
+
+          ## 受け入れ条件
+          - [ ] 特定プロダクト×業務種別の自律レベルをL1からL2へ変更する
+                APIが管理者のみ実行可能(編集者・閲覧者は403)であることを
+                確認する
+          - [ ] 緊急停止発動後、エージェント実行系エンドポイント(モックで
+                代用可)へのリクエストが409を返すことを確認する
+          - [ ] 緊急停止中でも `GET/POST/PUT /pmdf/*` 系のPMDF CRUD APIは
+                通常通り200系で成功することを確認する(FR-AU-05, AR-06)
+          - [ ] 緊急停止解除後、エージェント実行系エンドポイントが再び
+                成功することを確認する
+
+          ## 依存
+          [E3-6] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/autonomy/{config,
+          emergency_stop}.py`, `services/api-server/src/api_server/routers/
+          autonomy.py`
+
+          ## トレーサビリティ
+          FR-AU-01, FR-AU-05, AR-06 / 要件定義書 §4.3, §5.2
+
+          ## 要件書引用
+          > FR-AU-01:自律レベルは業務種別×プロダクト単位で設定ファイルにより
+          > 変更可能であること(信頼の段階的引き上げ/引き下げ)。
+          > FR-AU-05:緊急停止(エージェントの全自律動作の即時停止)がUIから
+          > 常時可能であること。停止中もUIによる閲覧・手動編集は継続できる
+          > こと。
+          > AR-06:UI・エージェント・学習系はそれぞれ独立してデプロイ・停止
+          > できる。UIとapi-serverはエージェント停止中もPMDFの閲覧・編集・
+          > import/exportが可能であること(エージェント非依存)。
+
+      - key: E3-9
+        title: "[E3-9] import/export API"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          E2バンドル機能(export/import/サニタイズ)をHTTP API化する。
+          バンドルのアップロードから適用までを1コミットとして扱う
+          (E3-2のpmdf-store層と統合)。
+
+          ## 対象ファイル
+          `services/api-server/src/api_server/routers/bundles.py`:
+          - `POST /bundles/export`(リクエストボディ: `ExportScope` +
+            `sanitize_profile`(省略可)) — E2-6/E2-8を呼び出し、生成された
+            tarballをレスポンスとしてストリーミング返却
+          - `POST /bundles/import/validate`(multipart file upload) —
+            E2-7の `validate_bundle` + `diff_preview` を実行し、差分プレビュー
+            結果(JSON)を返す(この時点では未適用)
+          - `POST /bundles/import/apply`(バンドルID or 再アップロード +
+            `resolutions`) — E2-7の `apply_bundle(dry_run=False)` を呼び、
+            E3-2のpmdf-store経由で1コミットとして適用する。適用后、
+            監査ログ(E3-7)に1エントリ記録する
+          - アップロードされたバンドルファイルは一時ディレクトリに保存し、
+            validate→apply の間はサーバ側で一時保持(セッションIDまたは
+            アップロードIDで紐付け、TTL付きで自動削除)
+
+          ## 受け入れ条件
+          - [ ] `POST /bundles/export` でtarballがダウンロードでき、
+                展開するとmanifest.jsonとエンティティ群が含まれることを
+                確認する
+          - [ ] エクスポートしたバンドルを別のPMDFストア(テスト用に初期化した
+                空ストア)へ `validate` → `apply` の順で適用すると、全
+                エンティティが復元され、参照整合・添付ハッシュが一致する
+                ことを確認する(AC-07のAPI層での検証)
+          - [ ] `apply` 完了後、pmdf-storeのGit履歴に1コミットが追加されて
+                いることを確認する
+          - [ ] 不正なバンドル(スキーマ違反)を`validate`に投げると422相当の
+                エラーレスポンスが返る
+
+          ## 依存
+          [E3-3], [E2-7] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/routers/bundles.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-DF-03, AC-07 / 要件定義書 §6.4
+
+          ## 要件書引用
+          > FR-DF-03:バンドル単位のimport/export(§6.4)をUIとCLIの双方から
+          > 実行できること。
+          > AC-07:PMDFバンドルのエクスポート→別環境へのインポートで、全
+          > エンティティ・参照整合・添付ハッシュが一致する。
+
+      - key: E3-10
+        title: "[E3-10] WebSocketイベント配信"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          承認キュー件数の変化・PMDFエンティティ変更・エージェント活動を
+          リアルタイムにUIへ配信するWebSocketエンドポイントを実装する
+          (FR-UI-11)。
+
+          ## 対象ファイル
+          - `services/api-server/src/api_server/events/bus.py`:
+            アプリ内pub/sub機構(`asyncio.Queue` ベースのシンプルな
+            イベントバス、単一プロセス構成を前提とし、将来的な複数レプリカ
+            構成ではRedis pub/sub等に差し替え可能なインターフェース
+            (`EventBus` Protocol)として設計する)
+          - `services/api-server/src/api_server/routers/ws.py`:
+            `WS /ws/events`(認証済みユーザーのみ接続可、E3-4のJWT検証を
+            WebSocket接続時のクエリパラメータまたはヘッダで実施)。
+            イベント種別: `approval.count_changed`, `pmdf.entity_changed`,
+            `agent.activity`
+          - E3-3(PMDF CRUD)、E3-6(承認)の書込系操作完了時に
+            `EventBus.publish(...)` を呼び出すよう統合する
+
+          ## 受け入れ条件
+          - [ ] WebSocketクライアント(テストでは `httpx`/`websockets`
+                ライブラリのテストクライアント)で接続し、別リクエストで
+                PMDFエンティティを変更すると、1秒以内に
+                `pmdf.entity_changed` イベントが配信されることを確認する
+                統合テストを用意する
+          - [ ] 承認レコードを新規作成すると `approval.count_changed`
+                イベントが配信されることを確認する
+          - [ ] 未認証でのWebSocket接続が拒否されることを確認する
+
+          ## 依存
+          [E3-3], [E3-6] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/events/bus.py`,
+          `services/api-server/src/api_server/routers/ws.py`
+
+          ## トレーサビリティ
+          FR-UI-11 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-11:更新はWebSocket等でリアルタイム反映されること
+          > (承認待ちの見落とし防止のため、承認キューは件数バッジを常時
+          > 表示)。
+
+  # =========================================================================
+  # E4: model-gateway + compose統合 [phase:2]
+  # =========================================================================
+  - key: E4
+    title: "[E4] model-gateway + compose統合"
+    labels: [epic, "phase:2"]
+    body: |
+      ## 概要
+      全LLM・埋め込み呼び出しの単一窓口となるmodel-gatewayをLiteLLM Proxy
+      で実装し、疎結合アーキテクチャ(設計原則1)の要とする。また、
+      docker-compose定義を実コンテナとして統合起動できる状態に仕上げ、
+      バックエンド(オンラインAPI⇄ローカルOllama)の無改修切替を検証する。
+
+      ## 含まれるサブイシュー
+      - E4-1 LiteLLM論理名ルーティング
+      - E4-2 フォールバック・リトライ・タイムアウト
+      - E4-3 コスト計測とコストAPI
+      - E4-4 compose統合起動
+      - E4-5 バックエンド無改修切替検証
+
+      ## トレーサビリティ
+      AR-01〜04, AC-01/02 / 要件定義書 §4.2, §4.3, §8
+    subs:
+      - key: E4-1
+        title: "[E4-1] LiteLLM論理名ルーティング"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          エージェントコアが論理名(`pdm-main`, `pdm-teacher`, `pdm-judge`,
+          `pdm-embed`)でモデルを指定し、論理名→実モデルの対応をゲートウェイ
+          設定にのみ記述する構成をLiteLLM Proxyで実現する(AR-01, AR-02)。
+
+          ## 対象ファイル
+          `services/model-gateway/litellm.config.yaml`:
+          - `model_list` に論理名ごとのエントリを定義。例:
+            ```yaml
+            model_list:
+              - model_name: pdm-main
+                litellm_params:
+                  model: anthropic/claude-sonnet-4-5
+                  api_key: os.environ/ANTHROPIC_API_KEY
+              - model_name: pdm-teacher
+                litellm_params:
+                  model: anthropic/claude-opus-4
+                  api_key: os.environ/ANTHROPIC_API_KEY
+              - model_name: pdm-judge
+                litellm_params:
+                  model: openai/gpt-4o
+                  api_key: os.environ/OPENAI_API_KEY
+              - model_name: pdm-embed
+                litellm_params:
+                  model: openai/text-embedding-3-large
+                  api_key: os.environ/OPENAI_API_KEY
+              # ローカル切替例(Ollama, OpenAI互換)
+              - model_name: pdm-main
+                litellm_params:
+                  model: ollama/qwen2.5:7b-instruct-q4_K_M
+                  api_base: http://ollama:11434
+              # Bedrock例
+              - model_name: pdm-main
+                litellm_params:
+                  model: bedrock/anthropic.claude-3-5-sonnet
+            ```
+          - 同一 `model_name` に複数バックエンドを定義し、LiteLLMのルーティング
+            戦略(`.env` の `ACTIVE_BACKEND` 的な変数で有効化するエントリ群を
+            切り替える、または別々のconfigファイルを `.env` で選択する方式。
+            E4-5での無改修切替検証と整合させる)
+          - `services/model-gateway/Dockerfile`: 公式 `ghcr.io/berriai/litellm`
+            イメージをベースに、`litellm.config.yaml` をコピー
+
+          ## 受け入れ条件
+          - [ ] `respx` 等でモックしたAnthropic/OpenAI/Ollama互換バックエンドに
+                対し、論理名 `pdm-main` でのリクエストが設定通りのバックエンド
+                へルーティングされることを確認する統合テストを用意する
+                (`services/model-gateway/tests/`)
+          - [ ] `pdm-teacher`, `pdm-judge`, `pdm-embed` それぞれについても
+                同様にルーティング確認する
+          - [ ] エージェントコア側のコードに実モデル名(例:
+                `claude-sonnet-4-5` 等)がハードコードされていないことを
+                コードレビュー観点で確認する(AR-01の担保)
+
+          ## 依存
+          [E1-4] 完了後
+
+          ## 成果物
+          `services/model-gateway/litellm.config.yaml`,
+          `services/model-gateway/Dockerfile`,
+          `services/model-gateway/tests/`
+
+          ## トレーサビリティ
+          AR-01, AR-02 / 要件定義書 §4.3, §8
+
+          ## 要件書引用
+          > AR-01:エージェントコアのモデル指定は論理名(`pdm-main`,
+          > `pdm-teacher`, `pdm-judge`, `pdm-embed`)で行い、論理名→実モデル
+          > の対応はゲートウェイ設定にのみ記述する。
+          > AR-02:ゲートウェイは最低限、Anthropic API、OpenAI API、
+          > AWS Bedrock、OpenAI互換ローカルサーバ(Ollama / vLLM)をサポート
+          > する。
+
+      - key: E4-2
+        title: "[E4-2] フォールバック・リトライ・タイムアウト"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          バックエンド障害時のフォールバック先、リトライ回数、タイムアウトを
+          LiteLLM設定で定義し、実際に機能することを検証する(AR-03)。
+
+          ## 対象ファイル
+          `services/model-gateway/litellm.config.yaml` に以下を追加:
+          - `litellm_settings`:
+            - `num_retries: 2`(リトライ回数)
+            - `request_timeout: 30`(秒、成果物生成等の長時間応答は個別に
+              上書き)
+            - `fallbacks: [{"pdm-main": ["pdm-main-fallback"]}]`
+              形式で、主バックエンド障害時に予備バックエンド(例:
+              Anthropic障害時にBedrock経由の同モデルへ)へフォールバックする
+              設定
+          - `services/model-gateway/tests/test_fallback.py`:
+            モックで主バックエンドに5xx/タイムアウトを発生させ、
+            フォールバック先が呼ばれることを確認
+
+          ## 受け入れ条件
+          - [ ] モックバックエンドが最初のリクエストでタイムアウトを模擬し、
+                設定回数までリトライされることを確認する
+          - [ ] 主バックエンドが継続的に失敗する場合、フォールバック先
+                バックエンドへリクエストが転送されることを確認する
+          - [ ] タイムアウト設定値を超えるとリクエストが打ち切られ、
+                エラーが呼び出し元(エージェントコア想定のテストクライアント)
+                に伝播することを確認する
+
+          ## 依存
+          [E4-1] 完了後
+
+          ## 成果物
+          `services/model-gateway/litellm.config.yaml`(拡張)、
+          `services/model-gateway/tests/test_fallback.py`
+
+          ## トレーサビリティ
+          AR-03 / 要件定義書 §4.3
+
+          ## 要件書引用
+          > AR-03:バックエンド障害時のフォールバックとタイムアウト・
+          > リトライポリシーを設定で定義できる。
+
+      - key: E4-3
+        title: "[E4-3] コスト計測とコストAPI"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          LiteLLMのspend tracking機能を用いて全呼び出しのトークン数・
+          レイテンシ・概算コストを記録し、api-server側で月次予算に対する
+          消化率を集計・可視化するAPIを実装する(AR-04)。
+
+          ## 対象ファイル
+          - `services/model-gateway/litellm.config.yaml`:
+            `general_settings.database_url` 等でLiteLLMのspend tracking
+            を有効化(SQLiteまたは既存Postgres、Tier-Lではファイルベース
+            SQLiteを既定とする)
+          - `services/api-server/src/api_server/routers/costs.py`:
+            `GET /costs/summary?period=monthly` — LiteLLMのspend
+            APIまたはDBを参照し、モデル別・論理名別のトークン数・
+            概算コスト・月次予算に対する消化率(%)を返す
+          - `services/api-server/src/api_server/costs/budget.py`:
+            月次予算値(環境変数 `MONTHLY_BUDGET_JPY` 等)と実消化額を比較し、
+            `consumption_ratio` を算出するロジック。80%/100%閾値判定は
+            E9-2で利用するため、ここでは判定関数
+            `check_budget_threshold(ratio: float) -> BudgetStatus`
+            (enum: `ok`/`warning`/`exceeded`)のみ実装する
+
+          ## 受け入れ条件
+          - [ ] モックしたLiteLLM呼び出し複数件に対し、`GET /costs/summary`
+                がモデル別・論理名別の集計値を返すことを確認する
+          - [ ] 月次予算の80%に相当する消化額を与えると
+                `check_budget_threshold` が `warning` を返すことを確認する
+          - [ ] 100%以上では `exceeded` を返すことを確認する
+          - [ ] 80%未満では `ok` を返すことを確認する
+
+          ## 依存
+          [E4-1], [E3-1] 完了後
+
+          ## 成果物
+          `services/api-server/src/api_server/routers/costs.py`,
+          `services/api-server/src/api_server/costs/budget.py`
+
+          ## トレーサビリティ
+          AR-04 / 要件定義書 §4.3, §9.1
+
+          ## 要件書引用
+          > AR-04:全呼び出しのトークン数・レイテンシ・概算コストを記録し、
+          > 月次予算に対する消化率を可視化する。
+
+      - key: E4-4
+        title: "[E4-4] compose統合起動"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          E1-4で定義したdocker-compose骨格の常時稼働コンテナ群について、
+          プレースホルダから実Dockerfileへ差し替え、`api-only` プロファイルで
+          全ヘルスチェックがpassする状態に仕上げる(AC-01のTier-L側検証)。
+
+          ## 対象ファイル
+          - `services/api-server/Dockerfile`, `services/agent-core/Dockerfile`
+            (E5着手前の暫定スケルトンでも可、healthcheckが通る最小実装)、
+            `services/model-gateway/Dockerfile`(E4-1で作成済み)、
+            `services/web-ui/Dockerfile`(E7着手前の暫定スケルトン、静的な
+            プレースホルダページ配信でも可)
+          - 各サービスに `HEALTHCHECK` 命令またはcompose側の `healthcheck:`
+            セクションを追加(例: api-serverは `curl -f http://localhost:8000/
+            healthz`)
+          - `docker-compose.yml` の各サービス定義を実Dockerfileの
+            `build:` コンテキストに更新(既存の `image:` プレースホルダから
+            置き換え)
+          - qdrant/minio/mlflowは公式イメージをそのまま使用しhealthcheckのみ
+            追加
+
+          ## 受け入れ条件
+          - [ ] `docker compose --profile api-only up -d` で
+                web-ui/api-server/agent-core/model-gateway/qdrant/minio/
+                mlflow/scheduler/pmdf-storeが起動し、全て `healthy` 状態に
+                なることを確認する(**AC-01のTier-L側**)
+          - [ ] CIでは実際のコンテナ起動は行わず、
+                `docker compose --profile api-only config` と
+                `docker compose --profile api-only build`(ビルドのみ)を
+                実行して検証する(E1-3のci-compose.ymlを拡張)
+          - [ ] `docker compose --profile api-only down` で全コンテナが
+                正常に停止することを確認する
+
+          ## 依存
+          [E3-1], [E4-1], [E7-1] 完了後
+
+          ## 成果物
+          各サービスの `Dockerfile`、更新された `docker-compose.yml`
+
+          ## トレーサビリティ
+          AC-01 / 要件定義書 §4.2, §13
+
+          ## 要件書引用
+          > AC-01:同一compose定義からTier-S・Tier-Lの双方で全常時稼働
+          > コンテナが起動し疎通する
+
+      - key: E4-5
+        title: "[E4-5] バックエンド無改修切替検証"
+        labels: ["phase:2"]
+        body: |
+          ## 概要
+          `.env`の変更のみで推論バックエンドを「オンラインAPI⇄ローカル
+          Ollama」へ無改修切替できることを検証するスクリプトを実装する
+          (AC-02)。Ollama実行環境が無い場合はOpenAI互換モックサーバで代替する。
+
+          ## 対象ファイル
+          - `scripts/switch_backend_check.sh`:
+            1. `.env` の `ACTIVE_BACKEND=api` でmodel-gatewayを起動し、
+               論理名 `pdm-main` へのテストリクエストがオンラインAPI
+               (モック)へルーティングされることを確認
+            2. `.env` の `ACTIVE_BACKEND=ollama` に変更してmodel-gatewayを
+               再起動(コード変更なし)し、同じテストリクエストがOllama
+               (実環境がなければOpenAI互換モックサーバ、例えば `services/
+               model-gateway/tests/mock_openai_compatible_server.py` を
+               ローカル起動して代用)へルーティングされることを確認
+            3. いずれの場合もエージェントコア側・model-gateway設定ファイル
+               本体には変更を加えていないことをgit diffで確認するステップを
+               含める
+          - エラーハンドリング: 各ステップの失敗時に明確なメッセージを出し、
+            起動したコンテナ/プロセスを確実にクリーンアップ(trap構文で
+            スクリプト終了時にdown/killを保証)する
+
+          ## 受け入れ条件
+          - [ ] `scripts/switch_backend_check.sh` を実行し、上記2パターン
+                双方でルーティング先が期待通り切り替わることを確認する
+          - [ ] スクリプト実行中に `docker-compose.yml` や
+                `litellm.config.yaml` への変更(gitで追跡される差分)が
+                発生していないことを確認するアサーションが含まれる
+          - [ ] スクリプトが異常終了した場合でも起動済みコンテナ/モック
+                サーバが後片付けされることを確認する
+
+          ## 依存
+          [E4-4] 完了後
+
+          ## 成果物
+          `scripts/switch_backend_check.sh`,
+          `services/model-gateway/tests/mock_openai_compatible_server.py`
+          (必要な場合)
+
+          ## トレーサビリティ
+          AC-02 / 要件定義書 §1.2, §13
+
+          ## 要件書引用
+          > AC-02:`.env`変更のみで推論バックエンドを「オンラインAPI ⇄
+          > ローカルOllama」へ無改修切替できる
+          > 3. 推論・学習に用いるモデルを、オンラインAPI(Anthropic /
+          > OpenAI / AWS Bedrock 等)とローカルモデル(Ollama / vLLM)の間で
+          > 無改修で切り替え可能な疎結合アーキテクチャとする
+  # =========================================================================
+  # E5: agent-core [phase:3]
+  # =========================================================================
+  - key: E5
+    title: "[E5] agent-core"
+    labels: [epic, "phase:3"]
+    body: |
+      ## 概要
+      PdM業務を自律的に遂行するエージェントコアをLangGraphベースで実装する。
+      全てのPMDF変更はapi-server経由(直接ストア書込禁止)、全てのLLM呼び出しは
+      model-gateway経由の論理名でのみ行う(疎結合の徹底)。要件定義書§5.1の
+      FR-PD-01〜11の全業務を4つの業務グラフとして実装し、自律レベルに応じた
+      承認ゲート連携・根拠明示・差戻フィードバック取込を行う。
+
+      ## 含まれるサブイシュー
+      - E5-1 骨格とゲートウェイクライアント
+      - E5-2 PMDFツール群
+      - E5-3 RAG検索ツール
+      - E5-4 業務グラフ①バックログ運用
+      - E5-5 業務グラフ②ビジョン・ロードマップ・リリース判断
+      - E5-6 業務グラフ③KPI監視・Decision Record・週次レビュー
+      - E5-7 業務グラフ④ディスカバリー・実験・SH調整・施策実行
+      - E5-8 根拠明示と差戻フィードバック取込
+      - E5-9 チャット指示インターフェース
+
+      ## トレーサビリティ
+      FR-PD-01〜14, FR-AU-03 / 要件定義書 §5.1
+    subs:
+      - key: E5-1
+        title: "[E5-1] 骨格とゲートウェイクライアント"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          agent-coreサービスの基盤を実装する。LangGraphによるグラフ実行基盤、
+          model-gateway経由(論理名のみ)のLLMクライアント、タスクキュー、
+          毎ステップでの緊急停止フラグ照会を実装する。
+
+          ## 対象ファイル
+          - `services/agent-core/pyproject.toml`: `langgraph`, `langchain-core`,
+            `httpx`, `pydantic` 等の依存
+          - `services/agent-core/src/agent_core/llm_client.py`:
+            `LogicalModelClient`。`model_gateway_url` と論理名
+            (`pdm-main`/`pdm-teacher`/`pdm-judge`/`pdm-embed`)のみを受け取り、
+            OpenAI互換の `/chat/completions` エンドポイントへHTTPリクエストする
+            薄いラッパー。**実モデル名を一切扱わない**ことをコード上のインター
+            フェースで強制する(引数の型を `Literal["pdm-main", "pdm-teacher",
+            "pdm-judge", "pdm-embed"]` に限定)
+          - `services/agent-core/src/agent_core/task_queue.py`: タスクの
+            登録・取得・状態管理(pending/running/done/failed)。初期実装は
+            プロセス内キュー(`asyncio.Queue`)で可、将来の複数ワーカー化を
+            見据えインターフェース化する
+          - `services/agent-core/src/agent_core/guards.py`:
+            `check_emergency_stop() -> None`: api-server(E3-8)の
+            `GET /autonomy/emergency-stop/status` を毎ステップ(LangGraphの
+            各ノード実行前)に照会し、停止中なら例外を送出してグラフ実行を
+            中断する共通ノードラッパー
+          - テスト: `respx` でmodel-gatewayへのHTTPリクエストをモックし、
+            `LogicalModelClient` が正しいエンドポイント・ペイロードで
+            リクエストすることを確認する
+
+          ## 受け入れ条件
+          - [ ] `LogicalModelClient.complete(model="pdm-main", messages=[...])`
+                が `respx` でモックしたmodel-gatewayエンドポイントへ
+                リクエストし、レスポンスをパースして返すことを確認する
+          - [ ] 型チェック(mypy)で、未定義の論理名文字列(例: `"gpt-4"`直接
+                指定)を渡すコードがコンパイルエラーになることを確認する
+          - [ ] `check_emergency_stop` が停止中フラグを検知した場合、
+                後続のLLM呼び出しノードが実行されずにグラフが中断される
+                ことを確認する統合テストを用意する
+          - [ ] タスクキューへの登録・取得・状態遷移の単体テストがある
+
+          ## 依存
+          [E4-1], [E3-8] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/{llm_client,task_queue,
+          guards}.py`, 関連テスト
+
+          ## トレーサビリティ
+          AR-01 / 要件定義書 §4.1, §4.3, §5.2
+
+          ## 要件書引用
+          > 1. **疎結合(モデル非依存)**:エージェントコアはモデルを直接呼ば
+          > ない。全推論・埋め込み呼び出しはモデルゲートウェイのOpenAI互換
+          > エンドポイント経由とし、接続先の切替は環境変数と設定のみで行う。
+
+      - key: E5-2
+        title: "[E5-2] PMDFツール群"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          エージェントがPMDFを操作するためのツール(LangGraphのtool/
+          function calling相当)を実装する。**api-server経由のCRUD・検索の
+          みを許可し、pmdf-storeへの直接書込は一切行わない**ことをテストで
+          保証する。
+
+          ## 対象ファイル
+          - `services/agent-core/src/agent_core/tools/pmdf_tools.py`:
+            - `create_entity(kind: str, data: dict, auth_token: str) -> dict`:
+              api-serverの `POST /pmdf/{kind}` をHTTP経由で呼ぶのみ
+              (pmdf-storeモジュールへの直接importを行わない設計とし、
+              `services/agent-core` のパッケージ依存関係に
+              `services.api-server.pmdf_store` を含めないことをCIの
+              import-linter等で強制する)
+            - `get_entity`, `update_entity`, `search_entities`(product/kind
+              条件でのフィルタ検索、E3-3の一覧APIを利用)も同様にHTTP経由
+            - 全ツール呼び出しはE3-7の監査ログに `actor=agent:<name>@v<version>`
+              として記録される(api-server側で記録されるため、agent-core側
+              では追加実装不要だが、監査ログのactorフィールドに正しい
+              エージェント識別子が渡ることをテストで確認する)
+
+          ## 受け入れ条件
+          - [ ] `import-linter`(または同等の静的解析、`grep`ベースのCIチェック
+                でも可)で、`services/agent-core` 配下のコードが
+                `services/api-server` の内部モジュール(`pmdf_store` 等)を
+                直接importしていないことを検証するテスト/CIステップがある
+          - [ ] `create_entity` 呼び出しがapi-serverの `POST /pmdf/{kind}`
+                に対するHTTPリクエストとして観測できる(モックサーバでの
+                統合テスト)
+          - [ ] `actor` フィールドに `agent:` 接頭辞を持つ識別子が渡される
+                ことを確認する
+
+          ## 依存
+          [E5-1], [E3-3] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/tools/pmdf_tools.py`, 関連テスト、
+          直接書込禁止を検証するCI/lint設定
+
+          ## トレーサビリティ
+          設計原則2・3 / 要件定義書 §4.1
+
+          ## 要件書引用
+          > 2. **PMDF中心設計(データがマスター)**:プロダクトの真実の状態は
+          > PMDFリポジトリにのみ存在する。エージェントもUIも、PMDFを読み
+          > 書きする対等なクライアントであり、UI・エージェント・外部組織の
+          > いずれから見ても同一の状態が再現される。
+
+      - key: E5-3
+        title: "[E5-3] RAG検索ツール"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          Qdrant(テストでは `:memory:` モード)からKB(知識ベース)と
+          PMDFを区別して検索できるRAGツールを実装する。出典メタデータを
+          結果に含め、domain/frameworkフィルタを可能にする(FR-KB-04)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/tools/rag_tool.py`:
+          - `search_knowledge(query: str, source: Literal["kb", "pmdf", "all"]
+            = "all", domain: str | None = None, framework: str | None = None,
+            top_k: int = 5) -> list[SearchResult]`
+          - embeddingはE4-1の論理名 `pdm-embed` をE5-1の `LogicalModelClient`
+            経由で取得
+          - Qdrantクライアント(`qdrant-client`)接続、コレクションは
+            `source` メタデータ(値: `kb` または `pmdf`)で区別
+            (E6-2/E6-3で投入されるコレクションを参照)
+          - `SearchResult` に `text`, `score`, `source`, `domain`,
+            `framework`(kb由来の場合), `pmdf_kind`/`pmdf_id`(pmdf由来の場合)
+            を含め、根拠明示(E5-8)で利用できる形式にする
+
+          ## 受け入れ条件
+          - [ ] `qdrant-client` の `:memory:` モードでテスト用コレクションを
+                作成し、ダミーのKBチャンク・PMDFチャンクを投入した状態で
+                `search_knowledge(source="kb")` がKB由来の結果のみ返す
+                ことを確認する
+          - [ ] `search_knowledge(source="pmdf")` がPMDF由来の結果のみ返す
+                ことを確認する
+          - [ ] `domain="discovery"` フィルタで、該当メタデータを持つ
+                チャンクのみが返ることを確認する
+          - [ ] 各結果に出典メタデータ(source, domain/framework または
+                pmdf_kind/pmdf_id)が含まれることを確認する
+
+          ## 依存
+          [E5-1], [E6-2] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/tools/rag_tool.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-KB-04 / 要件定義書 §5.5
+
+          ## 要件書引用
+          > FR-KB-04:PMDFの内容(自プロダクトの状態・過去の意思決定)も
+          > ベクトル化し、一般知識と区別可能な形でRAG検索対象とする
+          > (「このプロダクトでは過去にどう判断したか」に答えるため)。
+
+      - key: E5-4
+        title: "[E5-4] 業務グラフ(1)バックログ運用"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          FR-PD-04(バックログ運用)を実現するLangGraphグラフを実装する。
+          ユーザーストーリー起票、受入基準定義、RICE/WSJF等の優先順位付けを
+          行う。既定自律レベルはL2(実行→事後レビュー)。決定的な数値計算
+          (RICEスコア等)はLLM出力に依存せずコード側で検算する。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/graphs/backlog.py`:
+          - LangGraphノード構成:
+            1. `intake`: 課題・要望のテキストからstory候補を抽出(LLM、
+               `pdm-main` 論理名)
+            2. `draft_story`: `as_a/i_want/so_that`+受入基準案を生成
+            3. `calc_priority`: LLMが提示した `reach/impact/confidence/effort`
+               の数値から `score = reach * impact * confidence / effort`
+               (RICE)をコード側で再計算し、LLMの計算結果と不一致なら
+               コード側の値で上書きする(決定的計算の検算、E5-4の核心要件)
+            4. `persist`: E5-2の `create_entity(kind="story", ...)` で
+               PMDFへ登録(L2のため事前承認は不要、実行後にreport等で
+               事後報告対象とする)
+          - WSJF(Weighted Shortest Job First)の計算式も同様にコード側検算
+            関数として実装(`priority.method` に応じて検算ロジックを
+            切り替える)
+
+          ## 受け入れ条件
+          - [ ] LLM(モック)がRICEの4項目を出力した際、`calc_priority`
+                ノードがコード側で `score` を再計算し、PMDFに保存される
+                `priority.score` がコード計算値と一致することを確認する
+                (LLMが誤ったscoreを出力するケースをテストケースとして含む)
+          - [ ] 生成されたstoryがE2-3のPydanticモデル・E2-1のJSON Schemaに
+                適合することを確認する
+          - [ ] グラフ実行がL2として、承認ゲート(E3-6)を経由せず直接
+                `persist` まで完了することを確認する(L1グラフとの違いを
+                明確にするテスト)
+
+          ## 依存
+          [E5-2] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/graphs/backlog.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-PD-04 / 要件定義書 §5.1, §5.2
+
+          ## 要件書引用
+          > FR-PD-04 バックログ運用:ユーザーストーリー起票、受入基準定義、
+          > 優先順位付け(RICE/WSJF等の手法選択込み) | 既定自律レベル: L2
+
+      - key: E5-5
+        title: "[E5-5] 業務グラフ(2)ビジョン・ロードマップ・リリース判断"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          FR-PD-01(ビジョン管理)、FR-PD-02(ロードマップ)、FR-PD-07
+          (リリース判断)を実現するグラフを実装する。いずれも既定自律
+          レベルL1(起案→人間承認→実行)であり、E3-6の承認ゲートを経由しない
+          限り実行が完了しないことを担保する。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/graphs/vision_roadmap_release.py`:
+          - `propose_vision_update`: product.visionの変更案を生成し、
+            approvalエンティティを起案(E5-2の `create_entity(kind="approval",
+            ...)`)。**この時点ではproductエンティティ自体は更新しない**
+          - `propose_roadmap_update`: roadmap_item群のトレードオフ提示+
+            変更案生成、同様にapproval起案のみ
+          - `propose_release_decision`: release.go_no_go の推奨(Go/No-Go)
+            材料整理、同様にapproval起案のみ
+          - `execute_after_approval`: E3-6で承認済み
+            (`GET /approvals?target_id=...&status=approved`で確認)と
+            分かった場合のみ、実際のPMDF更新(`update_entity`)を実行する
+            ノード。承認が確認できない場合は例外を送出し実行しない
+            (api-server側のE3-6ミドルウェアが最終防衛線だが、agent-core
+            側でも二重チェックする)
+
+          ## 受け入れ条件
+          - [ ] `propose_vision_update` 実行後、PMDFのproductエンティティが
+                変更されておらず、approvalエンティティのみが新規作成される
+                ことを確認する
+          - [ ] 承認前に `execute_after_approval` を呼び出すテストで、
+                api-server(モック)が403を返し、グラフが例外を送出して
+                中断することを確認する(**AC-06に対応する統合テスト**:
+                未承認では実行されない)
+          - [ ] 承認済みの状態(モックが200を返す)で `execute_after_approval`
+                を呼ぶと、PMDF更新が実行されることを確認する
+          - [ ] ロードマップ・リリース判断についても同様のフローが動作する
+                ことを確認する
+
+          ## 依存
+          [E5-2], [E3-6] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/graphs/
+          vision_roadmap_release.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-PD-01, FR-PD-02, FR-PD-07 / 要件定義書 §5.1, §5.2
+
+          ## 要件書引用
+          > | FR-PD-01 | プロダクト定義・ビジョン管理 | ビジョン/ミッション/
+          > ターゲット/ポジショニングの起案・更新提案 | L1(承認必須) |
+          > | FR-PD-07 | リリース判断 | リリース可否の判断材料整理と推奨
+          > (Go/No-Go起案) | L1 |
+
+      - key: E5-6
+        title: "[E5-6] 業務グラフ(3)KPI監視・Decision Record・週次レビュー"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          FR-PD-05(KPI監視)、FR-PD-08(Decision Record)、FR-PD-11
+          (定常レビュー)を実現するグラフを実装する。いずれも既定自律
+          レベルL3(完全自律、監査ログのみ)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/graphs/kpi_dr_review.py`:
+          - `monitor_kpi`: metricエンティティの現在値系列を取得し、
+            設定された閾値と比較。異常検知時はLLM(`pdm-main`)で原因仮説を
+            生成し、report(またはalert相当のx_拡張フィールド)に記録
+          - `record_decision`: 重要判断が発生した際(他グラフからの呼び出し
+            または監視結果に基づき)、decisionエンティティを
+            **必須項目(背景/選択肢/根拠/却下案)を全て埋めた状態で**自動記録。
+            必須項目のいずれかが空の場合はE2-3のPydanticバリデーションで
+            拒否されるため、生成失敗時はリトライまたはエラーログに記録する
+          - `weekly_review`: 週次でプロダクト健全性を評価しreportエンティティ
+            を生成。要判断事項を検出した場合、E5-2経由でapprovalエンティティ
+            (起案)をキューに追加する(L1業務への橋渡し)
+          - L3のためapproval起案(record_decision, monitor_kpiの結果)は
+            事前承認なしに直接persistされるが、全て監査ログに記録される
+            (E3-7)
+
+          ## 受け入れ条件
+          - [ ] `record_decision` が生成するdecisionエンティティが、
+                背景・選択肢・採用案根拠・却下理由の全フィールドを持つ
+                ことをE2-2のスキーマ検証で確認する
+          - [ ] `monitor_kpi` が閾値超過を検知した場合、原因仮説を含む
+                レポートまたはアラート相当のレコードが生成されることを
+                確認する
+          - [ ] `weekly_review` が要判断事項を検出した場合、approval
+                エンティティが承認キューに追加される(E3-6の
+                `GET /approvals?status=pending` で確認できる)ことを
+                統合テストで確認する
+          - [ ] これらL3グラフの実行が、承認ゲート(E3-6)を経由せず直接
+                完了することを確認する(L1グラフとの対比テスト)
+
+          ## 依存
+          [E5-2] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/graphs/kpi_dr_review.py`,
+          関連テスト
+
+          ## トレーサビリティ
+          FR-PD-05, FR-PD-08, FR-PD-11 / 要件定義書 §5.1, §5.2
+
+          ## 要件書引用
+          > | FR-PD-08 | 意思決定記録 | 全重要判断のDecision Record化
+          > (背景・選択肢・根拠・却下案) | L3 |
+          > | FR-PD-11 | 定常レビュー | 週次でプロダクト健全性レポートを
+          > 自動生成し、要判断事項を承認キューへ起票 | L3 |
+
+      - key: E5-7
+        title: "[E5-7] 業務グラフ(4)ディスカバリー・実験・SH調整・施策実行"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          FR-PD-03(ディスカバリー)、FR-PD-06(仮説検証・実験管理)、
+          FR-PD-09(ステークホルダー調整)、FR-PD-10(施策のプロジェクト実行
+          管理)を実現するグラフを実装する。FR-PD-14に基づき、プロダクト
+          (ライフサイクル全体)とプロジェクト(施策=一時的取り組み)の概念を
+          正しく区別する。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/graphs/discovery_experiment_
+          stakeholder_initiative.py`:
+          - `run_discovery`: persona(属性・課題・JTBD)を生成・更新、
+            ユーザーインタビュー設計案を作成(L2、事後報告)
+          - `run_experiment`: experimentエンティティ(仮説・設計・成功基準・
+            結果・学び)を作成・更新(L2)
+          - `stakeholder_communication`: stakeholderマップ更新+定例レポート
+            文案生成はL2だが、**実際の送信(外部送信)はL1**として、
+            送信アクションのみapproval起案を経由させる
+            (`draft_message` ノード=L2で文案生成、
+            `send_message` ノード=L1でE3-6ゲート経由必須)
+          - `run_initiative`: initiativeエンティティ(憲章、アプローチ
+            (予測型/適応型/ハイブリッド)、WBS、スケジュール、リスク登録簿
+            (riskエンティティ群)、EVM値)を生成・更新(L2)。PMBOK隣接
+            領域の原則をKB検索(E5-3、`domain="project_management"` 等)で
+            参照しテーラリングを適用する
+
+          ## 受け入れ条件
+          - [ ] `run_discovery` が生成するpersonaがE2-1のスキーマに適合する
+                ことを確認する
+          - [ ] `run_experiment` が実験結果と学びをexperimentエンティティに
+                記録することを確認する
+          - [ ] `stakeholder_communication` の `send_message` ノードが、
+                未承認では実行されず(E3-6ゲート、403)、`draft_message`
+                (文案生成のみ)は承認なしで完了することを確認する
+                (L2/L1混在フローのテスト)
+          - [ ] `run_initiative` が生成するinitiativeにWBS・リスク登録簿・
+                EVM値が含まれ、E2-2のスキーマに適合することを確認する
+          - [ ] initiative(施策=プロジェクト)とproduct(プロダクト)の
+                概念混同がない(initiativeがproduct固有のライフサイクル
+                フィールドを持たない等)ことをスキーマレベルで確認する
+
+          ## 依存
+          [E5-4] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/graphs/discovery_experiment_
+          stakeholder_initiative.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-PD-03, FR-PD-06, FR-PD-09, FR-PD-10, FR-PD-14 / 要件定義書 §5.1, §1.3
+
+          ## 要件書引用
+          > FR-PD-14:プロダクト/プロジェクトの概念区別(ライフサイクル全体
+          > vs 一時的取り組み)を正しく扱い、施策実行にはPMBOK由来の原則・
+          > テーラリングを適用すること。
+          > | FR-PD-09 | ステークホルダー調整 | 定例レポート生成、関係者
+          > マップ更新、コミュニケーション文案作成 | L2(送信はL1) |
+
+      - key: E5-8
+        title: "[E5-8] 根拠明示と差戻フィードバック取込"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          全業務グラフの成果物にKB出典・PMDF参照エンティティを根拠として
+          明示する共通機構(FR-PD-13)と、UIからの差し戻し(E3-6/E7-4)の
+          理由を次回起案および学習データキューへ反映する仕組み(FR-AU-03)
+          を実装する。
+
+          ## 対象ファイル
+          - `services/agent-core/src/agent_core/evidence.py`:
+            `EvidenceAttacher` — E5-3の `SearchResult` 群を成果物の
+            `x_evidence` 拡張フィールド(PMDFのx_接頭辞拡張の仕組み、E2-1)
+            に付与する共通デコレータ/関数。KB出典は
+            `{source: "kb", domain, framework, excerpt}`、PMDF参照は
+            `{source: "pmdf", kind, id}` の形式で記録する
+          - 全業務グラフ(E5-4〜E5-7)の成果物生成ノードに
+            `EvidenceAttacher` を適用する(既存グラフへの後付け統合、
+            各グラフファイルに1行のデコレータ追加程度の変更で済む設計とする)
+          - `services/agent-core/src/agent_core/feedback_loop.py`:
+            - `on_rejection(approval: Approval) -> None`: E3-6で差し戻された
+              approvalを検知(E3-10のWebSocketイベント購読、または
+              ポーリング)し、差し戻し理由(`reason`)を元に該当業務グラフの
+              「次回起案」プロンプトへコンテキストとして注入する
+              (再起案フロー)
+            - 差し戻しペア(元の起案内容+差し戻し理由+ある場合は修正版)を
+              `services/agent-core/data/feedback_queue/` へJSONL形式で
+              キューイングする(E8-5の学習データ取込の入力となる)
+
+          ## 受け入れ条件
+          - [ ] E5-4〜E5-7の成果物(story, decision, experiment等)全てに
+                `x_evidence` フィールドが付与され、KB出典またはPMDF参照の
+                いずれかが最低1件含まれることを確認する
+          - [ ] approvalが差し戻された場合、`on_rejection` が呼ばれ、
+                対応する業務グラフへの再起案時に差し戻し理由がプロンプト
+                コンテキストに含まれることを確認する(モックLLM呼び出しの
+                引数を検証)
+          - [ ] 差し戻しペアが `feedback_queue/` にJSONL形式で追記される
+                ことを確認する
+
+          ## 依存
+          [E5-4], [E5-5], [E5-6], [E5-7] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/{evidence,feedback_loop}.py`,
+          関連テスト
+
+          ## トレーサビリティ
+          FR-PD-13, FR-AU-03 / 要件定義書 §5.1, §5.2
+
+          ## 要件書引用
+          > FR-PD-13:回答・成果物には根拠(KB出典、PMDF内の参照エンティティ、
+          > データ)を明示すること。
+          > FR-AU-03:承認・差し戻し・修正指示はUIから1操作で行え、差し
+          > 戻し理由はエージェントの次回起案と学習データに反映されること。
+
+      - key: E5-9
+        title: "[E5-9] チャット指示インターフェース"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          UIからエージェントへ手動でタスクを指示できるチャット形式の
+          インターフェースのバックエンドを実装する(FR-UI-07の
+          バックエンド部分)。実行状況はWebSocketイベントとして発行する。
+
+          ## 対象ファイル
+          - `services/agent-core/src/agent_core/chat.py`:
+            `handle_chat_instruction(message: str, product_id: str,
+            actor: str) -> TaskHandle`: 自然文の指示を受け、E5-1の
+            タスクキューへ登録。どの業務グラフ(E5-4〜E5-7)を起動すべきかは
+            LLM(`pdm-main`)による意図分類ノードで判定する
+          - `services/api-server/src/api_server/routers/chat.py`:
+            `POST /chat/instructions`(UIからの指示受付、E3-4認証必須)、
+            `GET /chat/tasks/{task_id}`(実行状況取得)
+          - タスク実行の各段階(受理/実行中/完了/失敗)でE3-10のイベントバス
+            経由 `agent.activity` イベントを発行する
+
+          ## 受け入れ条件
+          - [ ] `POST /chat/instructions` で「このプロダクトの来週の
+                ロードマップ見直しを検討して」等のテキスト指示を送ると、
+                対応する業務グラフ(ロードマップ関連、E5-5)のタスクが
+                キューへ登録されることを確認する(意図分類はモックLLMで
+                固定応答させて検証)
+          - [ ] タスクの状態遷移(pending→running→done）ごとに
+                `agent.activity` イベントがWebSocket経由で配信される
+                ことを確認する統合テストがある
+          - [ ] `GET /chat/tasks/{task_id}` で実行状況が取得できることを
+                確認する
+
+          ## 依存
+          [E5-1], [E3-10] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/chat.py`,
+          `services/api-server/src/api_server/routers/chat.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-UI-07 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-07 エージェント制御:自律レベル設定の変更、タスクの手動
+          > 指示(チャット形式)、緊急停止
+
+  # =========================================================================
+  # E6: 知識ベース [phase:3]
+  # =========================================================================
+  - key: E6
+    title: "[E6] 知識ベース"
+    labels: [epic, "phase:3"]
+    body: |
+      ## 概要
+      PdMドメイン(第一ドメイン)とプロジェクトマネジメント隣接ドメインの
+      コーパスを構造化し、Qdrantへのingestion・PMDFインデクサ・埋め込み
+      モデル切替検証を実装する。著作権上、PMBOK原文の複製・逐語再現は
+      一切行わず、独自著作の要約・解説のみで構成する(§11)。
+
+      ## 含まれるサブイシュー
+      - E6-1 KBコーパス構造とオントロジー
+      - E6-2 ingestionパイプライン
+      - E6-3 PMDFインデクサ
+      - E6-4 埋め込みモデル切替検証
+
+      ## トレーサビリティ
+      FR-KB-01〜05, DR-01 / 要件定義書 §5.5, §11
+    subs:
+      - key: E6-1
+        title: "[E6-1] KBコーパス構造とオントロジー"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          KBコーパスのディレクトリ構造とfront-matterメタデータ規約を定義し、
+          PdM本体(第一ドメイン)+PM隣接ドメインのサンプル独自コーパスを
+          作成する。著作権チェックリストを整備し、原文複製が無いことを
+          レビュー可能にする。
+
+          ## 対象ファイル
+          - `kb/corpus/<domain>/<slug>.md`: 各チャンク元ファイルは
+            front-matterメタデータを持つMarkdown。例:
+            ```markdown
+            ---
+            domain: discovery
+            framework: jtbd
+            pm_principle: null
+            title: ジョブ理論に基づく課題仮説の立て方
+            source: original
+            license: internal
+            ---
+            (本文、独自解説のみ)
+            ```
+          - `domain` の例: `vision_strategy`, `discovery`, `roadmap`,
+            `backlog_prioritization`, `metrics`, `experimentation`,
+            `release`, `stakeholder`, `project_management`(PM隣接領域)
+          - `framework` の例: `rice`, `wsjf`, `kano`, `aarrr`,
+            `north_star_metric`
+          - `pm_principle` の例(PMBOK第8版準拠教科書の独自要約として):
+            `focus_on_value`, `tailoring`, `stewardship` 等
+            (**PMBOK原文の逐語引用は禁止**。要約・独自解説のみ)
+          - PdM本体ドメインのサンプルコーパス最低10ファイル、PM隣接ドメインの
+            サンプルコーパス最低5ファイルを作成(いずれも独自著作。分量の
+            目安として1ファイル300〜800字程度の解説)
+          - `kb/CORPUS_LICENSE_CHECKLIST.md`: 各コーパスファイル追加時に
+            確認すべき項目のチェックリスト(原文複製でないか、商標
+            [PMBOK/PMP等]を製品名に使用していないか、ライセンス出典の記録
+            があるか)
+
+          ## 受け入れ条件
+          - [ ] `kb/corpus/` 配下の全Markdownファイルがfront-matterの
+                必須フィールド(`domain`, `title`, `source`, `license`)を
+                持つことをスキーマ検証するテスト
+                (`kb/tests/test_corpus_frontmatter.py`)がある
+          - [ ] PdM本体ドメイン最低10件、PM隣接ドメイン最低5件のサンプル
+                ファイルが存在することを確認する
+          - [ ] `CORPUS_LICENSE_CHECKLIST.md` が存在し、原文複製禁止・
+                商標不使用の項目を含む
+          - [ ] 全サンプルファイルの本文に「PMBOK」「PMP」などの商標文字列が
+                製品名的な用法で使われていないことを確認する(参考資料と
+                しての言及は§11の脚注相当でのみ許容し、コーパス本文には
+                含めない方針とする)
+
+          ## 依存
+          [E1-1] 完了後
+
+          ## 成果物
+          `kb/corpus/**/*.md`, `kb/CORPUS_LICENSE_CHECKLIST.md`,
+          `kb/tests/test_corpus_frontmatter.py`
+
+          ## トレーサビリティ
+          FR-KB-01, FR-KB-02, FR-KB-03, DR-01 / 要件定義書 §5.5, §10, §11
+
+          ## 要件書引用
+          > FR-KB-01:第一ドメイン(PdM)のコーパス:プロダクトライフサイクル、
+          > ディスカバリー手法、優先順位付けフレームワーク(RICE/WSJF/Kano等)、
+          > 指標設計(北極星指標、AARRR等)、実験設計、プロダクト戦略。
+          > 独自著作またはライセンス上問題のない資料に限定する。
+          > 1. PMBOK®ガイド原文はPMIの著作物であり、原文の複製・学習投入・
+          > 逐語再現は行わない。隣接領域KBは独自著作の要約・解説のみで
+          > 構成する。「PMBOK」「PMP」等の商標は製品名に使用しない。
+
+      - key: E6-2
+        title: "[E6-2] ingestionパイプライン"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          E6-1のコーパスをチャンク分割し、model-gateway経由(論理名
+          `pdm-embed`)で埋め込みベクトルを生成、Qdrantへ投入するCLIを
+          実装する。テストは `:memory:` モードのQdrantで行う。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/kb/ingest.py`(または
+          独立パッケージ `packages/kb-ingest/` として切り出してもよいが、
+          agent-coreのRAGツール(E5-3)と密接なため同一サービス内配置を既定
+          とする):
+          - `chunk_document(md_text: str, front_matter: dict) -> list[Chunk]`:
+            見出し単位または固定長(例 500字、オーバーラップ50字)でチャンク
+            分割し、front-matterメタデータを各チャンクへ継承する
+          - `embed_chunks(chunks: list[Chunk]) -> list[EmbeddedChunk]`:
+            E5-1の `LogicalModelClient` で `pdm-embed` 論理名を使い埋め込み
+            取得
+          - `upsert_to_qdrant(embedded: list[EmbeddedChunk], collection: str,
+            qdrant_url: str) -> None`: コレクション未作成なら作成
+            (ベクトル次元は埋め込みモデルの出力次元から動的決定)、
+            `source="kb"` メタデータ付きでupsert
+          - CLIエントリポイント: `python -m agent_core.kb.ingest --corpus-dir
+            kb/corpus --collection pdm_kb`
+
+          ## 受け入れ条件
+          - [ ] `qdrant-client` の `:memory:` モードで、E6-1のサンプル
+                コーパス(最低数件)をchunk→embed(モック埋め込み)→upsert
+                した後、コレクション内のポイント数がチャンク数と一致する
+                ことを確認する
+          - [ ] 各ポイントのペイロードに `domain`, `framework`,
+                `pm_principle`, `source="kb"` が含まれることを確認する
+          - [ ] チャンク分割が長い文書を複数チャンクに分割し、各チャンクが
+                元のfront-matterメタデータを継承していることを確認する
+
+          ## 依存
+          [E6-1], [E4-1] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/kb/ingest.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-KB-01, FR-KB-02 / 要件定義書 §5.5
+
+      - key: E6-3
+        title: "[E6-3] PMDFインデクサ"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          PMDFエンティティの変更イベント(E3-10のWebSocketイベント、または
+          api-serverからのwebhook相当の通知)を購読し、変更内容をベクトル化
+          してQdrantへ投入する。KB由来(`source="kb"`)と区別するため
+          `source="pmdf"` タグを付与する(FR-KB-04)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/kb/pmdf_indexer.py`:
+          - `PmdfIndexer`: E3-10のWebSocketイベント(`pmdf.entity_changed`)
+            を購読するコンシューマ。エンティティのテキスト表現
+            (`title`/`background`/`rationale`等、kind別に定義した抽出関数)
+            をchunk→embed(E6-2の関数を再利用)→Qdrantへupsert
+            (`source="pmdf"`, `pmdf_kind`, `pmdf_id`, `product_id` メタデータ
+            付与)
+          - コレクションはKB用と分離するか、同一コレクション内で `source`
+            フィールドにより検索時フィルタする方式のいずれかを選択
+            (E5-3の `search_knowledge` が `source` パラメータでフィルタする
+            設計と整合させ、実装は同一コレクション+ペイロードフィルタ方式を
+            既定とする)
+          - エンティティ更新のたびに古いベクトルを削除して再投入する
+            (`pmdf_id` をQdrantのポイントIDとして安定させ、upsertで
+            自然に上書きされる設計とする)
+
+          ## 受け入れ条件
+          - [ ] テスト用WebSocketイベント(`pmdf.entity_changed`,
+                story更新)を発行すると、`PmdfIndexer` がQdrantへ該当
+                storyのベクトルをupsertすることを確認する
+          - [ ] 同一storyを2回更新すると、Qdrant内のポイントが重複せず
+                1件のまま内容が更新されることを確認する(upsert冪等性)
+          - [ ] E5-3の `search_knowledge(source="pmdf")` で、このインデクサが
+                投入したデータが検索結果として取得できることを確認する
+                (E5-3との統合テスト)
+
+          ## 依存
+          [E6-2], [E3-10] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/kb/pmdf_indexer.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-KB-04 / 要件定義書 §5.5
+
+          ## 要件書引用
+          > FR-KB-04:PMDFの内容(自プロダクトの状態・過去の意思決定)も
+          > ベクトル化し、一般知識と区別可能な形でRAG検索対象とする。
+
+      - key: E6-4
+        title: "[E6-4] 埋め込みモデル切替検証"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          埋め込みモデルの論理名(`pdm-embed`)の設定変更のみで実モデルを
+          差し替えられることを検証する。次元数が異なるモデルへ切り替える
+          場合のコレクション再作成手順もドキュメント化する(FR-KB-05)。
+
+          ## 対象ファイル
+          - `scripts/switch_embedding_model_check.sh`:
+            1. `pdm-embed` をモデルA(例: 次元1536)に設定した状態でE6-2の
+               ingestionを実行し、Qdrantコレクションの次元数を確認
+            2. `litellm.config.yaml` の `pdm-embed` エントリのみを変更し
+               (モデルB、例: 次元768)、コード変更なしで再ingestionを実行
+            3. 次元不一致でQdrantコレクションへのupsertが失敗する
+               (異なる次元は同一コレックションに投入できない)ことを確認し、
+               コレクション再作成(削除→新次元で作成→全件再投入)の手順を
+               実行するスクリプトステップを含める
+          - `docs/kb-embedding-switch.md`: 上記手順のドキュメント化
+            (次元差異時の再作成手順、既存ベクトルの扱い、ダウンタイムの
+            考慮事項)
+
+          ## 受け入れ条件
+          - [ ] `pdm-embed` の設定変更のみ(agent-coreコード変更なし)で
+                異なる次元の埋め込みモデルへの切替が確認できる
+                (モック埋め込みで次元1536→768のシナリオをシミュレート)
+          - [ ] 次元不一致時にコレクション再作成が必要である旨のエラー
+                メッセージが明確に出ることを確認する
+          - [ ] `docs/kb-embedding-switch.md` に再作成手順が明記されている
+
+          ## 依存
+          [E6-2] 完了後
+
+          ## 成果物
+          `scripts/switch_embedding_model_check.sh`,
+          `docs/kb-embedding-switch.md`
+
+          ## トレーサビリティ
+          FR-KB-05 / 要件定義書 §5.5
+
+          ## 要件書引用
+          > FR-KB-05:埋め込みモデルはゲートウェイ経由の論理名で切替可能と
+          > する。
+
+  # =========================================================================
+  # E7: web-ui [phase:3]
+  # =========================================================================
+  - key: E7
+    title: "[E7] web-ui"
+    labels: [epic, "phase:3"]
+    body: |
+      ## 概要
+      人間がプロダクト状態・成果物・エージェント活動を検査し、承認/差し戻し
+      を行う監督UIをReact + Vite + TypeScriptで実装する。リッチな
+      コラボレーション機能は対象外とし、監督に必要な最小構成に絞る(§3.2)。
+
+      ## 含まれるサブイシュー
+      - E7-1 UI骨格・認証・APIクライアント
+      - E7-2 レイアウト・WebSocket・承認バッジ
+      - E7-3 プロダクトダッシュボード
+      - E7-4 承認キュー
+      - E7-5 ドキュメントビューア+版間diff
+      - E7-6 エージェント活動ログ画面
+      - E7-7 手動編集
+      - E7-8 Import/Export画面
+      - E7-9 エージェント制御+コスト/学習状況画面
+
+      ## トレーサビリティ
+      FR-UI-01〜11, NFR-02 / 要件定義書 §5.3
+    subs:
+      - key: E7-1
+        title: "[E7-1] UI骨格・認証・APIクライアント"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          web-uiサービスの基盤を実装する。Vite+TypeScriptのプロジェクト
+          初期化、ルータ設定、ログイン画面、`openapi-typescript` によるAPI
+          クライアントの型自動生成を行う。
+
+          ## 対象ファイル
+          - `services/web-ui/package.json`: React 18, Vite, TypeScript,
+            `react-router-dom`, `openapi-typescript`, Vitest, Playwright
+            の依存
+          - `services/web-ui/src/main.tsx`, `src/App.tsx`: エントリポイントと
+            ルータ(`/login`, `/dashboard`, `/approvals`, `/documents`,
+            `/activity`, `/import-export`, `/agent-control` 等のルート雛形)
+          - `services/web-ui/src/pages/Login.tsx`: E3-4の
+            `POST /auth/login` を呼ぶログインフォーム(メール+パスワード、
+            TOTP有効時は追加入力欄)
+          - `services/web-ui/scripts/generate-api-client.ts` または
+            `package.json` の `scripts.generate-api`:
+            `openapi-typescript http://localhost:8000/openapi.json -o
+            src/api/schema.d.ts` を実行し、E3-1のOpenAPI出力から型を生成する
+            (CIでは事前生成済みのschema.d.tsをコミットし、実行時のライブ
+            生成には依存しない運用とする)
+          - `services/web-ui/src/api/client.ts`: 生成された型を用いた
+            fetchラッパー(JWTをlocalStorageまたはメモリに保持し、
+            Authorizationヘッダへ付与)
+
+          ## 受け入れ条件
+          - [ ] `pnpm install && pnpm build` がエラーなく完了する
+          - [ ] `pnpm vitest run` でログインフォームのユニットテスト
+                (正しい入力でログインAPI呼び出しが行われることをモックで
+                確認)が通る
+          - [ ] `src/api/schema.d.ts` がE3-1のOpenAPI出力から生成された
+                型定義を含み、TypeScriptのビルドエラーがない
+          - [ ] ログイン成功後、JWTがクライアント状態に保持され、以降の
+                APIリクエストにAuthorizationヘッダが付与されることを確認する
+
+          ## 依存
+          [E3-4] 完了後
+
+          ## 成果物
+          `services/web-ui/` 一式(package.json, src/main.tsx, src/App.tsx,
+          src/pages/Login.tsx, src/api/{client.ts,schema.d.ts}）
+
+          ## トレーサビリティ
+          FR-UI-09 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > 監督UI:人間がプロダクト状態・成果物・エージェント活動を検査し、
+          > 承認/差し戻しを行うフロントエンド
+
+      - key: E7-2
+        title: "[E7-2] レイアウト・WebSocket・承認バッジ"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          全画面共通のレイアウト(ヘッダ・サイドナビ)、E3-10のWebSocket
+          イベントへの接続と自動再接続、承認待ち件数バッジの常時表示を実装
+          する(FR-UI-11)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/components/Layout.tsx`: 共通レイアウト
+            (サイドナビにダッシュボード/承認キュー/ドキュメント/活動ログ/
+            Import-Export/エージェント制御への導線)
+          - `services/web-ui/src/hooks/useWebSocket.ts`: E3-10の
+            `WS /ws/events` への接続。切断時の指数バックオフ再接続ロジック
+            (最大リトライ間隔、例: 1秒→2秒→4秒→…上限30秒)
+          - `services/web-ui/src/components/ApprovalBadge.tsx`: WebSocket
+            イベント `approval.count_changed` を購読し、サイドナビ上に
+            未承認件数を常時表示するバッジコンポーネント
+          - 状態管理: React Context または軽量ライブラリ(Zustand等)で
+            WebSocket接続状態・承認件数をグローバルに共有
+
+          ## 受け入れ条件
+          - [ ] レイアウトコンポーネントが全ページで共通のヘッダ・
+                ナビゲーションを表示することをVitest+Testing Libraryで確認
+          - [ ] WebSocket接続が切断された場合、指数バックオフで再接続を
+                試みることを確認する(モックWebSocketサーバでの統合テスト)
+          - [ ] `approval.count_changed` イベント受信でバッジの表示件数が
+                更新されることを確認する
+          - [ ] 未認証状態ではWebSocket接続を試みない(E7-1のログイン後にのみ
+                接続する)ことを確認する
+
+          ## 依存
+          [E7-1], [E3-10] 完了後
+
+          ## 成果物
+          `services/web-ui/src/components/{Layout,ApprovalBadge}.tsx`,
+          `services/web-ui/src/hooks/useWebSocket.ts`
+
+          ## トレーサビリティ
+          FR-UI-11 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-11:更新はWebSocket等でリアルタイム反映されること
+          > (承認待ちの見落とし防止のため、承認キューは件数バッジを常時
+          > 表示)。
+
+      - key: E7-3
+        title: "[E7-3] プロダクトダッシュボード"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          プロダクトごとの健全性サマリ(KPI推移、ロードマップ進捗、未承認
+          件数、直近のエージェント活動)を1画面で表示するダッシュボードを
+          実装する。エンティティ1万件規模でも初期表示3秒以内(NFR-02)を
+          満たすため、テーブル・リストは仮想化する。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/Dashboard.tsx`: プロダクト選択+
+            健全性サマリ表示
+          - `services/web-ui/src/components/KpiChart.tsx`: metric
+            エンティティの現在値系列をグラフ表示(軽量チャートライブラリ、
+            例 `recharts` または `visx`)
+          - `services/web-ui/src/components/RoadmapProgress.tsx`:
+            roadmap_itemのstatus集計による進捗表示
+          - `services/web-ui/src/components/VirtualizedList.tsx`:
+            `@tanstack/react-virtual` 等を用いた仮想化リスト
+            (直近のエージェント活動ログ表示等、大量件数に対応)
+          - E3-3の一覧API(ページネーション対応、`?limit=&offset=`)を
+            利用し、初期表示は先頭N件のみ取得(全件取得を避けることで
+            NFR-02を満たす設計とする)
+
+          ## 受け入れ条件
+          - [ ] 1万件相当のダミーエンティティを返すモックAPIに対し、
+                ダッシュボードの初期表示が3秒以内に完了することを
+                Playwrightのパフォーマンス計測(`performance.now()`
+                ベースのアサーション)で確認する(**NFR-02**)
+          - [ ] KPI推移グラフ、ロードマップ進捗、未承認件数、直近活動の
+                4要素が1画面に表示されることを確認する
+          - [ ] リスト表示が仮想化されており、DOM上に同時レンダリングされる
+                要素数が全件数より大幅に少ない(例: 表示領域+バッファ分のみ)
+                ことを確認する
+
+          ## 依存
+          [E7-2] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/Dashboard.tsx`,
+          `services/web-ui/src/components/{KpiChart,RoadmapProgress,
+          VirtualizedList}.tsx`
+
+          ## トレーサビリティ
+          FR-UI-01, NFR-02 / 要件定義書 §5.3, §7
+
+          ## 要件書引用
+          > FR-UI-01:プロダクトダッシュボード:プロダクトごとの健全性サマリ
+          > (KPI現在値と推移、ロードマップ進捗、未承認件数、直近のエージェント
+          > 活動)を1画面で表示
+          > NFR-02:性能(UI):ダッシュボード初期表示3秒以内(エンティティ
+          > 1万件規模まで)
+
+      - key: E7-4
+        title: "[E7-4] 承認キュー"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          L1起案の一覧表示、PMDF差分(変更前後)表示、承認/差し戻し
+          (理由入力必須)、承認履歴表示を実装する(FR-UI-02)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/Approvals.tsx`: E3-6の
+            `GET /approvals?status=pending` を用いた一覧表示
+          - `services/web-ui/src/components/PmdfDiffView.tsx`: 対象
+            エンティティの変更前後(E3-2の `history` APIから現在版と
+            提案版を取得)をフィールド単位でdiff表示(追加/削除/変更を
+            色分け)
+          - `services/web-ui/src/components/ApprovalActionForm.tsx`:
+            承認/差し戻しボタン+理由入力欄(差し戻し時は理由必須、
+            E3-6の `POST /approvals/{id}/decide` を呼ぶ)
+          - `services/web-ui/src/pages/ApprovalHistory.tsx`: 過去の承認/
+            差し戻し履歴一覧
+
+          ## 受け入れ条件
+          - [ ] 承認待ちのapprovalエンティティ一覧が表示され、各項目の
+                詳細を開くとPMDF diffが視覚的に表示されることを確認する
+          - [ ] 「承認」ボタンで確認ダイアログ経由 `POST /approvals/{id}/decide`
+                (判断=approved)が呼ばれることを確認する
+          - [ ] 「差し戻し」時に理由未入力では送信ボタンが無効化される
+                (E3-6の422検証と二重で、UI側でも入力必須をバリデーションする)
+                ことを確認する
+          - [ ] 承認履歴ページで過去の判断とその理由が表示されることを
+                確認する
+
+          ## 依存
+          [E7-2], [E3-6] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/{Approvals,ApprovalHistory}.tsx`,
+          `services/web-ui/src/components/{PmdfDiffView,
+          ApprovalActionForm}.tsx`
+
+          ## トレーサビリティ
+          FR-UI-02 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-02:承認キュー:L1起案の一覧。差分表示(変更前後のPMDF
+          > diff)、承認/差し戻し(理由入力)、承認履歴
+
+      - key: E7-5
+        title: "[E7-5] ドキュメントビューア+版間diff"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          PMDFの14エンティティ全てを人間可読にレンダリングするビューアと、
+          Git履歴(E3-2)ベースの任意時点の版との差分表示を実装する
+          (FR-UI-03)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/DocumentViewer.tsx`: kind別の
+            レンダリングコンポーネントを切り替えて表示(story/decision/
+            roadmap_item/report等、それぞれ専用の可読レイアウト)
+          - `services/web-ui/src/components/entity-views/`:
+            `StoryView.tsx`, `DecisionView.tsx`, `RoadmapItemView.tsx`
+            等、14種別分(E2-2で定義した全kind)のプレゼンテーション
+            コンポーネント
+          - `services/web-ui/src/components/VersionDiff.tsx`: E3-3の
+            `GET /pmdf/{kind}/{id}/history` で版一覧を取得し、2つの版
+            (コミット)を選択して差分表示(E7-4の `PmdfDiffView` を再利用)
+
+          ## 受け入れ条件
+          - [ ] 14種別すべてのエンティティについて、専用ビューで主要
+                フィールドが人間可読に表示されることを確認する
+                (最低限、各kindに1つのスナップショットテストまたは
+                レンダリングテストを用意する)
+          - [ ] 履歴一覧から任意の2版を選択すると、フィールド単位の差分が
+                表示されることを確認する
+          - [ ] 存在しないid・種別を指定した場合、適切なエラー表示になる
+                ことを確認する
+
+          ## 依存
+          [E7-2], [E3-2] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/DocumentViewer.tsx`,
+          `services/web-ui/src/components/entity-views/*.tsx`,
+          `services/web-ui/src/components/VersionDiff.tsx`
+
+          ## トレーサビリティ
+          FR-UI-03 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-03:ドキュメントビューア:PMDFの全エンティティ(ビジョン、
+          > ロードマップ、バックログ、Decision Record等)を人間可読に
+          > レンダリング。任意時点の版との差分表示(Git履歴ベース)
+
+      - key: E7-6
+        title: "[E7-6] エージェント活動ログ画面"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          実行中/完了タスク、使用モデル、根拠(参照KB/PMDF)、監査ログを
+          閲覧・検索できる画面を実装する(FR-UI-04)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/ActivityLog.tsx`: E5-9の
+            `GET /chat/tasks/{task_id}` およびタスク一覧API(E3-7の監査ログ
+            APIラッパーを想定、`GET /audit/records?actor=agent:*` 等)を
+            用いた活動ログ一覧
+          - `services/web-ui/src/components/EvidencePanel.tsx`: E5-8の
+            `x_evidence` フィールドを人間可読に表示(KB出典の抜粋、
+            PMDF参照エンティティへのリンク)
+          - `services/web-ui/src/components/AuditLogSearch.tsx`:
+            actor/action/対象kind/期間での検索フィルタUI
+          - `services/api-server/src/api_server/routers/audit.py`
+            (本サブイシューでE3-7の監査ログを検索可能にするAPIが未実装で
+            あれば追加する): `GET /audit/records?actor=&action=&kind=
+            &from=&to=`
+
+          ## 受け入れ条件
+          - [ ] タスク一覧が実行中/完了/失敗のステータス別に表示される
+                ことを確認する
+          - [ ] 各タスクの詳細を開くと、使用モデル(論理名)と根拠
+                (`x_evidence`)が表示されることを確認する
+          - [ ] 監査ログ検索フィルタ(actor, 期間等)が機能し、絞り込み
+                結果が表示されることを確認する
+
+          ## 依存
+          [E7-2], [E3-7] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/ActivityLog.tsx`,
+          `services/web-ui/src/components/{EvidencePanel,
+          AuditLogSearch}.tsx`, (必要な場合)`services/api-server/src/
+          api_server/routers/audit.py`
+
+          ## トレーサビリティ
+          FR-UI-04 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-04:エージェント活動ログ:実行中/完了タスク、使用モデル、
+          > 根拠(参照KB/PMDF)、監査ログの閲覧・検索
+
+      - key: E7-7
+        title: "[E7-7] 手動編集"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          PMDFエンティティの人間による直接編集機能を実装する。フォームまたは
+          YAML/JSONエディタ+スキーマ検証を提供し、人間の編集もエージェントと
+          同一の履歴(E3-2のGitコミット履歴)に記録されるようにする
+          (FR-UI-05)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/EntityEditor.tsx`: E7-5の
+            `entity-views` をベースにしたフォーム編集モードの切り替え
+          - `services/web-ui/src/components/YamlJsonEditor.tsx`:
+            `@monaco-editor/react` 等を用いたコードエディタコンポーネント。
+            入力中にE3-3のバリデーションエンドポイント(または
+            クライアントサイドでJSON Schemaをバンドルし `ajv` 等で
+            リアルタイム検証)でスキーマ適合をチェックし、エラー箇所を
+            インラインハイライトする
+          - 保存操作は E3-3の `PUT /pmdf/{kind}/{id}` を呼び、
+            `actor=user:<id>` としてコミットされる(E3-2で人間編集も
+            エージェント編集と同一の履歴構造に記録されることを保証)
+
+          ## 受け入れ条件
+          - [ ] フォームモードでstoryの受入基準を追加し保存すると、
+                E3-3経由でPMDFが更新され、E3-2のGit履歴に
+                `actor=user:<id>` のコミットが記録されることを確認する
+          - [ ] YAML/JSONエディタモードで、スキーマ違反(必須フィールド
+                削除等)を入力すると、保存前にエラーがインライン表示される
+                ことを確認する
+          - [ ] スキーマ違反状態では保存ボタンが無効化される、または
+                保存時にE3-3から422が返りエラーメッセージが表示される
+                ことを確認する
+
+          ## 依存
+          [E7-5] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/EntityEditor.tsx`,
+          `services/web-ui/src/components/YamlJsonEditor.tsx`
+
+          ## トレーサビリティ
+          FR-UI-05 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-05:手動編集:PMDFエンティティの人間による直接編集
+          > (フォームまたはYAML/JSONエディタ+スキーマ検証)。人間の編集も
+          > エージェントと同一の履歴に記録
+
+      - key: E7-8
+        title: "[E7-8] Import/Export画面"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          PMDFバンドルのアップロード/ダウンロード、差分プレビュー、競合
+          解決(取込側/既存側の2者択一+手動編集)UIを実装する(FR-UI-06,
+          FR-EX-05)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/ImportExport.tsx`: E3-9の
+            `POST /bundles/export`(スコープ指定フォーム: プロダクト/種別/
+            期間、サニタイズプロファイル選択)と
+            `POST /bundles/import/validate` → 差分プレビュー →
+            `POST /bundles/import/apply` のフロー
+          - `services/web-ui/src/components/ConflictResolver.tsx`:
+            E2-7の `diff_preview` 結果(`conflict` 種別のエンティティ)に
+            対し、「取込側を採用」「既存側を維持」のいずれかを選択する
+            UI。加えて、選択後にE7-7の `YamlJsonEditor` を開いて手動編集
+            できる導線を提供する(FR-EX-05の「2者択一+手動編集」要件)
+          - アップロードは `<input type="file" accept=".tar.gz">` +
+            multipart送信、ダウンロードはBlobレスポンスをファイル保存
+
+          ## 受け入れ条件
+          - [ ] エクスポートフォームでプロダクト/種別/期間を指定して
+                ダウンロードすると、E3-9のAPIが期待するクエリ/ボディで
+                呼ばれることを確認する
+          - [ ] バンドルアップロード後、`conflict` 種別のエンティティが
+                一覧表示され、各項目で「取込側」「既存側」を選択できる
+                ことを確認する
+          - [ ] 選択後に手動編集導線を開き、編集した内容が適用時に反映
+                されることを確認する
+          - [ ] 適用(`apply`)完了後、成功メッセージと適用件数が表示される
+                ことを確認する
+
+          ## 依存
+          [E7-2], [E3-9] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/ImportExport.tsx`,
+          `services/web-ui/src/components/ConflictResolver.tsx`
+
+          ## トレーサビリティ
+          FR-UI-06, FR-EX-05 / 要件定義書 §5.3, §6.4
+
+          ## 要件書引用
+          > FR-UI-06:Import / Export:PMDFバンドルのアップロード/ダウンロード
+          > (§6.4)。取込前の差分プレビューと競合解決
+          > FR-EX-05:競合解決:同一IDの相違はUI上で「取込側/既存側/手動
+          > マージ」を選択できること(初期実装は3-wayマージまでは不要、
+          > 2者択一+手動編集で可)。
+
+      - key: E7-9
+        title: "[E7-9] エージェント制御+コスト/学習状況画面"
+        labels: ["phase:3"]
+        body: |
+          ## 概要
+          自律レベル変更、チャット指示、緊急停止(1操作)、コスト消化率、
+          学習進捗を表示・操作する画面を実装する(FR-UI-07, FR-UI-08)。
+          レスポンシブデザインでPC・タブレット双方に対応する(FR-UI-10)。
+
+          ## 対象ファイル
+          - `services/web-ui/src/pages/AgentControl.tsx`:
+            - 自律レベル変更フォーム(E3-8の `PUT /autonomy/{product_id}/
+              {business_function}`、業務種別×プロダクトのマトリクス表示)
+            - チャット指示UI(E5-9の `POST /chat/instructions`、送信後の
+              実行状況をWebSocket(E3-10)経由でリアルタイム表示)
+            - 緊急停止ボタン(E3-8の `POST /autonomy/emergency-stop`、
+              1クリックで確認ダイアログ→実行という1操作フロー、
+              FR-AU-05準拠)
+          - `services/web-ui/src/pages/CostAndLearning.tsx`:
+            - コスト消化率表示(E4-3の `GET /costs/summary`、月次予算比の
+              プログレスバー)
+            - 学習進捗・評価ゲート結果表示(E8/E9で追加されるAPIを
+              利用する想定のプレースホルダを含み、本イシュー時点では
+              モックデータ表示でも可。実データ接続はE8-8完了後に別途
+              調整する旨をコード内コメントに明記)
+          - レスポンシブ対応: CSS Grid/Flexboxベースのレイアウトで、
+            ブレークポイント(例 768px)によりタブレット幅でもナビ・
+            コンテンツが崩れないことを確認する
+
+          ## 受け入れ条件
+          - [ ] 自律レベル変更フォームで業務種別×プロダクトごとの現在値が
+                表示され、変更が保存できることを確認する
+          - [ ] チャット指示送信後、実行状況がリアルタイム(WebSocket経由)
+                で更新されることを確認する
+          - [ ] 緊急停止ボタンが確認ダイアログを介して1操作で発動し、
+                発動後はUI上に停止中であることが明示されることを確認する
+          - [ ] コスト消化率がプログレスバーで表示され、80%/100%閾値で
+                視覚的な警告表示(色変化等)になることを確認する
+          - [ ] Playwrightでビューポート幅768px(タブレット相当)・
+                1280px(PC相当)双方でレイアウト崩れがないことを確認する
+                (FR-UI-10)
+
+          ## 依存
+          [E7-2], [E3-8], [E4-3], [E5-9] 完了後
+
+          ## 成果物
+          `services/web-ui/src/pages/{AgentControl,CostAndLearning}.tsx`
+
+          ## トレーサビリティ
+          FR-UI-07, FR-UI-08, FR-UI-10, FR-AU-05 / 要件定義書 §5.3
+
+          ## 要件書引用
+          > FR-UI-07:エージェント制御:自律レベル設定の変更、タスクの手動
+          > 指示(チャット形式)、緊急停止
+          > FR-UI-08:コスト/学習状況:API・クラウドコスト消化率、自己学習
+          > ループの進捗と評価ゲート結果
+          > FR-UI-10:UIはレスポンシブとし、PC・タブレットのブラウザで
+          > 動作すること。専用アプリは不要。
+
+  # =========================================================================
+  # E8: 自己学習ループ [phase:4]
+  # =========================================================================
+  - key: E8
+    title: "[E8] 自己学習ループ"
+    labels: [epic, "phase:4"]
+    body: |
+      ## 概要
+      「タスク生成→実行→評価→学習データ化→ファインチューニング→評価ゲート
+      →昇格」の自己学習ループを実装する。本エピック配下の全サブイシューは
+      **実GPU不要・モックでテスト可能**なことを前提とする(CPU上のtiny
+      モデルでのスモークテストを含む)。実際のGPU学習・大規模ベンチマーク
+      実行はローカル環境での人手検証(E10-4)に委ねる。
+
+      ## 含まれるサブイシュー
+      - E8-1 データセットスキーマと来歴管理
+      - E8-2 タスク合成
+      - E8-3 実行・軌跡記録
+      - E8-4 ハイブリッド評価
+      - E8-5 人間フィードバック取込と匿名化
+      - E8-6 データセット化とオプトイン制御
+      - E8-7 trainer QLoRA実装
+      - E8-8 eval-runner評価ゲート+デプロイフック
+
+      ## トレーサビリティ
+      FR-SL-01〜10, DR-02〜05, MR-04 / 要件定義書 §5.6, §10
+    subs:
+      - key: E8-1
+        title: "[E8-1] データセットスキーマと来歴管理"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          学習データ(軌跡/SFT/DPOレコード)のスキーマを定義し、train/val/
+          評価ゲート用データセットを厳格に分離する仕組みと、コンタミネー
+          ション検知(ハッシュ照合)を実装する。
+
+          ## 対象ファイル
+          `packages/pmdf/src/pmdf/learning/` (学習データはPMDFそのものでは
+          ないが、来歴管理の設計思想を共有するため同一パッケージ内に
+          `learning` サブモジュールとして配置する。あるいは
+          `packages/learning-data/` として独立パッケージ化してもよいが、
+          本実装では前者を既定とする):
+          - `schemas.py`(Pydanticモデル):
+            - `TrajectoryRecord`: シナリオ入力、生徒モデルの推論過程
+              (ステップ列)、ツール呼び出しログ、PMDF差分、使用モデル論理名、
+              生成日時
+            - `SftRecord`: `prompt`, `completion`, 由来
+              (`trajectory_id`参照)
+            - `DpoRecord`: `prompt`, `chosen`, `rejected`, 由来
+              (人間フィードバックまたはルールベース不合格由来かを示す
+              `origin: Literal["human_feedback", "rule_rejection"]`)
+            - 全レコード共通: `provenance`(生成モデル・プロンプトテンプレート
+              版・KB版・生成日時)を必須フィールドとする(DR-02)
+          - `split.py`: `assign_split(records: list, ratios: dict) ->
+            dict[str, list]` — train/val/gate(評価ゲート用)への厳格分離。
+            一度split済みのレコードのシナリオ由来ハッシュ
+            (`scenario_hash`)を記録し、同一シナリオ由来のレコードが
+            異なるsplitに混入しないようにする
+          - `contamination.py`: `detect_contamination(train: list, gate: list)
+            -> list[ContaminationHit]` — シナリオテキストの正規化+ハッシュ
+            (例: 空白正規化後のSHA-256)による完全一致検出、および
+            将来的なn-gram重複検出のための拡張ポイント(本イシューでは
+            完全一致検出のみ実装し、近似重複検出はTODOコメントで明記)
+
+          ## 受け入れ条件
+          - [ ] `TrajectoryRecord`/`SftRecord`/`DpoRecord` が
+                `provenance` を必須フィールドとして持ち、欠落時に
+                `ValidationError` が送出されることを確認する
+          - [ ] `assign_split` が指定比率(例 train:val:gate = 0.8:0.1:0.1)
+                でレコードを分割し、同一 `scenario_hash` を持つレコードが
+                複数splitにまたがらないことを確認する
+          - [ ] 意図的にtrainとgateへ同一シナリオ由来のレコードを混入させた
+                テストデータで `detect_contamination` がヒットを報告する
+                ことを確認する
+          - [ ] 重複のないデータセットでは `detect_contamination` が空リストを
+                返すことを確認する
+
+          ## 依存
+          [E2-3] 完了後
+
+          ## 成果物
+          `packages/pmdf/src/pmdf/learning/{schemas,split,
+          contamination}.py`, 関連テスト
+
+          ## トレーサビリティ
+          DR-02, DR-03 / 要件定義書 §5.6, §10
+
+          ## 要件書引用
+          > DR-02:学習データは原則合成データとし、来歴(生成モデル・
+          > プロンプト・KB版)を全件記録
+          > DR-03:train/val/評価ゲート用を厳格分離し、コンタミネーション
+          > 検知を行う
+
+      - key: E8-2
+        title: "[E8-2] タスク合成"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          KBおよび匿名化済みPMDFからPdMシナリオ(優先順位判断、ロードマップ
+          トレードオフ、実験解釈、リリース判断等の課題設定)を教師モデル
+          (`pdm-teacher` 論理名)を用いて合成生成する(FR-SL-01)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/learning/synthesize.py`
+          (学習ループ関連機能は `agent-core` 内 `learning` サブパッケージに
+          集約し、trainer/eval-runnerサービスとはデータファイル
+          (JSONL等)を介して疎結合に連携する設計とする):
+          - `synthesize_scenarios(kb_chunks: list, pmdf_samples: list,
+            count: int, teacher_model: str = "pdm-teacher") ->
+            list[Scenario]`:
+            - E5-3のRAG検索結果とE6-1のKBメタデータ(domain/framework)を
+              入力コンテキストとして教師モデルへプロンプトし、シナリオ
+              (状況設定+課題+期待される回答種別)を生成
+            - 各シナリオに `coverage_tags`(domain/frameworkの組み合わせ、
+              FR-SL-01のカバレッジタグ要件)を付与
+          - テストでは `respx` で教師モデル応答をモックし、固定応答から
+            期待通りのScenarioオブジェクトが構築されることを確認する
+            (実際の教師モデルAPI呼び出しは行わない)
+
+          ## 受け入れ条件
+          - [ ] モック教師モデル応答から `synthesize_scenarios` が
+                指定件数のシナリオを生成することを確認する
+          - [ ] 生成された各シナリオが `coverage_tags` を持ち、入力に
+                含めたKBメタデータ(domain/framework)と対応していることを
+                確認する
+          - [ ] `provenance`(E8-1のスキーマ)に教師モデル論理名・生成日時が
+                記録されることを確認する
+
+          ## 依存
+          [E8-1], [E6-2] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/learning/synthesize.py`,
+          関連テスト
+
+          ## トレーサビリティ
+          FR-SL-01 / 要件定義書 §5.6
+
+          ## 要件書引用
+          > FR-SL-01 タスク合成:KB+PMDF(匿名化済み)からPdMシナリオ
+          > (プロダクト状況+課題:優先順位判断、ロードマップトレードオフ、
+          > 実験解釈、リリース判断等)を合成生成する。教師モデル
+          > (Tier-SではAPI)を使用してよい。
+
+      - key: E8-3
+        title: "[E8-3] 実行・軌跡記録"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          生徒モデル(`pdm-student` 論理名)がE8-2の合成シナリオに回答し、
+          推論過程・ツール呼び出し・PMDF差分を軌跡(trajectory)として記録
+          する(FR-SL-02)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/learning/execute.py`:
+          - `execute_scenario(scenario: Scenario, student_model: str =
+            "pdm-student") -> TrajectoryRecord`:
+            - E5-1〜E5-9の業務グラフ(該当するもの)をシナリオに応じて
+              呼び出し、実行過程の各ステップ(LLM呼び出し内容、ツール
+              呼び出しの引数・結果、生成/更新されたPMDFエンティティの差分)
+              を記録
+            - サンドボックス実行: 本番のPMDFストアを汚染しないよう、
+              一時的な隔離ストア(E3-2の `PmdfStore` をテスト用一時ディレクトリ
+              で初期化したインスタンス)に対して実行する
+          - テストでは生徒モデル応答・ツール呼び出しを全てモックし、
+            `TrajectoryRecord` がE8-1のスキーマに適合する形で構築される
+            ことを確認する
+
+          ## 受け入れ条件
+          - [ ] モック生徒モデル+モックツールで `execute_scenario` を実行し、
+                `TrajectoryRecord` に推論過程・ツール呼び出しログ・PMDF差分
+                が記録されることを確認する
+          - [ ] 実行が一時隔離ストアに対して行われ、本番相当のストア
+                (テストでは別インスタンスとして用意)に影響しないことを
+                確認する
+          - [ ] 生成された `TrajectoryRecord` がE8-1の `TrajectoryRecord`
+                Pydanticモデルでバリデーションを通過することを確認する
+
+          ## 依存
+          [E8-2], [E5-1] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/learning/execute.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-SL-02 / 要件定義書 §5.6
+
+          ## 要件書引用
+          > FR-SL-02 実行:生徒モデルがシナリオに回答し、軌跡(推論過程・
+          > ツール呼び出し・PMDF差分)を記録する。
+
+      - key: E8-4
+        title: "[E8-4] ハイブリッド評価"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          E8-3の軌跡をルールベース検証+LLM-as-Judgeのハイブリッドで採点
+          する(FR-SL-03)。ルーブリックは価値中心の基準(誰にとっての価値か、
+          アウトプット/アウトカム/価値の区別、トレードオフの明示)で定義
+          する。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/learning/evaluate.py`:
+          - `rule_based_checks(trajectory: TrajectoryRecord) ->
+            RuleCheckResult`:
+            - PMDFスキーマ適合(E2-1/E2-3の検証を再利用)
+            - RICE/WSJF等の計算検算(E5-4の `calc_priority` 相当ロジックを
+              再利用し、軌跡内のscoreが検算値と一致するか)
+            - 受入基準の網羅性(storyのacceptance_criteriaが空でない、
+              最低N件等のヒューリスティック)
+            - Decision Recordの必須項目充足(E5-6の必須項目チェックを再利用)
+          - `llm_judge_score(trajectory: TrajectoryRecord, judge_model: str =
+            "pdm-judge") -> JudgeScore`:
+            - ルーブリック(価値中心基準)をプロンプトテンプレートとして
+              `packages/.../learning/rubrics/value_centric.md` に定義し、
+              `pdm-judge` 論理名でスコアリング(観点: 誰にとっての価値か
+              /アウトプット・アウトカム・価値の区別/トレードオフの明示、
+              各観点1〜5点)
+            - テストでは `respx` でジャッジモデル応答をモックする
+          - `hybrid_evaluate(trajectory) -> EvaluationResult`: 両者を
+            統合し、ルールベースで不合格(スキーマ不適合等)の場合は
+            ジャッジスコアに関わらず不合格とする(ルールベースを最終防衛
+            として優先する設計)
+
+          ## 受け入れ条件
+          - [ ] 正しいRICEスコアを持つ軌跡が `rule_based_checks` で合格
+                することを確認する
+          - [ ] 意図的に検算不一致のscoreを持つ軌跡が不合格になることを
+                確認する
+          - [ ] モックジャッジ応答から `llm_judge_score` が3観点のスコアを
+                パースして返すことを確認する
+          - [ ] ルールベース不合格の軌跡は、ジャッジスコアが高くても
+                `hybrid_evaluate` の総合結果が不合格になることを確認する
+
+          ## 依存
+          [E8-3] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/learning/evaluate.py`,
+          `packages/pmdf/src/pmdf/learning/rubrics/value_centric.md`,
+          関連テスト
+
+          ## トレーサビリティ
+          FR-SL-03 / 要件定義書 §5.6, 巻末注記(価値中心の成功定義)
+
+          ## 要件書引用
+          > FR-SL-03 評価:LLM-as-Judge+ルールベース検証(PMDFスキーマ適合、
+          > RICE等の計算検算、受入基準の網羅、Decision Recordの必須項目)の
+          > ハイブリッドで採点する。ルーブリックは価値中心の基準(誰に
+          > とっての価値か、アウトプット/アウトカム/価値の区別、
+          > トレードオフの明示)で定義する。
+
+      - key: E8-5
+        title: "[E8-5] 人間フィードバック取込と匿名化"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          E3-6の承認/差し戻し実績を選好データ(DPOペア)として自動収集する。
+          実運用データを用いる場合は固有名詞除去等の匿名化を必須とする
+          (FR-SL-04)。
+
+          ## 対象ファイル
+          `services/agent-core/src/agent_core/learning/feedback_ingest.py`:
+          - `collect_preference_pairs(approvals: list[Approval]) ->
+            list[DpoRecord]`: E5-8の `feedback_queue/`(差し戻しペアJSONL)
+            を読み込み、`chosen`(承認された/修正版内容)と `rejected`
+            (元の起案内容)のペアとして `DpoRecord`(E8-1）を構築する
+          - `anonymize.py`:
+            - `anonymize_text(text: str) -> str`: 固有名詞除去
+              (人名・組織名・メールアドレス等のパターンマッチ+簡易NER、
+              日本語対応のため `ja_ginza` 等の軽量ライブラリまたは
+              正規表現ベースのルールセットを利用。完全な匿名化保証は
+              困難なため、既知の限界をコード内コメントに明記し、
+              実運用データ利用時は人手レビューを推奨する旨をdocsに残す)
+            - `DpoRecord` 生成時、`origin="human_feedback"` のレコードは
+              必ず `anonymize_text` を通してから保存する
+
+          ## 受け入れ条件
+          - [ ] `feedback_queue/` のサンプルJSONL(差し戻し理由付きペアを
+                含む)から `collect_preference_pairs` が `DpoRecord` を
+                正しく構築することを確認する
+          - [ ] 人名・組織名を含むテストテキストに対し `anonymize_text` が
+                該当部分をマスクすることを確認する(既知のテストケース
+                セットに対する回帰テスト)
+          - [ ] `origin="human_feedback"` のレコードが未匿名化のまま
+                保存されないことを保証するテスト(匿名化処理をスキップする
+                コードパスが存在しないことの確認)がある
+
+          ## 依存
+          [E3-6], [E8-1] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/learning/{feedback_ingest,
+          anonymize}.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-SL-04 / 要件定義書 §5.6
+
+          ## 要件書引用
+          > FR-SL-04 人間フィードバックの取込:承認/差し戻し(FR-AU-03)の
+          > 実績を選好データとして自動収集する(差し戻し理由つきペア)。
+          > 実運用データを使う場合は匿名化・固有名詞除去を必須とする。
+
+      - key: E8-6
+        title: "[E8-6] データセット化とオプトイン制御"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          E8-4の評価結果に基づき合格軌跡をSFTデータへ、不合格+修正版
+          ペアおよび人間フィードバック(E8-5)をDPOデータへ振り分ける。
+          プロダクト単位のオプトイン設定と、共有バンドル由来データの既定
+          除外を実装する(FR-SL-05, FR-SL-10, DR-05)。
+
+          ## 対象ファイル
+          - `services/agent-core/src/agent_core/learning/dataset_builder.py`:
+            - `build_sft_dataset(trajectories: list[TrajectoryRecord],
+              evaluations: list[EvaluationResult]) -> list[SftRecord]`:
+              合格軌跡のみをSFTレコード化
+            - `build_dpo_dataset(rejected_trajectories: list, corrections:
+              list, human_feedback: list[DpoRecord]) -> list[DpoRecord]`:
+              不合格+修正版ペア、および人間フィードバック由来ペアを統合
+          - `services/agent-core/src/agent_core/learning/opt_in.py`:
+            - `ProductOptIn`(プロダクトid、`opt_in: bool`、設定日時)の
+              永続化(api-server設定ストア相当、E3-8の自律レベル設定と
+              同様の仕組みを流用)
+            - `filter_by_opt_in(records: list, opt_ins: dict[str, bool]) ->
+              list`: `product_id` を持つレコードのうち、オプトインされて
+              いないプロダクト由来のものを除外
+            - `is_from_shared_bundle(record) -> bool`: レコードの
+              `provenance` に共有バンドルimport由来(E2-7/E3-9でインポート
+              されたエンティティにはインポート元マーカーを付与する設計、
+              E3-9側で `x_imported_from_bundle: true` 相当のマーカーを
+              エンティティに付与することをE3-9実装時の前提とする)を検出し、
+              **既定でtrue**(除外対象)を返す
+
+          ## 受け入れ条件
+          - [ ] 合格軌跡のみが `build_sft_dataset` の出力に含まれ、不合格
+                軌跡が含まれないことを確認する
+          - [ ] 不合格軌跡+修正版ペア、および人間フィードバックペアが
+                `build_dpo_dataset` の出力に統合されることを確認する
+          - [ ] `opt_in=False` のプロダクトに属するレコードが
+                `filter_by_opt_in` で除外されることを確認する
+          - [ ] 共有バンドルインポート由来のマーカーを持つレコードが、
+                明示的なオプトイン操作なしには学習データセットに含まれない
+                (既定除外)ことを確認する
+
+          ## 依存
+          [E8-4], [E8-5] 完了後
+
+          ## 成果物
+          `services/agent-core/src/agent_core/learning/{dataset_builder,
+          opt_in}.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-SL-05, FR-SL-10, DR-05 / 要件定義書 §5.6, §10
+
+          ## 要件書引用
+          > FR-SL-05 データセット化:合格軌跡→SFT、不合格+修正版ペアおよび
+          > 人間の承認/差戻ペア→DPO。全件来歴管理。
+          > FR-SL-10:実プロダクト情報を学習に用いる場合、プロダクトごとの
+          > 明示的なオプトイン設定を必須とし、他社共有バンドル由来のデータ
+          > は既定で学習対象外とすること。
+
+      - key: E8-7
+        title: "[E8-7] trainer QLoRA実装"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          TRLベースのSFT/DPOトレーナーを実装する。Tier-L設定
+          (3Bモデル/4bit量子化/LoRA rank≦16/seq長≦2K/gradient
+          checkpointing)を既定とし、checkpoint再開・MLflow記録を実装する。
+          本イシューはCPU+極小モデル(`tiny-random`系のダミーモデル)での
+          スモークテストを完走させることを受け入れ条件とし、実GPU環境は
+          不要とする。
+
+          ## 対象ファイル
+          - `services/trainer/pyproject.toml`: `trl`, `peft`, `transformers`,
+            `bitsandbytes`(4bit量子化、CPU環境では関数境界でモック),
+            `mlflow` の依存
+          - `services/trainer/src/trainer/config.py`: `TrainingConfig`
+            (モデル名、LoRA rank(既定16以下)、seq_len(既定2048以下)、
+            4bit量子化フラグ、gradient_checkpointing フラグ、
+            checkpoint保存間隔)
+          - `services/trainer/src/trainer/sft.py`: `run_sft(dataset_path,
+            config: TrainingConfig, resume_from_checkpoint: str | None)`:
+            TRLの `SFTTrainer` を用いた学習ループ
+          - `services/trainer/src/trainer/dpo.py`: `run_dpo(...)`:
+            TRLの `DPOTrainer` を用いた学習ループ
+          - `services/trainer/src/trainer/bnb_adapter.py`: bitsandbytes
+            依存を関数境界でラップするモジュール(`load_model_4bit(...)`)。
+            CPU環境やbitsandbytes未インストール環境ではこの関数をテストで
+            モックし、実際の4bit量子化ロードをスキップできるようにする
+            (関数境界モックの目的:GPU非搭載CI環境でもテストを完走させる
+            ため)
+          - MLflow記録: 各学習run開始時に `mlflow.start_run()`、
+            ハイパーパラメータ・損失曲線・checkpoint成果物パスを記録
+
+          ## 受け入れ条件
+          - [ ] CPU環境+`hf-internal-testing/tiny-random-*` 系の極小
+                ダミーモデルを用いて `run_sft` がスモーク完走する
+                (数ステップの学習ループがエラーなく終了する)ことを
+                確認する
+          - [ ] `bnb_adapter.load_model_4bit` をモックした状態で
+                `run_sft`/`run_dpo` が呼び出せることを確認する
+                (bitsandbytes非搭載環境でのテスト実行可否を担保)
+          - [ ] checkpoint保存後、`resume_from_checkpoint` 指定で学習を
+                再開でき、状態(ステップ数等)が復元されることを確認する
+                (NFR-08: スポット中断対策の前提となるcheckpoint再開性)
+          - [ ] MLflowにrun記録(パラメータ・checkpointパス)が残ることを
+                確認する
+          - [ ] `TrainingConfig` のバリデーションで、LoRA rank>16や
+                seq_len>2048をTier-L既定として警告する(またはエラーに
+                する)ロジックがある
+
+          ## 依存
+          [E8-6] 完了後
+
+          ## 成果物
+          `services/trainer/src/trainer/{config,sft,dpo,bnb_adapter}.py`,
+          関連テスト
+
+          ## トレーサビリティ
+          FR-SL-06, NFR-08, ENV-L-02, MR-02 / 要件定義書 §5.6, §7, §8, §9.2
+
+          ## 要件書引用
+          > FR-SL-06 学習:QLoRA(4bit+LoRA)によるSFT/DPOをtrainerコンテナで
+          > 実行する。
+          > ENV-L-02:学習は3B QLoRA(4bit、rank≦16、seq≦2K、gradient
+          > checkpointing)を夜間バッチで実行。
+          > NFR-08 可用性:学習ジョブはcheckpoint再開可能(スポット中断
+          > 対策)。
+
+      - key: E8-8
+        title: "[E8-8] eval-runner評価ゲート+デプロイフック"
+        labels: ["phase:4"]
+        body: |
+          ## 概要
+          固定ベンチマークによる新旧モデル比較・昇格判定を行うeval-runnerを
+          実装する。ベンチ定義スキーマ、新旧比較ロジック、昇格時の
+          Ollamaアダプタ差替スクリプト(モック)、各段階の手動実行CLIを
+          整備する。GGUF/AWQ変換手順もドキュメント化する(MR-04)。
+
+          ## 対象ファイル
+          - `services/eval-runner/src/eval_runner/bench_schema.py`:
+            ベンチ問題のPydanticモデル(`category`: enum 6カテゴリ
+            — PdM知識/優先順位判断/成果物生成/PMDF操作の正確性/
+            プロダクト・プロジェクト区別/一般能力回帰、`question`,
+            `expected_answer_criteria`, `scoring_method`)。最低300問の
+            枠組みとして、各カテゴリ最低50問のダミー/サンプル問題を
+            `services/eval-runner/bench/` に配置(DR-04の枠組み。
+            全300問の実充実は運用フェーズでの継続タスクとし、本イシューでは
+            スキーマと動作する枠組みの実装を主眼とする)
+          - `services/eval-runner/src/eval_runner/compare.py`:
+            `compare_models(baseline_scores: dict, new_scores: dict) ->
+            PromotionDecision`: カテゴリ別スコアから、
+            「PdMベンチ総合+10pt以上」かつ「一般能力回帰カテゴリの劣化
+            5pt以内」の閾値判定ロジック(AC-04の枠組み)を実装
+          - `services/eval-runner/src/eval_runner/deploy_hook.py`:
+            `promote_model(adapter_path: str, ollama_url: str) -> None`:
+            昇格判定がpromoteの場合に呼ばれるOllamaアダプタ差替処理。
+            実Ollama環境が無い場合はHTTPモックサーバでの差替リクエスト
+            確認に留める(モック実装)
+          - `services/eval-runner/src/eval_runner/cli.py`: `typer` で
+            `eval-runner run-bench`, `eval-runner compare`,
+            `eval-runner promote` の各段階を個別手動実行可能にする
+            (FR-SL-09)
+          - `docs/gguf-awq-conversion.md`: GGUF(Ollama向け)/AWQ・GPTQ
+            (vLLM向け)への変換パイプライン手順のドキュメント化(MR-04、
+            実変換はローカルGPU環境が必要なため手順書のみ提供し、CI/自動
+            テストの対象外とする)
+
+          ## 受け入れ条件
+          - [ ] `services/eval-runner/bench/` に6カテゴリ各最低50問
+                (合計300問以上)のベンチ問題が配置され、
+                `bench_schema.py` のモデルでバリデーションが通ることを
+                確認する
+          - [ ] ベースラインスコアと新モデルスコア(いずれもテスト用の
+                固定値)から `compare_models` が閾値判定(promote/
+                reject)を正しく返すことを確認する(PdM総合+10pt以上かつ
+                一般能力回帰5pt以内→promote、それ以外→reject の境界値
+                テストを含む)
+          - [ ] `promote_model` がモックOllamaサーバへアダプタ差替リクエスト
+                を送ることを確認する(実Ollama不要)
+          - [ ] `eval-runner run-bench`/`compare`/`promote` の各CLIコマンドが
+                個別に手動実行できることを統合テストで確認する(FR-SL-09)
+          - [ ] `docs/gguf-awq-conversion.md` にGGUF/AWQ双方の変換手順が
+                記載されている
+
+          ## 依存
+          [E8-4], [E8-7] 完了後
+
+          ## 成果物
+          `services/eval-runner/src/eval_runner/{bench_schema,compare,
+          deploy_hook,cli}.py`, `services/eval-runner/bench/**`,
+          `docs/gguf-awq-conversion.md`
+
+          ## トレーサビリティ
+          FR-SL-07, FR-SL-08, FR-SL-09, DR-04, MR-04 / 要件定義書 §5.6, §8, §10
+
+          ## 要件書引用
+          > FR-SL-07 評価ゲート:固定ベンチマーク(PdM知識・優先順位判断・
+          > 成果物生成・PMDF操作の正確性・プロダクト/プロジェクト区別・
+          > 一般能力回帰)で新旧比較し、閾値を満たす場合のみ昇格。
+          > DR-04:評価ゲートは最低300問(6カテゴリ)を自作
+          > AC-04:評価ゲートでFT後モデルがベース比 PdMベンチ総合+10pt
+          > 以上、一般能力劣化5pt以内
+
+  # =========================================================================
+  # E9: 運用機能 [phase:5]
+  # =========================================================================
+  - key: E9
+    title: "[E9] 運用機能"
+    labels: [epic, "phase:5"]
+    body: |
+      ## 概要
+      定常業務のオーケストレーション(scheduler)、予算監視と自動停止、
+      ヘルスチェック・ログ集約、バックアップ/リストア、脆弱性スキャンCIを
+      実装する。
+
+      ## 含まれるサブイシュー
+      - E9-1 scheduler
+      - E9-2 予算監視と自動停止
+      - E9-3 ヘルスチェック・ログ集約
+      - E9-4 バックアップ/リストア
+      - E9-5 脆弱性スキャンCI
+
+      ## トレーサビリティ
+      FR-OP-01〜04, SEC-06 / 要件定義書 §5.7
+    subs:
+      - key: E9-1
+        title: "[E9-1] scheduler"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          KPI監視(FR-PD-05)・週次レビュー(FR-PD-11)の定期起動と、自己学習
+          ループの各段階(E8）を連結したフロー定義をcronベースで実行する
+          schedulerを実装する(FR-OP-04)。
+
+          ## 対象ファイル
+          - `services/scheduler/pyproject.toml`: 軽量スケジューラライブラリ
+            (`apscheduler` 等)の依存
+          - `services/scheduler/src/scheduler/jobs.py`:
+            - `trigger_kpi_monitoring()`: E5-6の `monitor_kpi` グラフを
+              agent-core APIまたはタスクキュー(E5-1)経由で定期起動
+              (例: 1時間ごと)
+            - `trigger_weekly_review()`: E5-6の `weekly_review` グラフを
+              週次起動(例: 毎週月曜9時)
+            - `trigger_learning_loop()`: E8-2〜E8-8の各段階を順に呼び出す
+              フロー定義(タスク合成→実行→評価→データセット化→学習→
+              評価ゲート、失敗時は次段階へ進まず通知)
+          - `services/scheduler/src/scheduler/main.py`: cron式設定
+            (環境変数または設定ファイルでスケジュールを外出しし、
+            コード変更なしで頻度調整可能にする)
+
+          ## 受け入れ条件
+          - [ ] `trigger_kpi_monitoring`/`trigger_weekly_review` が設定した
+                cronスケジュールに従って呼び出されることをモックスケジューラ
+                でのテストで確認する
+          - [ ] `trigger_learning_loop` が各段階を順序通り呼び出し、
+                途中段階が失敗した場合に後続段階が実行されないことを
+                確認する
+          - [ ] スケジュール設定が環境変数/設定ファイルから読み込まれ、
+                コード変更なしで頻度を変更できることを確認する
+
+          ## 依存
+          [E5-6] 完了後
+
+          ## 成果物
+          `services/scheduler/src/scheduler/{jobs,main}.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-OP-04 / 要件定義書 §5.7
+
+          ## 要件書引用
+          > FR-OP-04:scheduler により定常業務(FR-PD-05, FR-PD-11)を
+          > エージェントへ定期起動する。
+
+      - key: E9-2
+        title: "[E9-2] 予算監視と自動停止"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          E4-3のコスト集計結果を用い、予算80%到達で警告イベントを発行、
+          100%到達で学習ジョブ(trainer/eval-runner)を自動停止する
+          (FR-OP-01)。Tier-Lではローカル分の予算監視として実装する
+          (Tier-S側のAWS Budgets連携はE11-4で扱う)。
+
+          ## 対象ファイル
+          - `services/scheduler/src/scheduler/budget_monitor.py`:
+            - 定期的に(例 1時間ごと)E4-3の `GET /costs/summary` を
+              ポーリングし、`check_budget_threshold` (E4-3で実装済み)の
+              結果が `warning` の場合はE3-10のイベントバス相当の通知
+              (api-server経由でWebSocketイベント発行、またはメール等の
+              通知手段は将来拡張とし本イシューでは内部イベント発行のみ
+              実装)を送出する
+            - `exceeded` の場合、trainer/eval-runnerジョブの起動を停止する
+              (E9-1の `trigger_learning_loop` の実行前チェックとして
+              予算超過フラグを確認し、超過時はジョブをスキップしてログに
+              記録する)
+          - `services/api-server/src/api_server/routers/costs.py`
+            (E4-3で作成済み)に `POST /costs/budget-exceeded-flag` 相当の
+            内部エンドポイント、または既存の `costs.budget` モジュールが
+            提供する状態を直接参照する設計とする
+
+          ## 受け入れ条件
+          - [ ] 予算消化率が80%相当のテストデータで、警告イベントが
+                発行されることを確認する
+          - [ ] 予算消化率が100%相当のテストデータで、
+                `trigger_learning_loop` の実行前チェックによりジョブが
+                スキップされることを確認する(AC-09のローカル分に相当)
+          - [ ] 予算消化率が80%未満の場合は通常通りジョブが実行される
+                ことを確認する
+
+          ## 依存
+          [E4-3], [E8-7] 完了後
+
+          ## 成果物
+          `services/scheduler/src/scheduler/budget_monitor.py`, 関連テスト
+
+          ## トレーサビリティ
+          FR-OP-01, AC-09(ローカル分) / 要件定義書 §5.7, §13
+
+          ## 要件書引用
+          > FR-OP-01:月次コスト(API従量+AWSインフラ)を可視化し、予算80%で
+          > 警告、100%で学習ジョブを自動停止する。
+
+      - key: E9-3
+        title: "[E9-3] ヘルスチェック・ログ集約"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          全コンテナのヘルスチェックと構造化ログ集約規約を整備する
+          (FR-OP-02)。
+
+          ## 対象ファイル
+          - `docker-compose.yml`(E4-4で追加したhealthcheckの網羅性を
+            本イシューで最終確認・不足分を追加): 全常時稼働サービス
+            (web-ui/api-server/agent-core/model-gateway/qdrant/minio/
+            mlflow/scheduler/pmdf-store)に `healthcheck:` セクションを
+            持たせる
+          - `docs/logging-conventions.md`: 構造化ログ規約
+            (JSON形式、必須フィールド: `timestamp`, `level`, `service`,
+            `message`, `trace_id`(可能な場合))。各サービス(FastAPI/
+            LangGraph/Node)でのstructlog/pino等の設定方針を記載
+          - ログ集約: 本イシューではDocker Composeの標準ログドライバ
+            (`json-file`)+ `docker compose logs` での横断確認を既定運用
+            とし、将来のELK/Loki等への拡張ポイントをドキュメントに
+            明記する(実際のログ集約基盤導入はスコープ外、規約整備が
+            本イシューの主眼)
+
+          ## 受け入れ条件
+          - [ ] `docker compose --profile api-only ps` で全常時稼働
+                サービスの `STATUS` 列に `healthy` が表示されることを
+                確認する(E4-4のAC-01検証と合わせて実施)
+          - [ ] 各サービスのログ出力が `docs/logging-conventions.md` に
+                定めたJSON構造化フォーマットに従っていることを、
+                各サービスのサンプルログ出力で確認する
+          - [ ] `docker compose logs` で全サービスのログが横断的に確認
+                できることを確認する
+
+          ## 依存
+          [E4-4] 完了後
+
+          ## 成果物
+          `docker-compose.yml`(healthcheck追記)、
+          `docs/logging-conventions.md`
+
+          ## トレーサビリティ
+          FR-OP-02 / 要件定義書 §5.7
+
+          ## 要件書引用
+          > FR-OP-02:全コンテナのヘルスチェックとログ集約。
+
+      - key: E9-4
+        title: "[E9-4] バックアップ/リストア"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          pmdf-store・KB・データセット・設定の一括バックアップとリストアを
+          実装し、完全復元をテストで確認する(FR-OP-03)。
+
+          ## 対象ファイル
+          - `scripts/backup.sh`: 以下を1つのtarballへまとめる
+            - pmdf-storeのGitリポジトリ全体(`.git`含む)
+            - `kb/corpus/`
+            - 学習データセット(E8の `data/` 配下、SFT/DPO/軌跡)
+            - 設定ファイル群(`.env`は**除外**し、`.env.example`と
+              autonomy設定等の非秘密設定のみ含める。SEC-01準拠で秘密情報を
+              バックアップに含めない)
+          - `scripts/restore.sh`: 上記tarballから各ディレクトリへ復元
+          - Tier-L想定では出力先を外部ディスク相当のローカルパス
+            (環境変数 `BACKUP_DEST_DIR` で指定)とする(Tier-SのS3出力は
+            E11で扱う)
+
+          ## 受け入れ条件
+          - [ ] `scripts/backup.sh` を実行し、pmdf-store/kb/データセット/
+                設定を含むtarballが生成されることを確認する
+          - [ ] 生成したtarballから別ディレクトリへ `scripts/restore.sh`
+                で復元し、元のpmdf-storeのGit履歴(コミット数・内容)が
+                完全一致することを確認する(完全復元テスト)
+          - [ ] `.env` 等の秘密情報ファイルがバックアップに含まれない
+                ことを確認する
+
+          ## 依存
+          [E3-2] 完了後
+
+          ## 成果物
+          `scripts/backup.sh`, `scripts/restore.sh`
+
+          ## トレーサビリティ
+          FR-OP-03 / 要件定義書 §5.7, §9.2
+
+          ## 要件書引用
+          > FR-OP-03:PMDFリポジトリ・KB・データセット・モデル・設定の
+          > 一括バックアップ/リストア(Tier-S:S3、Tier-L:外部ディスク)。
+
+      - key: E9-5
+        title: "[E9-5] 脆弱性スキャンCI"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          コンテナイメージとPython/Node依存関係の定期脆弱性スキャンを
+          GitHub Actionsワークフローとして整備する(SEC-06)。
+
+          ## 対象ファイル
+          - `.github/workflows/security-scan.yml`:
+            - トリガー: `schedule`(週次cron)+ `workflow_dispatch`
+              (手動実行可)
+            - ジョブ1: `aquasecurity/trivy-action` でE4-4のDockerfile群
+              から生成したイメージをスキャン(CRITICAL/HIGH脆弱性検出時に
+              ワークフローを失敗させる、または通知のみに留めるかは
+              `severity` 設定で明示)
+            - ジョブ2: Python依存(`uv.lock`)とNode依存(`pnpm-lock.yaml`)の
+              既知脆弱性スキャン(`pip-audit` / `pnpm audit` 等)
+
+          ## 受け入れ条件
+          - [ ] `security-scan.yml` が週次cronトリガーと手動トリガー
+                (`workflow_dispatch`)の両方で起動できる設定になっている
+                ことを確認する
+          - [ ] trivyスキャンジョブが実際にE4-4のいずれかのDockerfileから
+                ビルドしたイメージに対して実行され、結果がワークフロー
+                サマリに出力されることを確認する(実行して確認、既知の
+                脆弱性が検出されても本タスクではブロッキングにしない
+                設定で初期導入する)
+          - [ ] `pip-audit`/`pnpm audit` ジョブが依存関係の脆弱性一覧を
+                出力することを確認する
+
+          ## 依存
+          [E4-4] 完了後
+
+          ## 成果物
+          `.github/workflows/security-scan.yml`
+
+          ## トレーサビリティ
+          SEC-06 / 要件定義書 §12
+
+          ## 要件書引用
+          > SEC-06:コンテナイメージの定期脆弱性スキャン。
+
+  # =========================================================================
+  # E10: E2E受け入れとドキュメント [phase:5]
+  # =========================================================================
+  - key: E10
+    title: "[E10] E2E受け入れとドキュメント"
+    labels: [epic, "phase:5"]
+    body: |
+      ## 概要
+      サンプルプロダクトを用いたエンドツーエンドの受け入れ検証
+      (AC-05〜08相当)と、運用ドキュメントの最終化を行う。本エピックの
+      完了をもって初期リリーススコープ(Tier-L中心)の主要受け入れ基準を
+      満たす。
+
+      ## 含まれるサブイシュー
+      - E10-1 サンプルプロダクトPMDFシード
+      - E10-2 E2Eシナリオテスト
+      - E10-3 バンドル往復・サニタイズE2E
+      - E10-4 運用ドキュメント最終化
+
+      ## トレーサビリティ
+      AC-05〜08 / 要件定義書 §13
+    subs:
+      - key: E10-1
+        title: "[E10-1] サンプルプロダクトPMDFシード"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          FR-PD-01〜11の全業務を一巡させるための、サンプルプロダクト
+          (架空のプロダクト、例: ECサイトの「ゲスト購入時の注文履歴閲覧」
+          機能の例を要件定義書§6.2記述例から発展させたもの)のPMDF一式と、
+          それを投入するスクリプトを整備する。
+
+          ## 対象ファイル
+          - `scripts/seed_sample_product/data/`: product 1件、
+            stakeholder 2〜3件、persona 1〜2件、objective/metric 各1〜2件、
+            roadmap_item 2〜3件、story 3〜5件(要件定義書§6.2の記述例を
+            含む)、experiment 1件、decision 1〜2件、release 1件、
+            risk 1〜2件、initiative 1件、report 1件、approval 1〜2件
+            (承認済み・差し戻し済み双方のサンプルを含む)のYAMLファイル一式
+          - `scripts/seed_sample_product/seed.py`: E3-2のpmdf-store経由
+            (E3-3 API経由でも可)で上記データを一括投入するスクリプト。
+            冪等性を考慮(既存データがあればスキップまたは上書き確認)
+          - 全サンプルデータはE2-3のPydanticモデルでバリデーション済みで
+            あることを前提とする
+
+          ## 受け入れ条件
+          - [ ] `scripts/seed_sample_product/seed.py` を実行すると、
+                サンプルプロダクトの全エンティティ(14種別のうち作成した
+                全種別)がpmdf-storeに投入されることを確認する
+          - [ ] 投入されたデータがE2-1/E2-2のJSON Schemaに適合することを
+                確認する(E2-9の `pmdf validate` CLIで検証)
+          - [ ] サンプルstoryとして要件定義書§6.2の記述例
+                (`story-01JZX4T8G2K9` 相当)が含まれることを確認する
+          - [ ] approvalサンプルに承認済み・差し戻し済み双方のケースが
+                含まれることを確認する
+
+          ## 依存
+          [E2-9], [E3-3] 完了後
+
+          ## 成果物
+          `scripts/seed_sample_product/{data/**,seed.py}`
+
+          ## トレーサビリティ
+          AC-05の前提データ / 要件定義書 §6.2, §13
+
+      - key: E10-2
+        title: "[E10-2] E2Eシナリオテスト"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          Playwright+モックLLMを用い、AC-05(FR-PD-01〜11の全業務がUI経由で
+          一巡できる: 起案→承認→実行→記録)とAC-06(L1業務が承認レコード
+          なしでは実行できないことの確認、E3-6で実装済みのAPIレベルテストを
+          UI経由でも再確認)をE2Eテストとして実装する。
+
+          ## 対象ファイル
+          - `services/web-ui/e2e/full_pdm_cycle.spec.ts`: E10-1のサンプル
+            プロダクトを用い、
+            1. ビジョン更新起案(agent-core、モックLLM応答固定)→
+               承認キュー(E7-4)で承認→実行完了確認(E7-5でproduct.vision
+               変更を確認)
+            2. ロードマップ更新の同様のフロー
+            3. バックログ運用(story起票、L2のため即時反映、E7-5で確認)
+            4. 実験管理(experimentエンティティの作成・結果記録)
+            5. リリース判断起案→承認→実行
+            6. Decision Record自動記録(L3、承認不要で記録されることを確認)
+            7. 週次レビュー起案→承認キューに要判断事項が現れることを確認
+            の一連をE2Eで検証する(モックLLM: `services/agent-core`の
+            テスト用モックサーバまたはmodel-gatewayのモックバックエンドを
+            起動し、決定的な応答を返す構成でPlaywright実行前にセットアップ
+            する)
+          - `services/web-ui/e2e/approval_bypass_ui.spec.ts`: UIから
+            L1業務(例: ビジョン変更)を承認せずに直接実行しようとする操作
+            (存在するならAPIを直接叩くテスト、またはUI上に実行不可である
+            ことの表示確認)を行い、E3-6のAPIレベルの403(既存テスト)と
+            合わせて、UI上でも未承認では実行系ボタンが無効化/表示されない
+            ことを確認する(AC-06の補完)
+
+          ## 受け入れ条件
+          - [ ] `full_pdm_cycle.spec.ts` がFR-PD-01〜11に相当する一連の
+                業務フローをUI経由で一巡し、各段階でPMDFの状態変化が
+                期待通りであることを確認する(**AC-05**)
+          - [ ] `approval_bypass_ui.spec.ts` で、承認レコードがない状態
+                ではL1業務の実行操作がUI上でブロックされる、または
+                実行を試みてもエラー表示になることを確認する(**AC-06**の
+                UI側検証)
+          - [ ] 両E2Eテストがモックバックエンドのみで実行され、実際の
+                LLM APIキーを必要としないことを確認する(CI実行可能性の
+                担保)
+
+          ## 依存
+          [E7全件], [E5全件], [E10-1] 完了後
+
+          ## 成果物
+          `services/web-ui/e2e/{full_pdm_cycle,approval_bypass_ui}.spec.ts`
+
+          ## トレーサビリティ
+          AC-05, AC-06 / 要件定義書 §13
+
+          ## 要件書引用
+          > AC-05:サンプルプロダクト1件について、FR-PD-01〜11の全業務が
+          > UI経由で一巡できる(起案→承認→実行→記録)
+          > AC-06:L1業務がAPI直叩きを含め承認レコードなしでは実行できない
+          > ことをテストで確認する
+
+      - key: E10-3
+        title: "[E10-3] バンドル往復・サニタイズE2E"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          バンドルのexport→新環境import→全エンティティ・参照整合・添付
+          ハッシュ一致(AC-07)、および共有プロファイルでのマスキング
+          (AC-08)をE2Eで検証する。
+
+          ## 対象ファイル
+          - `services/web-ui/e2e/bundle_roundtrip.spec.ts`(または
+            `services/api-server/tests/test_e2e_bundle_roundtrip.py` として
+            APIレベルE2Eでもよいが、E7-8のUIを実際に経由する形を既定と
+            する):
+            1. E10-1のサンプルプロダクト(添付ファイル付きエンティティを
+               1件以上含む)をE7-8のExport画面からダウンロード
+            2. 別の空pmdf-store環境(テスト用に新規初期化)へE7-8の
+               Import画面からアップロード→差分プレビュー(全件`new`のはず)
+               →適用
+            3. 適用後、元環境と新環境の全エンティティ内容・参照整合・
+               添付ファイルのSHA-256ハッシュが一致することをアサーション
+          - `services/web-ui/e2e/bundle_sanitize.spec.ts`:
+            E2-8の共有プロファイルを指定してエクスポートし、ダウンロード
+            したバンドルを展開して、指定フィールド(内部コスト・個人名・
+            非公開指標値相当のテストデータ)がマスキングされていることを
+            確認する
+
+          ## 受け入れ条件
+          - [ ] `bundle_roundtrip.spec.ts` で、export→import後の全
+                エンティティ内容が一致し、参照整合エラーがなく、添付ハッシュ
+                が一致することを確認する(**AC-07**)
+          - [ ] `bundle_sanitize.spec.ts` で、共有プロファイル指定
+                エクスポート結果に指定フィールドの平文が含まれず、
+                マスキング済みであることを確認する(**AC-08**)
+
+          ## 依存
+          [E3-9], [E7-8] 完了後
+
+          ## 成果物
+          `services/web-ui/e2e/{bundle_roundtrip,bundle_sanitize}.spec.ts`
+
+          ## トレーサビリティ
+          AC-07, AC-08 / 要件定義書 §13
+
+          ## 要件書引用
+          > AC-07:PMDFバンドルのエクスポート→別環境へのインポートで、全
+          > エンティティ・参照整合・添付ハッシュが一致する
+          > AC-08:共有プロファイルでのエクスポートで指定フィールドが
+          > マスキングされている
+
+      - key: E10-4
+        title: "[E10-4] 運用ドキュメント最終化"
+        labels: ["phase:5"]
+        body: |
+          ## 概要
+          Tier-Lセットアップ手順、運用規程(責任分界)、ライセンス台帳、
+          ローカル検証チェックリスト(GPU系AC-03/04/10の人手手順)を
+          ドキュメントとして最終化する。
+
+          ## 対象ファイル
+          - `docs/setup-tier-l.md`: Windows/WSL2環境でのセットアップ手順
+            (Docker Desktop設定、NVIDIA Container Toolkit設定、
+            `docker compose --profile local-gpu up` までの手順、
+            トラブルシューティング)
+          - `docs/operations-policy.md`: 運用規程。§11の責任分界
+            (L1業務の最終責任は承認した人間に、L2/L3業務の運用責任は
+            自律レベルを設定した管理者に帰属する旨)を明文化
+          - `docs/license-ledger.md`: 基盤モデル・主要ライブラリ
+            (transformers, TRL, peft, LiteLLM, LangGraph, Qdrant,
+            MLflow等)のライセンス種別(改変・商用・出力利用条件)を
+            一覧表化
+          - `docs/local-verification-checklist.md`: GPU実機を要する
+            受け入れ基準(AC-03: 自己学習ループ1周無人完走、AC-04:
+            評価ゲート閾値判定、AC-10: 7B Q4推論のVRAM 8GB内安定稼働
+            100ターン連続)について、実施者がローカル環境で手動検証する
+            際のチェックリスト(前提条件、実行コマンド、期待結果、
+            記録すべきログ・メトリクス)
+
+          ## 受け入れ条件
+          - [ ] `docs/setup-tier-l.md` に従って新規Windows環境で
+                `docker compose --profile local-gpu config` まで到達できる
+                (実GPU確認は対象外、手順の完全性を人手でレビューする)
+          - [ ] `docs/operations-policy.md` に§11の責任分界の要点が
+                反映されている
+          - [ ] `docs/license-ledger.md` に主要依存ライブラリ全てのライセンス
+                種別が記載されている
+          - [ ] `docs/local-verification-checklist.md` にAC-03/04/10それぞれ
+                の実施手順・期待結果・記録項目が明記されている
+
+          ## 依存
+          [E10-2] 完了後
+
+          ## 成果物
+          `docs/{setup-tier-l,operations-policy,license-ledger,
+          local-verification-checklist}.md`
+
+          ## トレーサビリティ
+          §9.2, §11, AC-03/04/10 / 要件定義書 §9.2, §11, §13
+
+          ## 要件書引用
+          > 3. 責任分界:エージェントの起案・実行はすべて監査ログと
+          > provenanceで人間の承認者に紐づく。L1業務の最終責任は承認した
+          > 人間に、L2/L3業務の運用責任は自律レベルを設定した管理者に
+          > 帰属する旨を運用規程に明記する。
+
+  # =========================================================================
+  # E11: Tier-S AWSデプロイ [labels: epic, deferred]
+  # 本エピックおよび全サブイシューは将来実装。現時点で着手しない。
+  # =========================================================================
+  - key: E11
+    title: "[E11] Tier-S AWSデプロイ"
+    labels: [epic, deferred]
+    body: |
+      ## 概要
+      **本イシューは将来実装。現時点で着手しない。**
+
+      Tier-S(AWS上位環境、月額10万円上限)へのデプロイを実現するための
+      インフラ・学習ジョブ・公開経路・予算監視・環境間互換性・シークレット
+      管理をまとめたエピックである。初期リリースはTier-L(ローカル環境)を
+      主眼としており、本エピックは登録のみ行い実装には着手しない。
+      着手する場合は、E1〜E10で確立されたTier-L向けの疎結合アーキテクチャ
+      (設計原則1〜4)を前提に、`docker-compose.yml` の `profiles` と
+      `.env` の差分のみでAWS環境へ展開できることを検証しながら進める。
+
+      ## 含まれるサブイシュー(いずれも将来実装・現時点で未着手)
+      - E11-1 IaC基盤(Terraform)
+      - E11-2 スポット学習ジョブ
+      - E11-3 HTTPS公開
+      - E11-4 AWS Budgets連動予算監視
+      - E11-5 Tier-S⇄Tier-L成果物互換検証
+      - E11-6 SSM Parameter Storeシークレット管理+Cognitoメール認証検討
+
+      ## トレーサビリティ
+      ENV-S-01〜04, SEC-01〜03, ENV-C-01/02, AC-09 / 要件定義書 §9.1, §9.3
+    subs:
+      - key: E11-1
+        title: "[E11-1] IaC基盤(Terraform: VPC/ECR/S3/常時稼働EC2)"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          Terraformを用い、Tier-S環境の基盤(VPC、ECR、S3、常時稼働EC2
+          t4g.medium)を構築するIaCを整備する。
+
+          ## 想定対象ファイル(将来実装時)
+          - `infra/terraform/tier-s/{vpc,ecr,s3,ec2}.tf`
+          - 常時稼働EC2(t4g.medium)にui/api/gateway/tracking/scheduler/
+            Qdrant/pmdf-storeを同居させる構成(§9.1の費目表に対応)
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] `terraform plan` が成功し、VPC/ECR/S3/EC2が計画通り
+                生成されることを確認する
+          - [ ] 常時稼働EC2のコストが§9.1の目安(月額8,000円程度)の
+                範囲に収まるインスタンスタイプ・構成であることを確認する
+
+          ## 依存
+          なし(ただし着手はE1〜E10完了後を想定)
+
+          ## トレーサビリティ
+          §9.1 / 要件定義書 §9.1
+
+          ## 要件書引用
+          > | 常時稼働基盤 | t4g.medium 等 ×1(ui/api/gateway/tracking/
+          > scheduler/Qdrant/pmdf-store同居)+EBS | 〜8,000円 |
+
+      - key: E11-2
+        title: "[E11-2] スポット学習ジョブ(checkpoint→S3、アイドル30分自動停止)"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          学習ジョブをEC2スポット(またはSageMaker Trainingスポット)で
+          実行し、checkpointをS3へ定期保存、アイドル30分でGPUインスタンス
+          を自動停止する仕組みを整備する(ENV-S-01, ENV-S-02)。
+
+          ## 想定対象ファイル(将来実装時)
+          - `infra/terraform/tier-s/spot_training.tf`
+          - `scripts/tier-s/idle_shutdown_watcher.py`
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] スポットインスタンスでE8-7のtrainerジョブが実行でき、
+                checkpointがS3へ定期保存されることを確認する
+          - [ ] アイドル30分でインスタンスが自動停止することを確認する
+
+          ## 依存
+          [E11-1] 完了後(将来)
+
+          ## トレーサビリティ
+          ENV-S-01, ENV-S-02 / 要件定義書 §9.1
+
+          ## 要件書引用
+          > ENV-S-01:学習ジョブはEC2スポット(またはSageMaker Trainingスポット)
+          > で実行し、checkpointをS3へ定期保存する。
+          > ENV-S-02:GPUインスタンスはアイドル30分で自動停止する。
+
+      - key: E11-3
+        title: "[E11-3] HTTPS公開(ALB+ACMまたはCloudflare Tunnel)"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          web-ui(および同一経路のapi-server)のHTTPS公開を、ALB+ACMまたは
+          Cloudflare Tunnel等の低コスト構成で実現する。閲覧者(他社)
+          アクセスはこの経路のみとする(ENV-S-04, SEC-02)。
+
+          ## 想定対象ファイル(将来実装時)
+          - `infra/terraform/tier-s/{alb,acm}.tf` または
+            `infra/cloudflare-tunnel/config.yml`
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] HTTPS経由でweb-uiにアクセスできることを確認する
+          - [ ] gateway/tracking/vector-db/pmdf-storeが外部非公開である
+                ことを確認する(SEC-02)
+
+          ## 依存
+          [E11-1] 完了後(将来)
+
+          ## トレーサビリティ
+          ENV-S-04, SEC-02 / 要件定義書 §9.1, §12
+
+          ## 要件書引用
+          > ENV-S-04:UI公開はHTTPS必須(ALB+ACM または Cloudflare Tunnel等
+          > の低コスト構成)。閲覧者(他社)アクセスはこの経路のみとする。
+
+      - key: E11-4
+        title: "[E11-4] AWS Budgets連動予算監視(月10万円、80%警告/100%停止)"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          AWS Budgetsとゲートウェイのコスト計測(E4-3)を合算監視し、
+          FR-OP-01の自動停止と連動させる(ENV-S-03, AC-09)。
+
+          ## 想定対象ファイル(将来実装時)
+          - `infra/terraform/tier-s/budgets.tf`
+          - `services/scheduler/src/scheduler/aws_budget_integration.py`
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] AWS Budgetsで月10万円の予算アラートが80%/100%で発火する
+                ことを確認する
+          - [ ] E9-2のローカル予算監視ロジックとAWS Budgets通知を統合し、
+                100%到達時に学習ジョブが自動停止することを確認する
+
+          ## 依存
+          [E11-1], [E9-2] 完了後(将来)
+
+          ## トレーサビリティ
+          ENV-S-03, AC-09 / 要件定義書 §9.1, §13
+
+          ## 要件書引用
+          > ENV-S-03:AWS Budgets+ゲートウェイのAPIコスト計測を合算監視し、
+          > FR-OP-01の自動停止と連動する。
+          > AC-09:Tier-S月次コスト10万円以内、予算超過時の自動停止が動作
+
+      - key: E11-5
+        title: "[E11-5] Tier-S⇄Tier-L成果物互換検証"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          データセット・LoRAアダプタ・KBスナップショット・PMDFバンドルが
+          Tier-L⇄Tier-S間で相互に持ち込み可能であること、および
+          「クラウドで学習し、GGUF変換してローカルで運用する」フローが
+          成立することを検証する(ENV-C-01, ENV-C-02)。
+
+          ## 想定対象ファイル(将来実装時)
+          - `scripts/tier-s/export_artifacts_for_tier_l.sh`
+          - `scripts/tier-l/import_artifacts_from_tier_s.sh`
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] Tier-Sで学習したLoRAアダプタをTier-LのOllama環境へGGUF
+                変換して持ち込み、正常に推論できることを確認する
+          - [ ] PMDFバンドル・KBスナップショットがTier-S⇄Tier-L間で
+                往復可能であることを確認する(E2-6/E2-7の機構を再利用)
+
+          ## 依存
+          [E11-1], [E8-8] 完了後(将来)
+
+          ## トレーサビリティ
+          ENV-C-01, ENV-C-02 / 要件定義書 §9.3
+
+          ## 要件書引用
+          > ENV-C-01:データセット・LoRAアダプタ・KBスナップショット・
+          > PMDFバンドルは、Tier-L⇄Tier-S間で相互に持ち込み可能であること。
+          > ENV-C-02:「クラウドで学習し、GGUF変換してローカルで運用する」
+          > フローが成立すること。
+
+      - key: E11-6
+        title: "[E11-6] SSM Parameter Storeシークレット管理+Cognitoメール認証検討"
+        labels: [deferred]
+        body: |
+          ## 概要
+          **本イシューは将来実装。現時点で着手しない。**
+
+          Tier-S環境における秘密情報管理をSSM Parameter Storeで実現し、
+          将来のCognitoメール認証連携(ユーザーのグローバル開発標準:
+          AWSデプロイアプリケーションではメールアドレスによる認証・
+          確認方式を組み込むこと)を検討する。
+
+          ## 想定対象ファイル(将来実装時)
+          - `infra/terraform/tier-s/ssm_parameters.tf`
+          - `docs/tier-s-cognito-email-auth-design.md`(Cognitoメール
+            確認/メールOTP、メール検証付きサインアップの設計検討)
+
+          ## 受け入れ条件(将来実装時)
+          - [ ] APIキー・クラウド認証情報がSSM Parameter Store経由で
+                コンテナへ注入され、リポジトリ・イメージに含まれないことを
+                確認する(SEC-01)
+          - [ ] Cognitoメール認証(メール確認/OTP)の設計検討ドキュメントが
+                作成され、E3-4のメール+パスワード認証からの移行方針が
+                明記されている
+
+          ## 依存
+          [E11-1], [E3-4] 完了後(将来)
+
+          ## トレーサビリティ
+          SEC-01, SEC-03 / 要件定義書 §12、ユーザー標準(AWSデプロイと
+          メール認証)
+
+          ## 要件書引用
+          > SEC-01:APIキー・クラウド認証情報はDocker Secrets / SSM
+          > Parameter Storeで管理し、リポジトリ・イメージに含めない。
+          > SEC-03:UIは認証必須(初期:メール+パスワード+TOTP、または
+          > OIDC連携)。
+
