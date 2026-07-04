@@ -210,6 +210,7 @@ async def test_run_discovery_creates_persona_conforming_to_schema(
     from pmdf.models import Persona
 
     Persona.model_validate(persona)
+    assert persona["x_evidence"]
 
 
 @pytest.mark.asyncio
@@ -252,6 +253,10 @@ async def test_run_experiment_records_results_and_learnings(
     Experiment.model_validate(experiment)
     assert experiment["results"] == "定着率が+7pt改善した"
     assert experiment["learnings"]
+    assert experiment["x_evidence"]
+    assert any(
+        e.get("source") == "pmdf" and e.get("id") == PRODUCT_ID for e in experiment["x_evidence"]
+    )
 
 
 @pytest.mark.asyncio
@@ -396,6 +401,12 @@ async def test_run_initiative_includes_wbs_risk_and_evm_conforming_to_schema(
     for risk in result["risks"]:
         Risk.model_validate(risk)
     assert result["risks"]
+
+    # E5-8(FR-PD-13): initiative(EVM計算根拠)・risk(起因initiativeへの参照)双方に
+    # x_evidenceが付与されること。
+    assert result["initiative"]["x_evidence"]
+    for risk in result["risks"]:
+        assert risk["x_evidence"]
 
     # FR-PD-14: initiativeがproduct固有のライフサイクルフィールド(vision等)を持たないことの確認。
     assert "vision" not in result["initiative"]

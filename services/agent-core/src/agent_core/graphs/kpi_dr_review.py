@@ -13,6 +13,7 @@ from typing import Any
 
 from pmdf.ids import generate_id
 
+from agent_core.evidence import attach_evidence, data_evidence
 from agent_core.guards import run_node_with_guard
 from agent_core.llm_client import LogicalModelClient
 from agent_core.tools.pmdf_tools import PmdfToolClient
@@ -107,6 +108,20 @@ async def monitor_kpi(
         "decisions_needed": [],
         "summary": state["hypothesis"],
     }
+    # E5-8(FR-PD-13): PMDF参照(対象metric)+データ根拠(実測値・閾値)を明示する。
+    report_payload = attach_evidence(
+        report_payload,
+        [
+            {"source": "pmdf", "kind": "metric", "id": metric_id},
+            data_evidence(
+                description="KPI閾値超過の実測値",
+                data={
+                    "current_value": state["metric"].get("current_value"),
+                    "threshold_value": state["metric"].get("threshold_value"),
+                },
+            ),
+        ],
+    )
     created_report = await pmdf_tool_client.create_entity(kind="report", data=report_payload)
     return {"breached": True, "metric": state["metric"], "report": created_report}
 
@@ -169,6 +184,16 @@ async def record_decision(
         "approver": approver,
         "autonomy_level": AUTONOMY_LEVEL,
     }
+    # E5-8(FR-PD-13): 意思決定の根拠(データ: 背景・根拠テキスト)を明示する。
+    decision_payload = attach_evidence(
+        decision_payload,
+        [
+            data_evidence(
+                description="意思決定記録の根拠",
+                data={"background": draft["background"], "rationale": draft["rationale"]},
+            )
+        ],
+    )
     created: dict[str, Any] = await pmdf_tool_client.create_entity(
         kind="decision", data=decision_payload
     )
@@ -223,6 +248,11 @@ async def weekly_review(
         "decisions_needed": assessment["decisions_needed"],
         "summary": assessment["summary"],
     }
+    # E5-8(FR-PD-13): 週次評価の根拠(データ: 対象期間・評価サマリ)を明示する。
+    report_payload = attach_evidence(
+        report_payload,
+        [data_evidence(description="週次評価の根拠", data={"period": period})],
+    )
     created_report = await pmdf_tool_client.create_entity(kind="report", data=report_payload)
 
     approval_proposal: dict[str, Any] | None = None

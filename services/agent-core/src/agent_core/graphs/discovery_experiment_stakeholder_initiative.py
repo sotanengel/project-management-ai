@@ -21,6 +21,7 @@ from typing import Any
 
 from pmdf.ids import generate_id
 
+from agent_core.evidence import attach_evidence, data_evidence
 from agent_core.graphs.vision_roadmap_release import call_l1_gated_endpoint
 from agent_core.guards import run_node_with_guard
 from agent_core.llm_client import LogicalModelClient
@@ -87,6 +88,15 @@ async def run_discovery(
         "pain_points": draft.get("pain_points", []),
         "jobs": draft["jobs"],
     }
+    # E5-8(FR-PD-13): ペルソナ生成の根拠(データ: インタビュー入力コンテキスト)を明示する。
+    persona_payload = attach_evidence(
+        persona_payload,
+        [
+            data_evidence(
+                description="ユーザーインタビュー入力コンテキスト", data={"context": context}
+            )
+        ],
+    )
     created: dict[str, Any] = await pmdf_tool_client.create_entity(
         kind="persona", data=persona_payload
     )
@@ -144,6 +154,14 @@ async def run_experiment(
         "results": draft.get("results"),
         "learnings": draft.get("learnings"),
     }
+    # E5-8(FR-PD-13): 実験記録の根拠(PMDF参照: 対象product、データ: 入力コンテキスト)を明示する。
+    experiment_payload = attach_evidence(
+        experiment_payload,
+        [
+            {"source": "pmdf", "kind": "product", "id": product_id},
+            data_evidence(description="実験設計の入力コンテキスト", data={"context": context}),
+        ],
+    )
     created: dict[str, Any] = await pmdf_tool_client.create_entity(
         kind="experiment", data=experiment_payload
     )
@@ -290,6 +308,11 @@ async def run_initiative(
         "wbs": draft.get("wbs", []),
         "evm": evm,
     }
+    # E5-8(FR-PD-13): EVM計算の入力値(データ根拠)を明示する。
+    initiative_payload = attach_evidence(
+        initiative_payload,
+        [data_evidence(description="EVM計算の入力値", data=evm)],
+    )
     created_initiative = await pmdf_tool_client.create_entity(
         kind="initiative", data=initiative_payload
     )
@@ -309,6 +332,10 @@ async def run_initiative(
             "response_strategy": risk_draft["response_strategy"],
             "owner": risk_owner,
         }
+        # E5-8(FR-PD-13): リスク登録の根拠(PMDF参照: 起因initiative)を明示する。
+        risk_payload = attach_evidence(
+            risk_payload, [{"source": "pmdf", "kind": "initiative", "id": created_initiative["id"]}]
+        )
         created_risk = await pmdf_tool_client.create_entity(kind="risk", data=risk_payload)
         created_risks.append(created_risk)
 

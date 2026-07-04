@@ -243,6 +243,36 @@ async def test_propose_vision_update_does_not_modify_product_and_creates_approva
 
 
 @pytest.mark.asyncio
+async def test_propose_vision_update_attaches_evidence_to_draft(
+    app, auth_token: str, pmdf_tool_client: PmdfToolClient
+) -> None:
+    """E5-8(FR-PD-13): 起案内容(draft)に`x_evidence`(根拠)が最低1件含まれること。"""
+    async with await _http_client(app) as client:
+        await _seed_product(client, _headers(auth_token))
+
+    llm_response = json.dumps({"vision": "更新後ビジョン"}, ensure_ascii=False)
+    with respx.mock(base_url=MODEL_GATEWAY_URL) as mock:
+        mock.post("/chat/completions").mock(return_value=_chat_response(llm_response))
+        llm_client = LogicalModelClient(model_gateway_url=MODEL_GATEWAY_URL)
+
+        with respx.mock(base_url="http://test") as autonomy_mock:
+            autonomy_mock.get("/autonomy/emergency-stop/status").mock(
+                return_value=httpx.Response(200, json={"emergency_stopped": False})
+            )
+            proposal = await propose_vision_update(
+                product_id=PRODUCT_ID,
+                context="来期に向けたビジョン見直し",
+                pmdf_tool_client=pmdf_tool_client,
+                llm_client=llm_client,
+                api_server_url="http://test",
+                auth_token=auth_token,
+                proposer=PROPOSER_ID,
+            )
+
+    assert proposal["draft"]["x_evidence"]
+
+
+@pytest.mark.asyncio
 async def test_execute_after_approval_blocked_when_not_approved(
     app, auth_token: str, pmdf_tool_client: PmdfToolClient
 ) -> None:

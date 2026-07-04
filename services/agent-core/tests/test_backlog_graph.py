@@ -198,6 +198,50 @@ async def test_run_backlog_graph_conforms_to_story_schema(
 
 
 @pytest.mark.asyncio
+async def test_run_backlog_graph_attaches_evidence_to_persisted_story(
+    pmdf_tool_client: PmdfToolClient, app, auth_token: str
+) -> None:
+    """E5-8(FR-PD-13): 永続化されたstoryに`x_evidence`(根拠)が最低1件含まれること。"""
+    llm_response_payload = json.dumps(
+        {
+            "as_a": "利用者",
+            "i_want": "検索を高速化したい",
+            "so_that": "業務を早く終えたい",
+            "acceptance_criteria": ["検索が3秒以内に完了する"],
+            "title": "検索高速化",
+            "reach": 50,
+            "impact": 1,
+            "confidence": 0.5,
+            "effort": 2,
+            "score": 0,
+        },
+        ensure_ascii=False,
+    )
+
+    with respx.mock(base_url=MODEL_GATEWAY_URL) as mock:
+        mock.post("/chat/completions").mock(return_value=_chat_response(llm_response_payload))
+        llm_client = LogicalModelClient(model_gateway_url=MODEL_GATEWAY_URL)
+
+        with respx.mock(base_url="http://test") as autonomy_mock:
+            autonomy_mock.get("/autonomy/emergency-stop/status").mock(
+                return_value=httpx.Response(200, json={"emergency_stopped": False})
+            )
+            result = await run_backlog_graph(
+                intake_text="検索が遅い",
+                pmdf_tool_client=pmdf_tool_client,
+                llm_client=llm_client,
+                api_server_url="http://test",
+                auth_token=auth_token,
+            )
+
+    assert result["x_evidence"]
+    assert len(result["x_evidence"]) >= 1
+
+    created_story = await pmdf_tool_client.get_entity(kind="story", entity_id=result["id"])
+    assert created_story["x_evidence"]
+
+
+@pytest.mark.asyncio
 async def test_run_backlog_graph_completes_without_approval_gate_as_l2(
     pmdf_tool_client: PmdfToolClient, app, auth_token: str
 ) -> None:

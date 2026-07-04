@@ -17,6 +17,7 @@ from typing import Any, TypedDict
 from langgraph.graph import END, StateGraph
 from pmdf.ids import generate_id
 
+from agent_core.evidence import attach_evidence, data_evidence
 from agent_core.guards import run_node_with_guard
 from agent_core.llm_client import LogicalModelClient
 from agent_core.tools.pmdf_tools import PmdfToolClient
@@ -151,6 +152,11 @@ def _build_graph(
             },
             "status": "draft",
         }
+        # E5-8(FR-PD-13): 優先順位付けの計算根拠(データ)を`x_evidence`として明示する。
+        story_payload = attach_evidence(
+            story_payload,
+            [data_evidence(description="優先順位付け計算の入力値", data=priority)],
+        )
         created = await pmdf_tool_client.create_entity(kind="story", data=story_payload)
         return {**state, "story": created}
 

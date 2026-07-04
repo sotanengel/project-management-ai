@@ -205,6 +205,12 @@ async def test_monitor_kpi_detects_threshold_breach_and_generates_hypothesis(
     assert result["breached"] is True
     assert "オンボーディング" in result["report"]["summary"]
     assert result["report"]["health_assessment"] == "red"
+    # E5-8(FR-PD-13): 対象metricへのPMDF参照+データ根拠が明示される。
+    assert result["report"]["x_evidence"]
+    assert any(
+        e.get("source") == "pmdf" and e.get("id") == METRIC_ID
+        for e in result["report"]["x_evidence"]
+    )
 
 
 @pytest.mark.asyncio
@@ -280,6 +286,7 @@ async def test_record_decision_creates_entity_with_all_required_fields(
     assert decision["rationale"]
     assert decision["rejected_reasons"]
     assert decision["autonomy_level"] == "L3"
+    assert decision["x_evidence"]
 
 
 @pytest.mark.asyncio
@@ -360,6 +367,7 @@ async def test_weekly_review_flags_decisions_needed_and_creates_approval_proposa
     assert result["report"]["decisions_needed"] == ["価格戦略の見直しが必要"]
     assert result["approval_proposal"] is not None
     assert result["approval_proposal"]["target"] == result["report"]["id"]
+    assert result["report"]["x_evidence"]
 
     async with await _http_client(app) as client:
         response = await client.get("/approvals?status=pending", headers=_headers(auth_token))

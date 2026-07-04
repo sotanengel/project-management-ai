@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from agent_core.evidence import attach_evidence, data_evidence
 from agent_core.guards import run_node_with_guard
 from agent_core.llm_client import LogicalModelClient
 from agent_core.tools.pmdf_tools import PmdfToolClient
@@ -79,7 +80,12 @@ async def _propose(
     )
     proposal: dict[str, Any] = response.json()
 
-    proposal["draft"] = state["draft"]
+    # E5-8(FR-PD-13): 起案内容(draft)に根拠(データ: 入力コンテキスト)を明示する。
+    draft = attach_evidence(
+        state["draft"],
+        [data_evidence(description="起案時の入力コンテキスト", data={"context": user_content})],
+    )
+    proposal["draft"] = draft
     return proposal
 
 
