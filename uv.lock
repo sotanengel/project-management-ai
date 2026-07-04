@@ -33,6 +33,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "api-server" },
+    { name = "kb-ingest" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "respx" },
@@ -50,6 +51,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "api-server", editable = "services/api-server" },
+    { name = "kb-ingest", editable = "services/kb-ingest" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "respx", specifier = ">=0.22.0" },

@@ -20,10 +20,16 @@ dev = [
     # E5-2/E5-5等の統合テスト(api-serverの実TestClient/ASGITransportと
     # 組み合わせた検証)でのみ使用するテスト専用依存。
     "api-server",
+    # E5-3のRAG検索ツールのテストで、E6のChunk/QdrantKbStoreを直接
+    # 利用するためのテスト専用依存(本体コードは`VectorStore`/
+    # `EmbeddingClient`Protocol経由でのみ依存し、kb_ingestを型として
+    # importしない)。
+    "kb-ingest",
 ]
 
 [tool.uv.sources]
 api-server = { workspace = true }
+kb-ingest = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
