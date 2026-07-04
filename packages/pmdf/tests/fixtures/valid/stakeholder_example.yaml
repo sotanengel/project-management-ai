@@ -1,0 +1,19 @@
+pmdf_version: "1.0.0"
+kind: stakeholder
+id: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF
+provenance:
+  created_by: "agent:pm-copilot@v0.1.0"
+  approved_by: null
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "山田太郎"
+role: "営業部長"
+organization: "パートナー株式会社"
+interests:
+  - "リードタイム短縮"
+  - "コスト削減"
+influence: high
+contact_policy:
+  personal_name: "山田太郎"
+  channel: "email"
+  frequency: "monthly"

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/metric.schema.json",
+  "title": "PMDF Metric",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "metric" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "name": { "type": "string" },
+    "definition": {
+      "type": "string",
+      "description": "指標の定義文。"
+    },
+    "calculation_method": {
+      "type": "string",
+      "description": "算出方法。"
+    },
+    "target_value": { "type": "number" },
+    "threshold_value": { "type": "number" },
+    "current_value": { "type": ["number", "null"] },
+    "time_series": {
+      "type": "array",
+      "description": "時系列データ(外部データソース参照と排他ではないが併用可)。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "value": { "type": "number" }
+        },
+        "required": ["timestamp", "value"],
+        "additionalProperties": false
+      }
+    },
+    "external_source_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": [
+    "pmdf_version",
+    "kind",
+    "id",
+    "provenance",
+    "name",
+    "definition",
+    "calculation_method"
+  ],
+  "additionalProperties": false
+}

@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "プロジェクト管理AI 共通データ基盤パッケージ"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "jsonschema>=4.26.0",
+    "pyyaml>=6.0.3",
+]
 
 [build-system]
 requires = ["hatchling"]

@@ -1,0 +1,11 @@
+pmdf_version: "1.0.0"
+kind: metric
+# idがULIDパターンに一致しない(短すぎる)
+id: metric-123
+provenance:
+  created_by: "agent:analytics-bot@v1.2.0"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "月次リピート率"
+definition: "当月購入者のうち過去90日以内に購入経験がある割合"
+calculation_method: "repeat_orders / total_orders (90日ウィンドウ)"

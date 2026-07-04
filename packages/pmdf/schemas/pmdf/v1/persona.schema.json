@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pmdf.dev/schemas/v1/persona.schema.json",
+  "title": "PMDF Persona",
+  "type": "object",
+  "properties": {
+    "pmdf_version": { "$ref": "common.schema.json#/$defs/pmdf_version" },
+    "kind": { "const": "persona" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "attachments": { "$ref": "common.schema.json#/$defs/attachments" },
+    "name": { "type": "string" },
+    "attributes": {
+      "type": "object",
+      "description": "年齢層・職種等の属性(自由形式キーバリュー)。",
+      "additionalProperties": { "type": "string" }
+    },
+    "pain_points": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "jobs": {
+      "type": "array",
+      "description": "JTBD(Jobs To Be Done)形式のジョブ一覧。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "situation": { "type": "string" },
+          "motivation": { "type": "string" },
+          "outcome": { "type": "string" }
+        },
+        "required": ["situation", "motivation", "outcome"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "patternProperties": {
+    "^x_": {}
+  },
+  "required": ["pmdf_version", "kind", "id", "provenance", "name", "jobs"],
+  "additionalProperties": false
+}

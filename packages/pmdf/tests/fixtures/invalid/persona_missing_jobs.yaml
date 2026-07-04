@@ -1,0 +1,9 @@
+pmdf_version: "1.0.0"
+kind: persona
+id: persona-01JZX0PPPP01BBBBCCCCDDDDEF
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "忙しい共働き世帯の母"
+# jobs が欠落している(必須違反)
