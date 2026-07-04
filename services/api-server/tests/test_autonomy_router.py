@@ -255,3 +255,33 @@ async def test_non_admin_cannot_trigger_emergency_stop(editor_client: AsyncClien
     response = await editor_client.post("/autonomy/emergency-stop", json={})
 
     assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_emergency_stop_status_defaults_to_false_for_any_authenticated_role(
+    editor_client: AsyncClient,
+) -> None:
+    """E5-1: agent-coreが毎ステップ照会するステータス取得API(管理者以外も参照可)。"""
+    response = await editor_client.get("/autonomy/emergency-stop/status")
+
+    assert response.status_code == 200, response.text
+    assert response.json() == {"emergency_stopped": False}
+
+
+@pytest.mark.asyncio
+async def test_emergency_stop_status_reflects_stop_state(
+    editor_client: AsyncClient, admin_client: AsyncClient
+) -> None:
+    await admin_client.post("/autonomy/emergency-stop", json={})
+
+    response = await editor_client.get("/autonomy/emergency-stop/status")
+
+    assert response.status_code == 200, response.text
+    assert response.json() == {"emergency_stopped": True}
+
+
+@pytest.mark.asyncio
+async def test_emergency_stop_status_requires_authentication(client: AsyncClient) -> None:
+    response = await client.get("/autonomy/emergency-stop/status")
+
+    assert response.status_code == 401

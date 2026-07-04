@@ -1,0 +1,36 @@
+[project]
+name = "agent-core"
+version = "0.1.0"
+description = "LangGraphによるPdMエージェント実行基盤(agent-core)サービス"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.13.4",
+    "httpx>=0.28.1",
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "qdrant-client>=1.15.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.3.0",
+    "respx>=0.22.0",
+    # E5-2/E5-5等の統合テスト(api-serverの実TestClient/ASGITransportと
+    # 組み合わせた検証)でのみ使用するテスト専用依存。
+    "api-server",
+]
+
+[tool.uv.sources]
+api-server = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_core"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
