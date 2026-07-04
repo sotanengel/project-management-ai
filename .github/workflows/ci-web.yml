@@ -18,21 +18,30 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # services/web-ui はまだ存在しないため、pathsフィルタにより現時点では
-    # 発火しない。ディレクトリが追加された時点で自動的に有効化される。
-    defaults:
-      run:
-        working-directory: services/web-ui
+    # services/web-ui はまだ存在しないため、以下の存在チェックにより
+    # 現時点ではlint/test/build相当のステップがスキップされる。
+    # ディレクトリが追加された時点で自動的に有効化される。
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check web-ui exists
+        id: check
+        run: |
+          if [ -f services/web-ui/package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install pnpm
+        if: steps.check.outputs.exists == 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
       - name: Set up Node
+        if: steps.check.outputs.exists == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -40,13 +49,21 @@ jobs:
           cache-dependency-path: services/web-ui/pnpm-lock.yaml
 
       - name: Install dependencies
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
         run: pnpm install --frozen-lockfile
 
       - name: Lint
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
         run: pnpm lint
 
       - name: Test
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
         run: pnpm vitest run
 
       - name: Build
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
         run: pnpm build
