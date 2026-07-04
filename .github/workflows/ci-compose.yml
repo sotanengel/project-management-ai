@@ -1,0 +1,33 @@
+name: CI (Compose)
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "docker-compose.yml"
+      - ".env.example"
+      - ".github/workflows/ci-compose.yml"
+  pull_request:
+    paths:
+      - "docker-compose.yml"
+      - ".env.example"
+      - ".github/workflows/ci-compose.yml"
+
+concurrency:
+  group: ci-compose-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml (api-only profile)
+        if: hashFiles('docker-compose.yml') != ''
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+          fi
+          docker compose -f docker-compose.yml --profile api-only config -q

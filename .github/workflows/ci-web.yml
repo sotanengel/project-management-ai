@@ -1,0 +1,52 @@
+name: CI (Web)
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "services/web-ui/**"
+      - ".github/workflows/ci-web.yml"
+  pull_request:
+    paths:
+      - "services/web-ui/**"
+      - ".github/workflows/ci-web.yml"
+
+concurrency:
+  group: ci-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # services/web-ui はまだ存在しないため、pathsフィルタにより現時点では
+    # 発火しない。ディレクトリが追加された時点で自動的に有効化される。
+    defaults:
+      run:
+        working-directory: services/web-ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: services/web-ui/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm vitest run
+
+      - name: Build
+        run: pnpm build
