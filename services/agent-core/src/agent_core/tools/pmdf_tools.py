@@ -92,5 +92,27 @@ class PmdfToolClient:
             response.raise_for_status()
             return list(response.json())
 
+    async def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        json: dict[str, Any] | None = None,
+        raise_for_status: bool = True,
+    ) -> httpx.Response:
+        """PMDF CRUD以外のapi-serverエンドポイント(承認・L1実行系等)を呼び出す汎用メソッド。
+
+        `create_entity`等と同じ接続設定(base_url/認証ヘッダ/transport)を
+        再利用することで、業務グラフ側がテスト用transportを個別に
+        組み立てる必要をなくす。`raise_for_status=False`の場合、
+        エラーレスポンス(403等)でも例外を送出せずそのまま返す
+        (呼び出し側でステータスコードに応じた分岐を行いたい場合用)。
+        """
+        async with self._client() as client:
+            response = await client.request(method, path, json=json, headers=self._headers())
+            if raise_for_status:
+                response.raise_for_status()
+            return response
+
 
 __all__ = ["AGENT_ACTOR_HEADER", "PmdfToolClient"]
