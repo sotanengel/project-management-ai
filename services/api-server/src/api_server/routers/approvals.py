@@ -26,6 +26,7 @@ from api_server.approval.proposal_store import (
     update_proposal,
 )
 from api_server.approval.state_machine import InvalidTransitionError, ProposalState, transition
+from api_server.audit.log import AuditRecord, append_record, latest_hash
 from api_server.auth.dependencies import get_current_user, require_role
 from api_server.auth.models import User
 from api_server.config import Settings, get_settings
@@ -112,11 +113,12 @@ def decide(
 
     from pmdf.ids import generate_id
 
+    actor = f"user:{user.id}"
     approval_entity = Approval(
         pmdf_version="1.0.0",
         kind="approval",
         id=generate_id("approval"),
-        provenance=Provenance(created_by=f"user:{user.id}", updated_at=datetime.now(UTC)),
+        provenance=Provenance(created_by=actor, updated_at=datetime.now(UTC)),
         attachments=[],
         target=proposal.target,
         proposer=proposal.proposer,
@@ -124,7 +126,17 @@ def decide(
         decision=request.decision,
         reason=request.reason,
     )
-    store.create(approval_entity, actor=f"user:{user.id}")
+    store.create(approval_entity, actor=actor)
+
+    audit_record = AuditRecord.create(
+        actor=actor,
+        action=f"pmdf.approval.{request.decision}",
+        target_kind="approval",
+        target_id=approval_entity.id,
+        detail={"proposal_id": proposal.id, "target": proposal.target},
+        prev_hash=latest_hash(settings.audit_log_path),
+    )
+    append_record(audit_record, settings.audit_log_path)
 
     updated = proposal.model_copy(
         update={

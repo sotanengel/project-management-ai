@@ -17,8 +17,10 @@ from pmdf.models.common import PmdfBase
 from pmdf.schema_registry import SchemaNotFoundError, validate_entity
 from pmdf.validate import validate_references
 
+from api_server.audit.log import AuditRecord, append_record, latest_hash
 from api_server.auth.dependencies import check_product_scope, get_current_user, require_role
 from api_server.auth.models import User
+from api_server.config import Settings, get_settings
 from api_server.deps import get_pmdf_store_dependency
 from api_server.pmdf_store.store import PmdfStore
 
@@ -31,6 +33,20 @@ _UNDELETABLE_KINDS = frozenset({"approval", "decision"})
 def _actor_from_user(user: User) -> str:
     """認証済みユーザーからGitコミットのauthorに用いるactor文字列を組み立てる。"""
     return f"user:{user.id}"
+
+
+def _record_pmdf_audit(*, settings: Settings, actor: str, verb: str, entity: PmdfBase) -> None:
+    """PMDF書込操作(create/update)を監査ログへ追記する(FR-AU-04/SEC-04)。"""
+    log_path = settings.audit_log_path
+    record = AuditRecord.create(
+        actor=actor,
+        action=f"pmdf.{entity.kind}.{verb}",
+        target_kind=entity.kind,
+        target_id=entity.id,
+        detail={},
+        prev_hash=latest_hash(log_path),
+    )
+    append_record(record, log_path)
 
 
 def _resolve_product_id(kind: str, entity: PmdfBase) -> str | None:
@@ -87,13 +103,16 @@ def create_entity(
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(require_role("admin", "editor"))],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> dict[str, Any]:
     payload = {**payload, "kind": kind}
     _validate_schema_and_references(payload, kind, store)
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    created = store.create(entity, actor=_actor_from_user(user))
+    actor = _actor_from_user(user)
+    created = store.create(entity, actor=actor)
+    _record_pmdf_audit(settings=settings, actor=actor, verb="create", entity=created)
     return entity_to_json_dict(created)
 
 
@@ -163,6 +182,7 @@ def update_entity(
     payload: dict[str, Any],
     store: Annotated[PmdfStore, Depends(get_pmdf_store_dependency)],
     user: Annotated[User, Depends(require_role("admin", "editor"))],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> dict[str, Any]:
     _get_model_cls(kind)
     try:
@@ -175,7 +195,9 @@ def update_entity(
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    updated = store.update(entity, actor=_actor_from_user(user))
+    actor = _actor_from_user(user)
+    updated = store.update(entity, actor=actor)
+    _record_pmdf_audit(settings=settings, actor=actor, verb="update", entity=updated)
     return entity_to_json_dict(updated)
 
 
