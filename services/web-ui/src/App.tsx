@@ -10,7 +10,8 @@ import { DocumentViewer } from "./pages/DocumentViewer";
 import { ActivityLog } from "./pages/ActivityLog";
 import { EntityEditor } from "./pages/EntityEditor";
 import { ImportExport } from "./pages/ImportExport";
-import { Placeholder } from "./pages/Placeholder";
+import { AgentControl } from "./pages/AgentControl";
+import { CostAndLearning } from "./pages/CostAndLearning";
 
 function App() {
   return (
@@ -29,11 +30,8 @@ function App() {
             <Route path="/edit/:kind/:id" element={<EntityEditor />} />
             <Route path="/activity" element={<ActivityLog />} />
             <Route path="/import-export" element={<ImportExport />} />
-            <Route
-              path="/agent-control"
-              element={<Placeholder title="エージェント制御" />}
-            />
-            <Route path="/costs" element={<Placeholder title="コスト" />} />
+            <Route path="/agent-control" element={<AgentControl />} />
+            <Route path="/costs" element={<CostAndLearning />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -67,3 +67,13 @@ jobs:
         if: steps.check.outputs.exists == 'true'
         working-directory: services/web-ui
         run: pnpm build
+
+      - name: Install Playwright browsers
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E (Playwright)
+        if: steps.check.outputs.exists == 'true'
+        working-directory: services/web-ui
+        run: pnpm test:e2e

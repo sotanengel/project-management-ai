@@ -309,3 +309,77 @@ export async function applyImportBundle(
   });
   return (await response.json()) as BundleApplyResult;
 }
+
+// --- 自律レベル・緊急停止API(FR-UI-07) ---
+export type AutonomyConfig =
+  paths["/autonomy"]["get"]["responses"][200]["content"]["application/json"][number];
+export type AutonomyLevel = AutonomyConfig["level"];
+export type EmergencyStopResponse =
+  paths["/autonomy/emergency-stop/status"]["get"]["responses"][200]["content"]["application/json"];
+export type ChatInstructionRequest =
+  paths["/chat/instructions"]["post"]["requestBody"]["content"]["application/json"];
+export type CostSummaryResponse =
+  paths["/costs/summary"]["get"]["responses"][200]["content"]["application/json"];
+
+/** api-serverが定義する11業務種別(FR-PD-01〜11)。 */
+export const BUSINESS_FUNCTIONS = [
+  "vision",
+  "roadmap",
+  "discovery",
+  "backlog",
+  "kpi_monitoring",
+  "experiment",
+  "release",
+  "decision_record",
+  "stakeholder",
+  "initiative",
+  "periodic_review",
+] as const;
+
+export type BusinessFunction = (typeof BUSINESS_FUNCTIONS)[number];
+
+export function listAutonomyLevels(): Promise<AutonomyConfig[]> {
+  return apiRequest<AutonomyConfig[]>("/autonomy");
+}
+
+export function setAutonomyLevel(
+  productId: string,
+  businessFunction: string,
+  level: AutonomyLevel,
+): Promise<AutonomyConfig> {
+  return apiRequest<AutonomyConfig>(
+    `/autonomy/${encodeURIComponent(productId)}/${encodeURIComponent(businessFunction)}`,
+    { method: "PUT", body: { level } },
+  );
+}
+
+export function getEmergencyStopStatus(): Promise<EmergencyStopResponse> {
+  return apiRequest<EmergencyStopResponse>("/autonomy/emergency-stop/status");
+}
+
+export function triggerEmergencyStop(): Promise<EmergencyStopResponse> {
+  return apiRequest<EmergencyStopResponse>("/autonomy/emergency-stop", {
+    method: "POST",
+    body: {},
+  });
+}
+
+export function releaseEmergencyStop(): Promise<EmergencyStopResponse> {
+  return apiRequest<EmergencyStopResponse>("/autonomy/emergency-stop/release", {
+    method: "POST",
+    body: {},
+  });
+}
+
+export function sendChatInstruction(
+  request: ChatInstructionRequest,
+): Promise<ChatTask> {
+  return apiRequest<ChatTask>("/chat/instructions", {
+    method: "POST",
+    body: request,
+  });
+}
+
+export function getCostSummary(): Promise<CostSummaryResponse> {
+  return apiRequest<CostSummaryResponse>("/costs/summary");
+}
