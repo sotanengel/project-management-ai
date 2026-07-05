@@ -1,0 +1,250 @@
+- id: pmdf_accuracy-001
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 1: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-002
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 2: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-003
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 3: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-004
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 4: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-005
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 5: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-006
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 6: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-007
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 7: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-008
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 8: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-009
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 9: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-010
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 10: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-011
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 11: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-012
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 12: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-013
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 13: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-014
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 14: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-015
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 15: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-016
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 16: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-017
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 17: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-018
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 18: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-019
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 19: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-020
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 20: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-021
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 21: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-022
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 22: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-023
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 23: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-024
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 24: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-025
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 25: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-026
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 26: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-027
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 27: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-028
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 28: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-029
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 29: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-030
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 30: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-031
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 31: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-032
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 32: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-033
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 33: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-034
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 34: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-035
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 35: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-036
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 36: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-037
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 37: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-038
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 38: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-039
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 39: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-040
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 40: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-041
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 41: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-042
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 42: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-043
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 43: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-044
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 44: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-045
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 45: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-046
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 46: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-047
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 47: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-048
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 48: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-049
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 49: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: pmdf_accuracy-050
+  category: pmdf_accuracy
+  question: '[pmdf_accuracy] サンプル問題 50: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5

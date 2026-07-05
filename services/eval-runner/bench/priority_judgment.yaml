@@ -1,0 +1,250 @@
+- id: priority_judgment-001
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 1: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-002
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 2: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-003
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 3: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-004
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 4: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-005
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 5: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-006
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 6: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-007
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 7: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-008
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 8: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-009
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 9: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-010
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 10: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-011
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 11: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-012
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 12: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-013
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 13: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-014
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 14: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-015
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 15: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-016
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 16: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-017
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 17: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-018
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 18: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-019
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 19: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-020
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 20: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-021
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 21: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-022
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 22: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-023
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 23: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-024
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 24: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-025
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 25: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-026
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 26: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-027
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 27: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-028
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 28: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-029
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 29: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-030
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 30: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-031
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 31: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-032
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 32: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-033
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 33: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-034
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 34: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-035
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 35: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-036
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 36: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-037
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 37: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-038
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 38: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-039
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 39: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-040
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 40: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-041
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 41: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-042
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 42: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-043
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 43: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-044
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 44: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-045
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 45: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-046
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 46: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-047
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 47: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-048
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 48: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-049
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 49: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: priority_judgment-050
+  category: priority_judgment
+  question: '[priority_judgment] サンプル問題 50: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
