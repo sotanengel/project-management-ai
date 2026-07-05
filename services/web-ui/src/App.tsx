@@ -9,6 +9,7 @@ import { ApprovalHistory } from "./pages/ApprovalHistory";
 import { DocumentViewer } from "./pages/DocumentViewer";
 import { ActivityLog } from "./pages/ActivityLog";
 import { EntityEditor } from "./pages/EntityEditor";
+import { ImportExport } from "./pages/ImportExport";
 import { Placeholder } from "./pages/Placeholder";
 
 function App() {
@@ -27,10 +28,7 @@ function App() {
             <Route path="/documents/:kind/:id" element={<DocumentViewer />} />
             <Route path="/edit/:kind/:id" element={<EntityEditor />} />
             <Route path="/activity" element={<ActivityLog />} />
-            <Route
-              path="/import-export"
-              element={<Placeholder title="Import-Export" />}
-            />
+            <Route path="/import-export" element={<ImportExport />} />
             <Route
               path="/agent-control"
               element={<Placeholder title="エージェント制御" />}

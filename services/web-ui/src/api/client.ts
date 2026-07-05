@@ -52,6 +52,37 @@ function buildUrl(path: string, query?: RequestOptions["query"]): string {
   return url.toString();
 }
 
+/** 認証エラー時に共通のExceptionを送出するfetchラッパー(JSON/multipart/blob共通の下地)。 */
+async function rawFetch(
+  path: string,
+  init: { method: string; headers?: Record<string, string>; body?: BodyInit },
+): Promise<Response> {
+  const headers: Record<string, string> = { ...init.headers };
+  const token = tokenGetter();
+  if (token && headers.Authorization === undefined) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(buildUrl(path), {
+    method: init.method,
+    headers,
+    body: init.body,
+  });
+
+  if (!response.ok) {
+    let detail: unknown;
+    try {
+      const data = await response.json();
+      detail = data?.detail ?? data;
+    } catch {
+      detail = response.statusText;
+    }
+    throw new ApiError(response.status, detail);
+  }
+
+  return response;
+}
+
 /** fetchラッパー: JWTのAuthorizationヘッダ付与・エラーの共通ハンドリングを行う。 */
 export async function apiRequest<TResponse>(
   path: string,
@@ -209,4 +240,72 @@ export function listAuditRecords(
       date_to: params?.dateTo,
     },
   });
+}
+
+// --- Import/Export(バンドル)API ---
+export interface ExportRequest {
+  product_ids?: string[] | null;
+  kinds?: string[] | null;
+}
+
+/** `POST /bundles/export`(FR-UI-06)。バンドルのBlobを返す(ダウンロード保存はUI側)。 */
+export async function exportBundle(request: ExportRequest): Promise<Blob> {
+  const response = await rawFetch("/bundles/export", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  });
+  return response.blob();
+}
+
+export type BundleDiffType = "new" | "conflict" | "identical";
+
+export interface BundleDiffEntry {
+  id: string;
+  kind: string;
+  diff_type: BundleDiffType;
+  field_diffs: Record<string, { current: unknown; incoming: unknown }>;
+  reference_errors: string[];
+}
+
+export interface BundleValidationResult {
+  is_valid: boolean;
+  manifest: Record<string, unknown>;
+  diffs: BundleDiffEntry[];
+}
+
+/** `POST /bundles/import/validate`(multipart)。スキーマ検証+差分プレビューを返す。 */
+export async function validateImportBundle(
+  file: File,
+): Promise<BundleValidationResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await rawFetch("/bundles/import/validate", {
+    method: "POST",
+    body: formData,
+  });
+  return (await response.json()) as BundleValidationResult;
+}
+
+export type ImportResolution = "incoming" | "existing";
+
+export interface BundleApplyResult {
+  applied_ids: string[];
+  skipped_ids: string[];
+  dry_run: boolean;
+}
+
+/** `POST /bundles/import/apply`(multipart)。競合解決方針(id→incoming/existing)を渡して適用する。 */
+export async function applyImportBundle(
+  file: File,
+  resolutions: Record<string, ImportResolution>,
+): Promise<BundleApplyResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("resolutions", JSON.stringify(resolutions));
+  const response = await rawFetch("/bundles/import/apply", {
+    method: "POST",
+    body: formData,
+  });
+  return (await response.json()) as BundleApplyResult;
 }
