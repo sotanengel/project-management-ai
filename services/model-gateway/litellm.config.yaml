@@ -92,10 +92,9 @@ litellm_settings:
   success_callback: ["langfuse"] # 実運用ではapi-server側の集計を優先し無効化可
   request_timeout: 30
 
-# --- コスト計測用データストア(E4-3) -----------------------------------------
-# Tier-Lではファイルベース(SQLite)を既定とする。DB無し構成の場合、
-# api-server側の軽量コスト記録ストア(JSONL、POST /costs/usage)で代替する
-# (詳細はservices/api-server/src/api_server/costs/を参照)。
+# --- コスト計測(E4-3) -------------------------------------------------------
+# Tier-LではLiteLLM DB(spend tracking)は未接続。api-server側の軽量コスト記録
+# ストア(JSONL、POST /costs/usage)で代替する(詳細は
+# services/api-server/src/api_server/costs/を参照)。
 general_settings:
-  database_url: os.environ/LITELLM_DATABASE_URL
   store_model_in_db: false
