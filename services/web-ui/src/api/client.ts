@@ -100,6 +100,8 @@ export type TokenResponse =
   paths["/auth/login"]["post"]["responses"][200]["content"]["application/json"];
 export type ProposalResponse =
   paths["/approvals"]["get"]["responses"][200]["content"]["application/json"][number];
+export type DecideRequest =
+  paths["/approvals/{proposal_id}/decide"]["post"]["requestBody"]["content"]["application/json"];
 
 // --- 認証API ---
 export function login(request: LoginRequest): Promise<TokenResponse> {
@@ -121,6 +123,16 @@ export function refresh(accessToken: string): Promise<TokenResponse> {
 // --- 承認API ---
 export function listApprovals(status?: string): Promise<ProposalResponse[]> {
   return apiRequest<ProposalResponse[]>("/approvals", { query: { status } });
+}
+
+export function decideApproval(
+  proposalId: string,
+  request: DecideRequest,
+): Promise<ProposalResponse> {
+  return apiRequest<ProposalResponse>(`/approvals/${proposalId}/decide`, {
+    method: "POST",
+    body: request,
+  });
 }
 
 // --- PMDF汎用API ---

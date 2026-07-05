@@ -10,6 +10,7 @@ const NAV_ITEMS: Array<{
 }> = [
   { to: "/dashboard", label: "ダッシュボード" },
   { to: "/approvals", label: "承認キュー", showApprovalBadge: true },
+  { to: "/approvals/history", label: "承認履歴" },
   { to: "/documents", label: "ドキュメント" },
   { to: "/activity", label: "活動ログ" },
   { to: "/import-export", label: "Import-Export" },

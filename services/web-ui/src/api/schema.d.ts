@@ -726,6 +726,10 @@ export interface components {
       reason?: string | null;
       /** Approval Entity Id */
       approval_entity_id?: string | null;
+      /** Draft */
+      draft?: {
+        [key: string]: unknown;
+      } | null;
     };
     /**
      * ProposalState
@@ -739,6 +743,10 @@ export interface components {
       target: string;
       /** Proposer */
       proposer: string;
+      /** Draft */
+      draft?: {
+        [key: string]: unknown;
+      } | null;
     };
     /** RefreshRequest */
     RefreshRequest: {
