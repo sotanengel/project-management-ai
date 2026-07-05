@@ -10,6 +10,7 @@ dependencies = [
     "langgraph>=0.2.0",
     "langchain-core>=0.3.0",
     "qdrant-client>=1.15.1",
+    "pmdf",
 ]
 
 [dependency-groups]
@@ -30,6 +31,7 @@ dev = [
 [tool.uv.sources]
 api-server = { workspace = true }
 kb-ingest = { workspace = true }
+pmdf = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
