@@ -36,6 +36,14 @@
 - **アクティブブランチ: `develop`**。全実装作業は `develop` ブランチ上で
   行う。`main` への切替・PRマージはユーザーが手動で行う方針のため、
   実装エージェントは `main` へのswitchや `gh pr merge` を行わない。
+- **Phase 3(E7: web-ui)**: **E7-1〜E7-3完了**(#51 be34c88 / #52
+  bfab912 / #53 32bdbe3)。web-ui骨格(認証・APIクライアント
+  (`openapi-typescript`生成型)・レイアウト・WebSocketクライアント・
+  承認バッジ・プロダクトダッシュボード)を実装済み。**E7-4〜E7-9は
+  未着手**。起動方法は`services/web-ui`で`pnpm install`(初回のみ)→
+  `pnpm dev`(Vite開発サーバ、既定`http://localhost:5173`。
+  APIサーバ接続先は`.env`の`VITE_API_BASE_URL`、既定
+  `http://localhost:8000`)。検証は`pnpm lint && pnpm test && pnpm build`。
 
 ## 再開手順
 
@@ -60,7 +68,7 @@
 | E4       | #4        | model-gateway + compose統合   | phase:2    | 一部完了(E4-1〜3=#37,#83,#84完了。E4-4,#85/E4-5,#86はE7-1後に実施) |
 | E5       | #5        | agent-core                    | phase:3    | **完了**(E5-1〜E5-9 = #38〜#46)                                    |
 | E6       | #6        | 知識ベース                    | phase:3    | **完了**(E6-1〜E6-4 = #47〜#50)                                    |
-| E7       | #7        | web-ui                        | phase:3    | 未着手                                                             |
+| E7       | #7        | web-ui                        | phase:3    | 一部完了(E7-1〜3=#51,#52,#53完了。E7-4以降は未着手)                |
 | E8       | #8        | 自己学習ループ                | phase:4    | 未着手                                                             |
 | E9       | #9        | 運用機能                      | phase:5    | 未着手                                                             |
 | E10      | #10       | E2E受け入れとドキュメント     | phase:5    | 未着手                                                             |
