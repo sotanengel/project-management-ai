@@ -11,6 +11,7 @@ from api_server.logging import configure_logging
 from api_server.routers import (
     admin,
     approvals,
+    audit,
     auth,
     autonomy,
     bundles,
@@ -48,6 +49,7 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(admin.router)
     app.include_router(approvals.router)
+    app.include_router(audit.router)
     app.include_router(autonomy.router)
     app.include_router(bundles.router)
     app.include_router(chat.router)

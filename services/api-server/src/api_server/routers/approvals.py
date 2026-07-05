@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pmdf.models import Approval
@@ -40,6 +40,8 @@ router = APIRouter(prefix="/approvals", tags=["approvals"])
 class ProposeRequest(BaseModel):
     target: str
     proposer: str
+    #: 起案内容(変更前後diff表示用、E7-4)。省略可。
+    draft: dict[str, Any] | None = None
 
 
 class ProposalResponse(BaseModel):
@@ -50,6 +52,7 @@ class ProposalResponse(BaseModel):
     approver: str | None = None
     reason: str | None = None
     approval_entity_id: str | None = None
+    draft: dict[str, Any] | None = None
 
 
 class DecideRequest(BaseModel):
@@ -87,6 +90,7 @@ async def propose(
         target=request.target,
         proposer=request.proposer,
         status=ProposalState.PROPOSED,
+        draft=request.draft,
     )
     add_proposal(settings.proposal_store_path, proposal)
     await _publish_count_changed(bus, settings)

@@ -83,6 +83,32 @@ async def test_propose_returns_201_with_proposed_status(client: AsyncClient) -> 
 
 
 @pytest.mark.asyncio
+async def test_propose_with_draft_is_persisted_and_listed(client: AsyncClient) -> None:
+    """起案内容(draft、E7-4のPMDF diff表示に必要)は任意項目としてプロポーザルに保持される。"""
+    draft = {"theme": "新テーマ案", "status": "in_progress"}
+    propose_response = await client.post(
+        "/approvals", json={"target": TARGET_ID, "proposer": PROPOSER_ID, "draft": draft}
+    )
+
+    assert propose_response.status_code == 201, propose_response.text
+    assert propose_response.json()["draft"] == draft
+
+    list_response = await client.get("/approvals", params={"status": "pending"})
+    assert list_response.status_code == 200
+    body = list_response.json()
+    assert len(body) == 1
+    assert body[0]["draft"] == draft
+
+
+@pytest.mark.asyncio
+async def test_propose_without_draft_returns_none(client: AsyncClient) -> None:
+    response = await client.post("/approvals", json={"target": TARGET_ID, "proposer": PROPOSER_ID})
+
+    assert response.status_code == 201, response.text
+    assert response.json()["draft"] is None
+
+
+@pytest.mark.asyncio
 async def test_list_pending_approvals_returns_proposed_only(client: AsyncClient) -> None:
     propose_response = await client.post(
         "/approvals", json={"target": TARGET_ID, "proposer": PROPOSER_ID}

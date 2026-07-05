@@ -134,6 +134,44 @@ async def test_get_task_returns_current_status(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_list_tasks_returns_all_tasks_newest_first(client: AsyncClient) -> None:
+    """E7-6のエージェント活動ログ画面向け一覧API。新しいタスクが先頭に来る。"""
+    first = await client.post(
+        "/chat/instructions", json={"message": "1件目", "product_id": PRODUCT_ID}
+    )
+    second = await client.post(
+        "/chat/instructions", json={"message": "2件目", "product_id": PRODUCT_ID}
+    )
+
+    response = await client.get("/chat/tasks")
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert len(body) == 2
+    assert body[0]["id"] == second.json()["id"]
+    assert body[1]["id"] == first.json()["id"]
+
+
+@pytest.mark.asyncio
+async def test_list_tasks_filters_by_status(client: AsyncClient) -> None:
+    create_response = await client.post(
+        "/chat/instructions", json={"message": "実行中タスク", "product_id": PRODUCT_ID}
+    )
+    task_id = create_response.json()["id"]
+    await client.post(f"/chat/tasks/{task_id}/transition", json={"status": "running"})
+    await client.post(
+        "/chat/instructions", json={"message": "待機中タスク", "product_id": PRODUCT_ID}
+    )
+
+    response = await client.get("/chat/tasks", params={"status": "running"})
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert len(body) == 1
+    assert body[0]["id"] == task_id
+
+
+@pytest.mark.asyncio
 async def test_get_unknown_task_returns_404(client: AsyncClient) -> None:
     response = await client.get("/chat/tasks/task-does-not-exist")
     assert response.status_code == 404

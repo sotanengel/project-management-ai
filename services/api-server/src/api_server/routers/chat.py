@@ -14,7 +14,7 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api_server.auth.dependencies import get_current_user, require_role
 from api_server.auth.models import User
@@ -25,6 +25,7 @@ from api_server.chat.task_store import (
     ChatTaskTransitionRequest,
     add_task,
     find_task_by_id,
+    load_tasks,
     update_task,
 )
 from api_server.config import Settings, get_settings
@@ -63,6 +64,19 @@ async def post_instructions(
     add_task(settings.chat_task_store_path, task)
     await _publish_activity(bus, task)
     return task
+
+
+@router.get("/tasks", response_model=list[ChatTask])
+def list_tasks(
+    settings: Annotated[Settings, Depends(get_settings)],
+    _user: Annotated[User, Depends(get_current_user)],
+    status_filter: Annotated[str | None, Query(alias="status")] = None,
+) -> list[ChatTask]:
+    """チャットタスク一覧を新しい順に返す(E7-6のエージェント活動ログ画面向け)。"""
+    tasks = load_tasks(settings.chat_task_store_path)
+    if status_filter is not None:
+        tasks = [t for t in tasks if t.status.value == status_filter]
+    return list(reversed(tasks))
 
 
 @router.get("/tasks/{task_id}", response_model=ChatTask)

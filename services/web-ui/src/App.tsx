@@ -4,6 +4,12 @@ import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { Layout } from "./components/Layout";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
+import { Approvals } from "./pages/Approvals";
+import { ApprovalHistory } from "./pages/ApprovalHistory";
+import { DocumentViewer } from "./pages/DocumentViewer";
+import { ActivityLog } from "./pages/ActivityLog";
+import { EntityEditor } from "./pages/EntityEditor";
+import { ImportExport } from "./pages/ImportExport";
 import { Placeholder } from "./pages/Placeholder";
 
 function App() {
@@ -15,11 +21,18 @@ function App() {
           <Route element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/approvals" element={<Placeholder title="承認キュー" />} />
-            <Route path="/documents" element={<Placeholder title="ドキュメント" />} />
-            <Route path="/activity" element={<Placeholder title="活動ログ" />} />
-            <Route path="/import-export" element={<Placeholder title="Import-Export" />} />
-            <Route path="/agent-control" element={<Placeholder title="エージェント制御" />} />
+            <Route path="/approvals" element={<Approvals />} />
+            <Route path="/approvals/history" element={<ApprovalHistory />} />
+            <Route path="/documents" element={<DocumentViewer />} />
+            <Route path="/documents/:kind" element={<DocumentViewer />} />
+            <Route path="/documents/:kind/:id" element={<DocumentViewer />} />
+            <Route path="/edit/:kind/:id" element={<EntityEditor />} />
+            <Route path="/activity" element={<ActivityLog />} />
+            <Route path="/import-export" element={<ImportExport />} />
+            <Route
+              path="/agent-control"
+              element={<Placeholder title="エージェント制御" />}
+            />
             <Route path="/costs" element={<Placeholder title="コスト" />} />
           </Route>
         </Route>

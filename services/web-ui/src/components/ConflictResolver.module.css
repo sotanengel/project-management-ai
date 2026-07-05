@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+  border: 1px solid #e0a800;
+  border-radius: 6px;
+  padding: 0.75rem;
+  background: #fff8e1;
+}
+
+.itemHeader {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.fieldTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.5rem;
+}
+
+.fieldTable th,
+.fieldTable td {
+  text-align: left;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.actionButtonSelected {
+  background: #2c3e50;
+  color: #fff;
+  border-color: #2c3e50;
+}

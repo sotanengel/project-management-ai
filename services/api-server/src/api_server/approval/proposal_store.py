@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -28,6 +29,9 @@ class Proposal(BaseModel):
     reason: str | None = None
     #: 決定が下された際に作成された`Approval`(PMDF)エンティティのid。
     approval_entity_id: str | None = None
+    #: 起案内容(変更前後diff表示用、E7-4)。agent-core側で生成された変更案
+    #: (対象エンティティに適用予定のフィールド値)を任意で保持する。
+    draft: dict[str, Any] | None = None
 
 
 def load_proposals(path: Path) -> list[Proposal]:
