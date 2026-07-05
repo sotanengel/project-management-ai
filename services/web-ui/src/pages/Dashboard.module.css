@@ -1,0 +1,90 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.productSelectRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.productSelectRow select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.kpiList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approvalCount {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.noData {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.roadmapListWrapper {
+  margin-top: 12px;
+}
+
+.roadmapRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.roadmapPeriod {
+  color: var(--color-text-muted);
+}
+
+.activityRow {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.activityTaskId {
+  font-weight: 600;
+}
+
+.activityStatus {
+  color: var(--color-primary);
+}
+
+.activityIntent {
+  color: var(--color-text-muted);
+}

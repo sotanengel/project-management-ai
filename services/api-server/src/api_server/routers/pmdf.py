@@ -7,10 +7,11 @@
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Any
 
 import jsonschema
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from pmdf.io import entity_to_json_dict
 from pmdf.models import KIND_TO_MODEL
 from pmdf.models.common import PmdfBase
@@ -30,9 +31,22 @@ router = APIRouter(prefix="/pmdf", tags=["pmdf"])
 #: 削除不可のエンティティ種別(DR-06)。
 _UNDELETABLE_KINDS = frozenset({"approval", "decision"})
 
+#: agent-core(E5-2)がリクエストヘッダで実際のエージェント識別子を伝える
+#: ための専用ヘッダ名。値が存在する場合、監査ログ・Gitコミットのactorを
+#: このヘッダの値(`agent:<name>@v<version>`形式)で上書きする。
+_AGENT_ACTOR_HEADER = "X-Agent-Actor"
+_AGENT_ACTOR_PATTERN = re.compile(r"^agent:[^@]+@v.+$")
 
-def _actor_from_user(user: User) -> str:
-    """認証済みユーザーからGitコミットのauthorに用いるactor文字列を組み立てる。"""
+
+def _actor_from_user(user: User, agent_actor: str | None = None) -> str:
+    """認証済みユーザーからGitコミットのauthorに用いるactor文字列を組み立てる。
+
+    `agent_actor`(`X-Agent-Actor`ヘッダの値)が`agent:<name>@v<version>`
+    形式であれば、そちらを優先する(agent-coreのツール呼び出しであることを
+    監査ログ・Gitコミット履歴で判別できるようにするため)。
+    """
+    if agent_actor is not None and _AGENT_ACTOR_PATTERN.match(agent_actor):
+        return agent_actor
     return f"user:{user.id}"
 
 
@@ -113,13 +127,14 @@ async def create_entity(
     user: Annotated[User, Depends(require_role("admin", "editor"))],
     settings: Annotated[Settings, Depends(get_settings)],
     bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
+    agent_actor: Annotated[str | None, Header(alias=_AGENT_ACTOR_HEADER)] = None,
 ) -> dict[str, Any]:
     payload = {**payload, "kind": kind}
     _validate_schema_and_references(payload, kind, store)
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    actor = _actor_from_user(user)
+    actor = _actor_from_user(user, agent_actor)
     created = store.create(entity, actor=actor)
     _record_pmdf_audit(settings=settings, actor=actor, verb="create", entity=created)
     await _publish_entity_changed(bus, kind=kind, entity_id=created.id, verb="create")
@@ -194,6 +209,7 @@ async def update_entity(
     user: Annotated[User, Depends(require_role("admin", "editor"))],
     settings: Annotated[Settings, Depends(get_settings)],
     bus: Annotated[InMemoryEventBus, Depends(get_event_bus)],
+    agent_actor: Annotated[str | None, Header(alias=_AGENT_ACTOR_HEADER)] = None,
 ) -> dict[str, Any]:
     _get_model_cls(kind)
     try:
@@ -206,7 +222,7 @@ async def update_entity(
 
     model_cls = _get_model_cls(kind)
     entity = model_cls.model_validate(payload)
-    actor = _actor_from_user(user)
+    actor = _actor_from_user(user, agent_actor)
     updated = store.update(entity, actor=actor)
     _record_pmdf_audit(settings=settings, actor=actor, verb="update", entity=updated)
     await _publish_entity_changed(bus, kind=kind, entity_id=updated.id, verb="update")

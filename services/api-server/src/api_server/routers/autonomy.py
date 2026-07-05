@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from api_server.audit.log import AuditRecord, append_record, latest_hash
-from api_server.auth.dependencies import require_role
+from api_server.auth.dependencies import get_current_user, require_role
 from api_server.auth.models import User
 from api_server.autonomy.config import (
     AutonomyConfig,
@@ -72,6 +72,20 @@ def set_autonomy_level(
     )
     append_record(audit_record, settings.audit_log_path)
     return updated
+
+
+@router.get("/emergency-stop/status", response_model=EmergencyStopResponse)
+def get_emergency_stop_status(
+    settings: Annotated[Settings, Depends(get_settings)],
+    _user: Annotated[User, Depends(get_current_user)],
+) -> EmergencyStopResponse:
+    """緊急停止状態の照会(E5-1: agent-coreが毎ステップ照会する読み取り専用API)。
+
+    トリガー・解除(admin専用)とは異なり、認証済みであればロールを
+    問わず参照できる(agent-coreのサービスアカウントがeditor/admin
+    いずれであっても照会できるようにするため)。
+    """
+    return EmergencyStopResponse(emergency_stopped=is_stopped(settings.emergency_stop_path))
 
 
 @router.post("/emergency-stop", response_model=EmergencyStopResponse)

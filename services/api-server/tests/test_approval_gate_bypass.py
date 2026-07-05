@@ -19,6 +19,7 @@ from httpx import ASGITransport, AsyncClient
 DECISION_ID = "dec-01HGATEAAAAAAAAAAAAAAAAAAA"
 ROADMAP_ID = "roadmap-01HGATEAAAAAAAAAAAAAAAAAAA"
 RELEASE_ID = "release-01HGATEAAAAAAAAAAAAAAAAAAA"
+STAKEHOLDER_ID = "stakeholder-01HGATESENDAAAAAAAAAAAAAAA"
 PRODUCT_ID = "prod-01HGATEAAAAAAAAAAAAAAAAAAA"
 OBJECTIVE_ID = "obj-01HGATEAAAAAAAAAAAAAAAAAAA"
 PROPOSER_ID = "stakeholder-01HPRP1AAAAAAAAAAAAAAAAAAA"
@@ -31,6 +32,7 @@ L1_ENDPOINTS: list[tuple[str, str, str, str]] = [
     ("POST", "/pmdf/decision/{id}/execute", "decision", DECISION_ID),
     ("POST", "/roadmap/{id}/confirm", "roadmap_item", ROADMAP_ID),
     ("POST", "/release/{id}/go-no-go", "release", RELEASE_ID),
+    ("POST", "/stakeholder/{id}/send-message", "stakeholder", STAKEHOLDER_ID),
 ]
 
 
@@ -117,10 +119,27 @@ def _valid_release_payload(**overrides: object) -> dict:
     return payload
 
 
+def _valid_stakeholder_payload(**overrides: object) -> dict:
+    payload: dict[str, Any] = {
+        "pmdf_version": "1.0.0",
+        "kind": "stakeholder",
+        "id": STAKEHOLDER_ID,
+        "provenance": {"created_by": "user:tester", "updated_at": "2026-01-01T00:00:00Z"},
+        "attachments": [],
+        "name": "テスト関係者",
+        "role": "スポンサー",
+        "influence": "high",
+        "interests": [],
+    }
+    payload.update(overrides)
+    return payload
+
+
 _KIND_TO_CREATE_PAYLOAD = {
     "decision": ("/pmdf/decision", _valid_decision_payload),
     "roadmap_item": ("/pmdf/roadmap_item", _valid_roadmap_item_payload),
     "release": ("/pmdf/release", _valid_release_payload),
+    "stakeholder": ("/pmdf/stakeholder", _valid_stakeholder_payload),
 }
 
 

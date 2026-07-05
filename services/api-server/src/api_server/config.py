@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     #: LLM呼び出しusage(トークン数・レイテンシ・概算コスト)記録のJSONLパス。
     cost_usage_log_path: Path = Path("data/costs/usage.jsonl")
 
+    #: チャット指示タスク(E5-9)のファイルベースストアのパス。
+    chat_task_store_path: Path = Path("data/chat_tasks.json")
+
 
 @lru_cache
 def get_settings() -> Settings:

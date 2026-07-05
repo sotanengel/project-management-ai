@@ -18,7 +18,10 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: ^scripts/bootstrap_issues/issues\.yaml$
+        # pnpm-lock.yamlはパッケージ整合性ハッシュ(base64エンコードの
+        # sha512等)を大量に含み、detect-secretsが高エントロピー文字列と
+        # して誤検知するため除外する(実際のシークレットは含まれない)。
+        exclude: ^scripts/bootstrap_issues/issues\.yaml$|pnpm-lock\.yaml$
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
