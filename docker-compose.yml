@@ -14,27 +14,31 @@ volumes:
   minio-data:
   mlflow-data:
   ollama-data:
+  api-server-data:
 
 services:
   # --- 常時稼働サービス(全profile共通) -----------------------------------
 
   web-ui:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/web-ui/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${API_BASE_URL:-http://api-server:8000}
     networks: [pmai-net]
     ports:
       - "${WEB_UI_HOST_PORT:-8080}:80"
-    environment:
-      API_BASE_URL: ${API_BASE_URL:-http://api-server:8000}
     depends_on:
-      - api-server
+      api-server:
+        condition: service_healthy
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
 
   api-server:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/api-server/Dockerfile
     networks: [pmai-net]
     ports:
       - "${API_SERVER_HOST_PORT:-8000}:8000"
@@ -42,56 +46,96 @@ services:
       MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
       QDRANT_URL: ${QDRANT_URL}
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
-      PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+      PMDF_STORE_PATH: ${PMDF_STORE_PATH:-/data/pmdf}
       JWT_SECRET: ${JWT_SECRET}
+      USER_STORE_PATH: /app/data/users.json
+      PROPOSAL_STORE_PATH: /app/data/proposals.json
+      AUDIT_LOG_PATH: /app/data/audit/audit.log.jsonl
+      AUTONOMY_CONFIG_PATH: /app/data/autonomy.json
+      EMERGENCY_STOP_PATH: /app/data/emergency_stop.json
+      CHAT_TASK_STORE_PATH: /app/data/chat_tasks.json
+      COST_USAGE_LOG_PATH: /app/data/costs/usage.jsonl
+      BUDGET_MONTHLY_JPY: ${BUDGET_MONTHLY_JPY:-50000}
+    volumes:
+      - pmdf-store-data:/data/pmdf
+      - api-server-data:/app/data
     depends_on:
-      - model-gateway
-      - qdrant
-      - pmdf-store
+      pmdf-store:
+        condition: service_healthy
+      model-gateway:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      start_period: 20s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
 
   agent-core:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/agent-core/Dockerfile
     networks: [pmai-net]
     # 非公開(SEC-02): 外部公開ポートなし
     environment:
       MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
       QDRANT_URL: ${QDRANT_URL}
-      PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+      PMDF_STORE_PATH: ${PMDF_STORE_PATH:-/data/pmdf}
+      AGENT_CORE_HEALTH_PORT: "8081"
+    volumes:
+      - pmdf-store-data:/data/pmdf
     depends_on:
-      - model-gateway
-      - qdrant
-      - pmdf-store
+      model-gateway:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      pmdf-store:
+        condition: service_healthy
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      test: ["CMD", "curl", "-f", "http://localhost:8081/healthz"]
 
   pmdf-store:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/pmdf-store/Dockerfile
     networks: [pmai-net]
     # 非公開(SEC-02): Git bare + ファイル領域、外部公開ポートなし
     volumes:
-      - pmdf-store-data:${PMDF_STORE_PATH:-/data/pmdf}
+      - pmdf-store-data:/data/pmdf
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      test: ["CMD", "test", "-d", "/data/pmdf"]
 
   model-gateway:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: services/model-gateway
+      dockerfile: Dockerfile
     networks: [pmai-net]
     # 非公開(SEC-02): LiteLLM Proxy、外部公開ポートなし(内部ネットワークのみ)
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      MODEL_GATEWAY_PORT: ${MODEL_GATEWAY_PORT:-4000}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      PDM_MAIN_MODEL: ${PDM_MAIN_MODEL}
+      PDM_MAIN_LOCAL_MODEL: ${PDM_MAIN_LOCAL_MODEL}
+      PDM_MAIN_LOCAL_API_BASE: ${PDM_MAIN_LOCAL_API_BASE}
+      PDM_MAIN_FALLBACK_MODEL: ${PDM_MAIN_FALLBACK_MODEL}
+      PDM_TEACHER_MODEL: ${PDM_TEACHER_MODEL}
+      PDM_JUDGE_MODEL: ${PDM_JUDGE_MODEL}
+      PDM_EMBED_MODEL: ${PDM_EMBED_MODEL}
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      start_period: 30s
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')",
+        ]
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -101,11 +145,16 @@ services:
       - qdrant-data:/qdrant/storage
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333 && echo -e \"GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && grep -q \"HTTP/1.1 200\" <&3'",
+        ]
 
   minio:
     image: minio/minio:latest
-    command: ["server", "/data"]
+    command:
+      ["server", "/data", "--address", ":9000", "--console-address", ":9001"]
     networks: [pmai-net]
     # 非公開(SEC-02): tracking用オブジェクトストレージ、外部公開ポートなし
     environment:
@@ -115,11 +164,17 @@ services:
       - minio-data:/data
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      start_period: 20s
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
 
   mlflow:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    image: ghcr.io/mlflow/mlflow:v2.18.0
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri ${MLFLOW_BACKEND_STORE_URI:-sqlite:////data/mlflow.db}
+      --default-artifact-root ${MLFLOW_ARTIFACT_ROOT:-/data/artifacts}
     networks: [pmai-net]
     # 非公開(SEC-02): tracking、外部公開ポートなし
     environment:
@@ -128,23 +183,34 @@ services:
     volumes:
       - mlflow-data:/data
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      start_period: 60s
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')",
+        ]
 
   scheduler:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/scheduler/Dockerfile
     networks: [pmai-net]
     # 非公開: cronベースオーケストレーション、外部公開ポートなし
     environment:
       API_BASE_URL: http://api-server:8000
+      SCHEDULER_HEALTH_PORT: "8082"
     depends_on:
-      - api-server
+      api-server:
+        condition: service_healthy
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/healthz"]
 
   # --- local-gpu profile: ローカルGPU推論 -----------------------------------
 
@@ -157,7 +223,8 @@ services:
       - ollama-data:/root/.ollama
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "true"]
+      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
 
   # --- train profile: 学習・評価バッチ(常時稼働しない) -----------------------
 
@@ -170,8 +237,10 @@ services:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
       PMDF_STORE_PATH: ${PMDF_STORE_PATH}
     depends_on:
-      - mlflow
-      - pmdf-store
+      mlflow:
+        condition: service_healthy
+      pmdf-store:
+        condition: service_healthy
 
   eval-runner:
     image: python:3.12-slim
@@ -182,5 +251,7 @@ services:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
       MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
     depends_on:
-      - mlflow
-      - model-gateway
+      mlflow:
+        condition: service_healthy
+      model-gateway:
+        condition: service_healthy

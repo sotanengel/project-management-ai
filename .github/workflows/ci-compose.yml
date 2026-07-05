@@ -6,11 +6,13 @@ on:
     paths:
       - "docker-compose.yml"
       - ".env.example"
+      - "services/**/Dockerfile"
       - ".github/workflows/ci-compose.yml"
   pull_request:
     paths:
       - "docker-compose.yml"
       - ".env.example"
+      - "services/**/Dockerfile"
       - ".github/workflows/ci-compose.yml"
 
 concurrency:
@@ -31,3 +33,11 @@ jobs:
             cp .env.example .env
           fi
           docker compose -f docker-compose.yml --profile api-only config -q
+
+      - name: Build docker-compose images (api-only profile)
+        if: hashFiles('docker-compose.yml') != ''
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+          fi
+          docker compose -f docker-compose.yml --profile api-only build
