@@ -27,6 +27,7 @@ dependencies = [
     { name = "httpx" },
     { name = "langchain-core" },
     { name = "langgraph" },
+    { name = "pmdf" },
     { name = "pydantic" },
     { name = "qdrant-client" },
 ]
@@ -45,6 +46,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain-core", specifier = ">=0.3.0" },
     { name = "langgraph", specifier = ">=0.2.0" },
+    { name = "pmdf", editable = "packages/pmdf" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "qdrant-client", specifier = ">=1.15.1" },
 ]
