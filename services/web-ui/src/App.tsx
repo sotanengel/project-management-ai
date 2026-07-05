@@ -6,6 +6,7 @@ import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { Approvals } from "./pages/Approvals";
 import { ApprovalHistory } from "./pages/ApprovalHistory";
+import { DocumentViewer } from "./pages/DocumentViewer";
 import { Placeholder } from "./pages/Placeholder";
 
 function App() {
@@ -19,10 +20,9 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/approvals" element={<Approvals />} />
             <Route path="/approvals/history" element={<ApprovalHistory />} />
-            <Route
-              path="/documents"
-              element={<Placeholder title="ドキュメント" />}
-            />
+            <Route path="/documents" element={<DocumentViewer />} />
+            <Route path="/documents/:kind" element={<DocumentViewer />} />
+            <Route path="/documents/:kind/:id" element={<DocumentViewer />} />
             <Route
               path="/activity"
               element={<Placeholder title="活動ログ" />}

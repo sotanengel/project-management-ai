@@ -146,6 +146,21 @@ export function listPmdfEntities<T = Record<string, unknown>>(
 export function getPmdfEntity<T = Record<string, unknown>>(
   kind: string,
   id: string,
+  ref?: string,
 ): Promise<T> {
-  return apiRequest<T>(`/pmdf/${kind}/${id}`);
+  return apiRequest<T>(`/pmdf/${kind}/${id}`, { query: { ref } });
+}
+
+export interface PmdfHistoryEntry {
+  commit_hash: string;
+  author: string;
+  committed_at: string;
+  message: string;
+}
+
+export function getPmdfEntityHistory(
+  kind: string,
+  id: string,
+): Promise<PmdfHistoryEntry[]> {
+  return apiRequest<PmdfHistoryEntry[]>(`/pmdf/${kind}/${id}/history`);
 }
