@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import re
 from collections import defaultdict
+from collections.abc import Sequence
 from typing import Protocol
 
 from pmdf.learning.schemas import ContaminationHit
@@ -12,12 +13,17 @@ from pmdf.learning.schemas import ContaminationHit
 _WHITESPACE_RE = re.compile(r"\s+")
 
 
-class ScenarioRecord(Protocol):
+class HashableScenario(Protocol):
+    """scenario_hash 属性または scenario_text からハッシュ導出可能なレコード。"""
+
     scenario_text: str
-    id: str
 
     @property
     def scenario_hash(self) -> str | None: ...
+
+
+class ScenarioRecord(HashableScenario, Protocol):
+    id: str
 
 
 def normalize_scenario_text(text: str) -> str:
@@ -31,7 +37,7 @@ def scenario_hash(text: str) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
-def resolve_scenario_hash(record: ScenarioRecord) -> str:
+def resolve_scenario_hash(record: HashableScenario) -> str:
     explicit = getattr(record, "scenario_hash", None)
     if explicit:
         return explicit
@@ -39,8 +45,8 @@ def resolve_scenario_hash(record: ScenarioRecord) -> str:
 
 
 def detect_contamination(
-    train: list[ScenarioRecord],
-    gate: list[ScenarioRecord],
+    train: Sequence[ScenarioRecord],
+    gate: Sequence[ScenarioRecord],
 ) -> list[ContaminationHit]:
     """train/gate 間の scenario_hash 重複を検出する。
 

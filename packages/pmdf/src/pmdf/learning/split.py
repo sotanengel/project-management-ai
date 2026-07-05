@@ -3,21 +3,11 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Protocol
 
-from pmdf.learning.contamination import resolve_scenario_hash
-
-
-class SplitRecord(Protocol):
-    """`scenario_hash` 属性または `scenario_text` からハッシュ導出可能なレコード。"""
-
-    scenario_text: str
-
-    @property
-    def scenario_hash(self) -> str | None: ...
+from pmdf.learning.contamination import HashableScenario, resolve_scenario_hash
 
 
-def assign_split[RecordT: SplitRecord](
+def assign_split[RecordT: HashableScenario](
     records: list[RecordT],
     ratios: dict[str, float] | None = None,
 ) -> dict[str, list[RecordT]]:

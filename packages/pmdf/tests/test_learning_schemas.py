@@ -26,13 +26,15 @@ def _provenance() -> RecordProvenance:
 
 def test_trajectory_record_requires_provenance() -> None:
     with pytest.raises(ValidationError):
-        TrajectoryRecord(
-            scenario_text="Add login feature",
-            steps=[{"role": "user", "content": "plan"}],
-            tool_calls=[],
-            pmdf_diffs=[],
-            model="pdm-main",
-            scenario_hash="abc123",
+        TrajectoryRecord.model_validate(
+            {
+                "scenario_text": "Add login feature",
+                "steps": [{"role": "user", "content": "plan"}],
+                "tool_calls": [],
+                "pmdf_diffs": [],
+                "model": "pdm-main",
+                "scenario_hash": "abc123",
+            }
         )
 
 
@@ -52,10 +54,12 @@ def test_trajectory_record_accepts_valid_payload() -> None:
 
 def test_sft_record_requires_provenance() -> None:
     with pytest.raises(ValidationError):
-        SftRecord(
-            prompt="Write a story",
-            completion="Story created",
-            trajectory_id="traj-001",
+        SftRecord.model_validate(
+            {
+                "prompt": "Write a story",
+                "completion": "Story created",
+                "trajectory_id": "traj-001",
+            }
         )
 
 
