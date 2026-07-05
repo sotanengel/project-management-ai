@@ -155,6 +155,20 @@ export function getPmdfEntity<T = Record<string, unknown>>(
   return apiRequest<T>(`/pmdf/${kind}/${id}`, { query: { ref } });
 }
 
+/** PMDFエンティティを更新する(FR-UI-05、`PUT /pmdf/{kind}/{id}`)。
+ *
+ * 実際のactor(`user:<id>`)はapi-server側がJWTから解決するため、
+ * UI側で明示的に指定する必要はない。スキーマ・参照整合エラーは422
+ * (`ApiError`、`detail`に日本語メッセージ)としてスローされる。
+ */
+export function updatePmdfEntity<T = Record<string, unknown>>(
+  kind: string,
+  id: string,
+  payload: Record<string, unknown>,
+): Promise<T> {
+  return apiRequest<T>(`/pmdf/${kind}/${id}`, { method: "PUT", body: payload });
+}
+
 export interface PmdfHistoryEntry {
   commit_hash: string;
   author: string;

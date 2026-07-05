@@ -118,6 +118,13 @@ export function DocumentViewer() {
           )}
           {entityQuery.data && (
             <>
+              <button
+                type="button"
+                className={styles.listItemButton}
+                onClick={() => navigate(`/edit/${selectedKind}/${selectedId}`)}
+              >
+                編集する
+              </button>
               <EntityView entity={entityQuery.data} />
               <div className={styles.versionSection}>
                 <h2>版間diff</h2>

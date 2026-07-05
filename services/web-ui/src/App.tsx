@@ -8,6 +8,7 @@ import { Approvals } from "./pages/Approvals";
 import { ApprovalHistory } from "./pages/ApprovalHistory";
 import { DocumentViewer } from "./pages/DocumentViewer";
 import { ActivityLog } from "./pages/ActivityLog";
+import { EntityEditor } from "./pages/EntityEditor";
 import { Placeholder } from "./pages/Placeholder";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/documents" element={<DocumentViewer />} />
             <Route path="/documents/:kind" element={<DocumentViewer />} />
             <Route path="/documents/:kind/:id" element={<DocumentViewer />} />
+            <Route path="/edit/:kind/:id" element={<EntityEditor />} />
             <Route path="/activity" element={<ActivityLog />} />
             <Route
               path="/import-export"
