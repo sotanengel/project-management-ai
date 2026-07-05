@@ -6,7 +6,6 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pytest
 from agent_core.learning.anonymize import anonymize_text
 from agent_core.learning.dataset_builder import (
     OptInStore,
