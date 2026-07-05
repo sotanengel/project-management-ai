@@ -1,0 +1,84 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+}
+
+.section {
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 1.25rem;
+  background: #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.progressOk {
+  background: #1e8449;
+}
+
+.progressWarning {
+  background: #d4ac0d;
+}
+
+.progressExceeded {
+  background: #c0392b;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--color-border, #ddd);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.table th {
+  background: var(--color-surface, #f5f5f5);
+}
+
+.placeholder {
+  padding: 1rem;
+  border-radius: 6px;
+  background: var(--color-bg, #f9f9f9);
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #666);
+}
+
+.error {
+  color: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .summaryRow {
+    flex-direction: column;
+  }
+}
