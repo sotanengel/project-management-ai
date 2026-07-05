@@ -1,0 +1,250 @@
+- id: artifact_generation-001
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 1: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-002
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 2: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-003
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 3: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-004
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 4: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-005
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 5: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-006
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 6: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-007
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 7: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-008
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 8: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-009
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 9: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-010
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 10: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-011
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 11: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-012
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 12: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-013
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 13: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-014
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 14: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-015
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 15: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-016
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 16: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-017
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 17: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-018
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 18: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-019
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 19: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-020
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 20: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-021
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 21: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-022
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 22: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-023
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 23: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-024
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 24: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-025
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 25: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-026
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 26: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-027
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 27: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-028
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 28: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-029
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 29: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-030
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 30: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-031
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 31: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-032
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 32: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-033
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 33: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-034
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 34: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-035
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 35: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-036
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 36: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-037
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 37: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-038
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 38: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-039
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 39: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-040
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 40: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-041
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 41: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-042
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 42: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-043
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 43: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-044
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 44: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-045
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 45: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-046
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 46: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-047
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 47: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-048
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 48: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-049
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 49: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5
+- id: artifact_generation-050
+  category: artifact_generation
+  question: '[artifact_generation] サンプル問題 50: PdM判断を述べよ。'
+  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  scoring_method: rubric_1_5

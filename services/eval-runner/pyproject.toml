@@ -1,0 +1,34 @@
+[project]
+name = "eval-runner"
+version = "0.1.0"
+description = "評価ゲート eval-runner (E8-8)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.13.4",
+    "pyyaml>=6.0.3",
+    "typer>=0.26.8",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "respx>=0.22.0",
+]
+
+[project.scripts]
+eval-runner = "eval_runner.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eval_runner"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff.lint.per-file-ignores]
+"src/eval_runner/cli.py" = ["B008"]
