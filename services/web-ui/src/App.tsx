@@ -7,6 +7,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Approvals } from "./pages/Approvals";
 import { ApprovalHistory } from "./pages/ApprovalHistory";
 import { DocumentViewer } from "./pages/DocumentViewer";
+import { ActivityLog } from "./pages/ActivityLog";
 import { Placeholder } from "./pages/Placeholder";
 
 function App() {
@@ -23,10 +24,7 @@ function App() {
             <Route path="/documents" element={<DocumentViewer />} />
             <Route path="/documents/:kind" element={<DocumentViewer />} />
             <Route path="/documents/:kind/:id" element={<DocumentViewer />} />
-            <Route
-              path="/activity"
-              element={<Placeholder title="活動ログ" />}
-            />
+            <Route path="/activity" element={<ActivityLog />} />
             <Route
               path="/import-export"
               element={<Placeholder title="Import-Export" />}

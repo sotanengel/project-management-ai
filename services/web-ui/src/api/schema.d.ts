@@ -92,6 +92,32 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/audit/records": {
+    parameters: {
+      query?: {
+        actor?: string | null;
+        action?: string | null;
+        kind?: string | null;
+        date_from?: string | null;
+        date_to?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Records
+     * @description 監査ログをフィルタ条件で絞り込み、新しい順に返す。
+     */
+    get: operations["list_records_audit_records_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/approvals": {
     parameters: {
       query?: never;
@@ -293,6 +319,28 @@ export interface paths {
      * @description 自然文の指示を受け付け、`pending`状態のチャットタスクとして登録する。
      */
     post: operations["post_instructions_chat_instructions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/chat/tasks": {
+    parameters: {
+      query?: {
+        status?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Tasks
+     * @description チャットタスク一覧を新しい順に返す(E7-6のエージェント活動ログ画面向け)。
+     */
+    get: operations["list_tasks_chat_tasks_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -538,6 +586,33 @@ export interface components {
       total_cost_jpy: number;
       /** Total Latency Ms */
       total_latency_ms: number;
+    };
+    /**
+     * AuditRecord
+     * @description 監査ログ1レコード分の情報。
+     */
+    AuditRecord: {
+      /**
+       * Timestamp
+       * Format: date-time
+       */
+      timestamp: string;
+      /** Actor */
+      actor: string;
+      /** Action */
+      action: string;
+      /** Target Kind */
+      target_kind: string;
+      /** Target Id */
+      target_id: string;
+      /** Detail */
+      detail?: {
+        [key: string]: unknown;
+      };
+      /** Prev Hash */
+      prev_hash?: string | null;
+      /** Hash */
+      hash: string;
     };
     /**
      * AutonomyConfig
@@ -1015,6 +1090,41 @@ export interface operations {
       };
     };
   };
+  list_records_audit_records_get: {
+    parameters: {
+      query?: {
+        actor?: string | null;
+        action?: string | null;
+        kind?: string | null;
+        date_from?: string | null;
+        date_to?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuditRecord"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   list_proposals_approvals_get: {
     parameters: {
       query?: {
@@ -1353,6 +1463,37 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ChatTask"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_tasks_chat_tasks_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChatTask"][];
         };
       };
       /** @description Validation Error */

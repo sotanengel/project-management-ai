@@ -102,6 +102,10 @@ export type ProposalResponse =
   paths["/approvals"]["get"]["responses"][200]["content"]["application/json"][number];
 export type DecideRequest =
   paths["/approvals/{proposal_id}/decide"]["post"]["requestBody"]["content"]["application/json"];
+export type ChatTask =
+  paths["/chat/tasks"]["get"]["responses"][200]["content"]["application/json"][number];
+export type AuditRecord =
+  paths["/audit/records"]["get"]["responses"][200]["content"]["application/json"][number];
 
 // --- 認証API ---
 export function login(request: LoginRequest): Promise<TokenResponse> {
@@ -163,4 +167,32 @@ export function getPmdfEntityHistory(
   id: string,
 ): Promise<PmdfHistoryEntry[]> {
   return apiRequest<PmdfHistoryEntry[]>(`/pmdf/${kind}/${id}/history`);
+}
+
+// --- チャットタスク(エージェント活動)API ---
+export function listChatTasks(status?: string): Promise<ChatTask[]> {
+  return apiRequest<ChatTask[]>("/chat/tasks", { query: { status } });
+}
+
+// --- 監査ログAPI ---
+export interface AuditRecordSearchParams {
+  actor?: string;
+  action?: string;
+  kind?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export function listAuditRecords(
+  params?: AuditRecordSearchParams,
+): Promise<AuditRecord[]> {
+  return apiRequest<AuditRecord[]>("/audit/records", {
+    query: {
+      actor: params?.actor,
+      action: params?.action,
+      kind: params?.kind,
+      date_from: params?.dateFrom,
+      date_to: params?.dateTo,
+    },
+  });
 }
