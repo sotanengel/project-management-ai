@@ -112,14 +112,18 @@ services:
       context: services/model-gateway
       dockerfile: Dockerfile
     networks: [pmai-net]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # 非公開(SEC-02): LiteLLM Proxy、外部公開ポートなし(内部ネットワークのみ)
     environment:
+      ACTIVE_BACKEND: ${ACTIVE_BACKEND:-api}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
       PDM_MAIN_MODEL: ${PDM_MAIN_MODEL}
+      PDM_MAIN_API_BASE: ${PDM_MAIN_API_BASE:-}
       PDM_MAIN_LOCAL_MODEL: ${PDM_MAIN_LOCAL_MODEL}
       PDM_MAIN_LOCAL_API_BASE: ${PDM_MAIN_LOCAL_API_BASE}
       PDM_MAIN_FALLBACK_MODEL: ${PDM_MAIN_FALLBACK_MODEL}
