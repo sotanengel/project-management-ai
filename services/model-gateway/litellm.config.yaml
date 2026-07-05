@@ -66,6 +66,15 @@ model_list:
       num_retries: 2
       timeout: 30
 
+  # --- pdm-student: 自己学習ループの生徒role(E8-3) ---------------------------
+  - model_name: pdm-student
+    litellm_params:
+      model: os.environ/PDM_STUDENT_MODEL
+      api_key: os.environ/PDM_MAIN_API_KEY
+      api_base: os.environ/PDM_MAIN_API_BASE
+      num_retries: 2
+      timeout: 30
+
   # --- pdm-embed: 埋め込み(RAG/知識ベース用) ---------------------------------
   - model_name: pdm-embed
     litellm_params:

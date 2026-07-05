@@ -69,7 +69,13 @@ async def test_complete_with_each_logical_name() -> None:
             )
         )
         client = LogicalModelClient(model_gateway_url=base_url)
-        for logical_name in ("pdm-main", "pdm-teacher", "pdm-judge", "pdm-embed"):
+        for logical_name in (
+            "pdm-main",
+            "pdm-teacher",
+            "pdm-judge",
+            "pdm-embed",
+            "pdm-student",
+        ):
             result = await client.complete(model=logical_name, messages=[])
             assert result.content == "ok"
 
@@ -89,4 +95,10 @@ def test_logical_model_name_type_rejects_unknown_literal_at_typecheck() -> None:
     """型注釈`LogicalModelName`が定義済み論理名のみのLiteralであることを確認する(mypy検証は別途CIで担保)。"""
     from agent_core.llm_client import LOGICAL_MODEL_NAMES
 
-    assert LOGICAL_MODEL_NAMES == ("pdm-main", "pdm-teacher", "pdm-judge", "pdm-embed")
+    assert LOGICAL_MODEL_NAMES == (
+        "pdm-main",
+        "pdm-teacher",
+        "pdm-judge",
+        "pdm-embed",
+        "pdm-student",
+    )

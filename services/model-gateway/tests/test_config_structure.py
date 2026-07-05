@@ -16,7 +16,13 @@ import yaml
 
 CONFIG_PATH = Path(__file__).parent.parent / "litellm.config.yaml"
 
-REQUIRED_LOGICAL_NAMES = {"pdm-main", "pdm-teacher", "pdm-judge", "pdm-embed"}
+REQUIRED_LOGICAL_NAMES = {
+    "pdm-main",
+    "pdm-teacher",
+    "pdm-judge",
+    "pdm-embed",
+    "pdm-student",
+}
 
 
 def load_config() -> dict:
@@ -36,7 +42,7 @@ def test_config_has_model_list() -> None:
 
 
 def test_all_required_logical_names_are_defined() -> None:
-    """AR-01: pdm-main/pdm-teacher/pdm-judge/pdm-embedの4論理名が定義済み。"""
+    """AR-01: pdm-main/pdm-teacher/pdm-judge/pdm-embed/pdm-studentの5論理名が定義済み。"""
     config = load_config()
     model_names = {entry["model_name"] for entry in config["model_list"]}
     assert REQUIRED_LOGICAL_NAMES.issubset(model_names)
