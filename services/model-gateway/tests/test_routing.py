@@ -18,6 +18,7 @@ from model_gateway.router import GatewayRouter
 def env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PDM_MAIN_MODEL", "anthropic/claude-sonnet-4-5")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test-anthropic-key")
+    monkeypatch.setenv("PDM_MAIN_API_KEY", "test-anthropic-key")
     monkeypatch.setenv("PDM_MAIN_LOCAL_MODEL", "ollama/qwen2.5:7b-instruct-q4_K_M")
     monkeypatch.setenv("PDM_MAIN_LOCAL_API_BASE", "http://ollama:11434")
     monkeypatch.setenv("PDM_MAIN_FALLBACK_MODEL", "bedrock/anthropic.claude-3-5-sonnet")

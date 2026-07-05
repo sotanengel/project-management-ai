@@ -8,7 +8,10 @@ FROM ghcr.io/berriai/litellm:main-stable
 WORKDIR /app
 
 COPY litellm.config.yaml /app/litellm.config.yaml
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 4000
 
-CMD ["--config", "/app/litellm.config.yaml", "--port", "4000"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["litellm", "--config", "/app/litellm.config.yaml", "--port", "4000"]

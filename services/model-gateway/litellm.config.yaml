@@ -29,7 +29,8 @@ model_list:
   - model_name: pdm-main
     litellm_params:
       model: os.environ/PDM_MAIN_MODEL
-      api_key: os.environ/ANTHROPIC_API_KEY
+      api_key: os.environ/PDM_MAIN_API_KEY
+      api_base: os.environ/PDM_MAIN_API_BASE
       num_retries: 2
       timeout: 30
 
