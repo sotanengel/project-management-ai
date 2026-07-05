@@ -66,9 +66,7 @@ async def _default_graph_dispatch(
                 "result": {"status": "ok"},
             }
         )
-        pmdf_diffs.append(
-            {"kind": "story", "id": entity_id, "verb": "create", "after": entity}
-        )
+        pmdf_diffs.append({"kind": "story", "id": entity_id, "verb": "create", "after": entity})
 
     return {"steps": steps, "tool_calls": tool_calls, "pmdf_diffs": pmdf_diffs}
 

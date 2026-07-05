@@ -16,9 +16,7 @@ from typing import Any, Literal, get_args
 import httpx
 
 #: agent-coreがLLM呼び出しに使用できる論理名(実モデル名は一切扱わない)。
-LogicalModelName = Literal[
-    "pdm-main", "pdm-teacher", "pdm-judge", "pdm-embed", "pdm-student"
-]
+LogicalModelName = Literal["pdm-main", "pdm-teacher", "pdm-judge", "pdm-embed", "pdm-student"]
 
 #: `LogicalModelName`の全値(実行時検証・テストで利用)。
 LOGICAL_MODEL_NAMES: tuple[LogicalModelName, ...] = get_args(LogicalModelName)
