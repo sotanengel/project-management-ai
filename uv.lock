@@ -3735,6 +3735,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "respx" },
 ]
 
 [package.metadata]
@@ -3747,7 +3748,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=9.1.1" }]
+dev = [
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "respx", specifier = ">=0.22.0" },
+]
 
 [[package]]
 name = "scikit-learn"

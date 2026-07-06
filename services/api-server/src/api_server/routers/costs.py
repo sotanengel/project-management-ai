@@ -20,6 +20,7 @@ from api_server.auth.dependencies import require_role
 from api_server.auth.models import User
 from api_server.config import Settings, get_settings
 from api_server.costs.budget import check_budget_threshold, compute_consumption_ratio
+from api_server.costs.budget_state import is_learning_blocked, set_learning_blocked
 from api_server.costs.usage_store import (
     AggregatedUsage,
     UsageRecord,
@@ -128,6 +129,67 @@ def get_cost_summary(
         by_logical_name=_to_entries(summarize_by_logical_name(log_path)),
         by_day=_to_entries(summarize_by_day(log_path)),
     )
+
+
+class LearningBlockedResponse(BaseModel):
+    learning_blocked: bool
+
+
+class LearningBlockedRequest(BaseModel):
+    learning_blocked: bool
+
+
+class BudgetEventRequest(BaseModel):
+    event_type: str
+    consumption_ratio: float = 0.0
+    total_spend_jpy: float | None = None
+    budget_monthly_jpy: float | None = None
+
+
+class BudgetEventResponse(BaseModel):
+    published: bool = True
+
+
+@router.get("/learning-blocked", response_model=LearningBlockedResponse)
+def get_learning_blocked(
+    settings: Annotated[Settings, Depends(get_settings)],
+    _user: Annotated[User, Depends(require_role("admin", "editor"))],
+) -> LearningBlockedResponse:
+    """学習ジョブ停止フラグを返す(scheduler用、E9-2)。"""
+    return LearningBlockedResponse(
+        learning_blocked=is_learning_blocked(settings.budget_exceeded_path)
+    )
+
+
+@router.put("/learning-blocked", response_model=LearningBlockedResponse)
+def update_learning_blocked(
+    request: LearningBlockedRequest,
+    settings: Annotated[Settings, Depends(get_settings)],
+    _user: Annotated[User, Depends(require_role("admin", "editor"))],
+) -> LearningBlockedResponse:
+    """学習ジョブ停止フラグを更新する(scheduler用、E9-2)。"""
+    set_learning_blocked(settings.budget_exceeded_path, blocked=request.learning_blocked)
+    return LearningBlockedResponse(learning_blocked=request.learning_blocked)
+
+
+@router.post("/budget-events", response_model=BudgetEventResponse)
+async def publish_budget_event(
+    request: BudgetEventRequest,
+    _user: Annotated[User, Depends(require_role("admin", "editor"))],
+) -> BudgetEventResponse:
+    """予算警告・超過イベントをWebSocketへ配信する(E9-2)。"""
+    from api_server.events.bus import get_event_bus
+
+    bus = get_event_bus()
+    await bus.publish(
+        request.event_type,
+        {
+            "consumption_ratio": request.consumption_ratio,
+            "total_spend_jpy": request.total_spend_jpy,
+            "budget_monthly_jpy": request.budget_monthly_jpy,
+        },
+    )
+    return BudgetEventResponse(published=True)
 
 
 __all__ = ["router"]
