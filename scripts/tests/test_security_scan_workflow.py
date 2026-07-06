@@ -11,7 +11,9 @@ WORKFLOW = Path(".github/workflows/security-scan.yml")
 
 def test_security_scan_workflow_has_triggers() -> None:
     data = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
-    assert "schedule" in data["on"]
-    assert "workflow_dispatch" in data["on"]
+    triggers = data.get(True) or data.get("on")
+    assert triggers is not None
+    assert "schedule" in triggers
+    assert "workflow_dispatch" in triggers
     job_names = set(data["jobs"])
     assert {"pinact", "zizmor", "trivy", "dependency-audit"}.issubset(job_names)
