@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from api_server.costs.budget_state import is_learning_blocked, set_learning_blocked
 
 
