@@ -124,6 +124,27 @@ export const INITIAL_DECISION = {
   ],
 };
 
+export const INITIAL_STAKEHOLDER = {
+  kind: "stakeholder",
+  id: STAKEHOLDER_ID,
+  name: "山田太郎",
+  role: "営業部長",
+  organization: "パートナー株式会社",
+  interests: ["リードタイム短縮"],
+  influence: "high",
+  contact_policy: {
+    personal_name: "山田太郎",
+    channel: "email",
+    frequency: "monthly",
+  },
+  pmdf_version: "1.0.0",
+  provenance: {
+    created_by: "agent:pm-copilot@v0.1.0",
+    updated_at: "2026-07-01T09:00:00+09:00",
+  },
+  attachments: [],
+};
+
 export const INITIAL_RELEASE = {
   kind: "release",
   id: RELEASE_ID,
