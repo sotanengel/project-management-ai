@@ -3725,11 +3725,29 @@ name = "scheduler"
 version = "0.1.0"
 source = { editable = "services/scheduler" }
 dependencies = [
+    { name = "agent-core" },
     { name = "apscheduler" },
+    { name = "eval-runner" },
+    { name = "httpx" },
+    { name = "trainer" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "apscheduler", specifier = ">=3.11.0" }]
+requires-dist = [
+    { name = "agent-core", editable = "services/agent-core" },
+    { name = "apscheduler", specifier = ">=3.11.0" },
+    { name = "eval-runner", editable = "services/eval-runner" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "trainer", editable = "services/trainer" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.1.1" }]
 
 [[package]]
 name = "scikit-learn"
