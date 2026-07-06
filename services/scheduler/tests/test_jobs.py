@@ -81,13 +81,37 @@ def test_trigger_weekly_review_invokes_runner(monkeypatch: pytest.MonkeyPatch) -
 def test_trigger_learning_loop_runs_stages_in_order() -> None:
     order: list[str] = []
 
+    def _synthesize() -> list[dict[str, str]]:
+        order.append("synthesize")
+        return [{"id": "s1"}]
+
+    def _execute(_scenario: dict[str, str]) -> dict[str, bool]:
+        order.append("execute")
+        return {"ok": True}
+
+    def _evaluate(_trajectory: dict[str, bool]) -> dict[str, bool]:
+        order.append("evaluate")
+        return {"passed": True}
+
+    def _build_datasets(_evaluations: list[dict[str, bool]]) -> str:
+        order.append("build_datasets")
+        return "/tmp/data.jsonl"
+
+    def _run_training(_path: str) -> dict[str, str]:
+        order.append("run_training")
+        return {"adapter": "/tmp/adapter"}
+
+    def _compare() -> dict[str, str]:
+        order.append("compare_models")
+        return {"decision": "promote"}
+
     deps = LearningLoopDeps(
-        synthesize=lambda: order.append("synthesize") or [{"id": "s1"}],
-        execute=lambda _scenario: order.append("execute") or {"ok": True},
-        evaluate=lambda _trajectory: order.append("evaluate") or {"passed": True},
-        build_datasets=lambda _evaluations: order.append("build_datasets") or "/tmp/data.jsonl",
-        run_training=lambda _path: order.append("run_training") or {"adapter": "/tmp/adapter"},
-        compare_models=lambda: order.append("compare_models") or {"decision": "promote"},
+        synthesize=_synthesize,
+        execute=_execute,
+        evaluate=_evaluate,
+        build_datasets=_build_datasets,
+        run_training=_run_training,
+        compare_models=_compare,
     )
 
     result = trigger_learning_loop(deps=deps)
@@ -107,13 +131,35 @@ def test_trigger_learning_loop_runs_stages_in_order() -> None:
 def test_trigger_learning_loop_stops_on_stage_failure() -> None:
     order: list[str] = []
 
+    def _synthesize() -> list[dict[str, str]]:
+        order.append("synthesize")
+        return [{"id": "s1"}]
+
+    def _execute(_scenario: dict[str, str]) -> dict[str, bool]:
+        raise RuntimeError("execute failed")
+
+    def _evaluate(_trajectory: dict[str, bool]) -> None:
+        order.append("evaluate")
+
+    def _build_datasets(_evaluations: list[object]) -> str:
+        order.append("build_datasets")
+        return "/tmp/data.jsonl"
+
+    def _run_training(_path: str) -> dict[str, object]:
+        order.append("run_training")
+        return {}
+
+    def _compare() -> dict[str, object]:
+        order.append("compare_models")
+        return {}
+
     deps = LearningLoopDeps(
-        synthesize=lambda: order.append("synthesize") or [{"id": "s1"}],
-        execute=lambda _scenario: (_ for _ in ()).throw(RuntimeError("execute failed")),
-        evaluate=lambda _trajectory: order.append("evaluate"),
-        build_datasets=lambda _evaluations: order.append("build_datasets"),
-        run_training=lambda _path: order.append("run_training"),
-        compare_models=lambda: order.append("compare_models"),
+        synthesize=_synthesize,
+        execute=_execute,
+        evaluate=_evaluate,
+        build_datasets=_build_datasets,
+        run_training=_run_training,
+        compare_models=_compare,
     )
 
     result = trigger_learning_loop(deps=deps)
@@ -126,13 +172,34 @@ def test_trigger_learning_loop_stops_on_stage_failure() -> None:
 
 def test_trigger_learning_loop_skips_when_budget_blocked() -> None:
     order: list[str] = []
+
+    def _noop_list() -> list[object]:
+        order.append("synthesize")
+        return []
+
+    def _noop_obj(_: object) -> object:
+        order.append("called")
+        return {}
+
+    def _noop_str(_: list[object]) -> str:
+        order.append("build_datasets")
+        return ""
+
+    def _run_training(_path: str) -> dict[str, object]:
+        order.append("run_training")
+        return {}
+
+    def _compare() -> dict[str, object]:
+        order.append("compare_models")
+        return {}
+
     deps = LearningLoopDeps(
-        synthesize=lambda: order.append("synthesize") or [],
-        execute=lambda _scenario: order.append("execute"),
-        evaluate=lambda _trajectory: order.append("evaluate"),
-        build_datasets=lambda _evaluations: order.append("build_datasets"),
-        run_training=lambda _path: order.append("run_training"),
-        compare_models=lambda: order.append("compare_models"),
+        synthesize=_noop_list,
+        execute=_noop_obj,
+        evaluate=_noop_obj,
+        build_datasets=_noop_str,
+        run_training=_run_training,
+        compare_models=_compare,
     )
 
     result = trigger_learning_loop(deps=deps, is_learning_blocked=lambda: True)

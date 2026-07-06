@@ -122,10 +122,12 @@ async def _default_kpi_runner(*, config: SchedulerConfig) -> dict[str, Any]:
     from agent_core.llm_client import LogicalModelClient
     from agent_core.tools.pmdf_tools import PmdfToolClient
 
-    llm_client = LogicalModelClient(base_url=config.model_gateway_url)
+    llm_client = LogicalModelClient(config.model_gateway_url)
     pmdf_client = PmdfToolClient(
-        base_url=config.api_base_url,
+        api_server_url=config.api_base_url,
         auth_token=config.auth_token,
+        agent_name="scheduler",
+        agent_version="v1",
     )
     return await monitor_kpi(
         metric_id=config.metric_id,
@@ -142,10 +144,12 @@ async def _default_weekly_review_runner(*, config: SchedulerConfig) -> dict[str,
     from agent_core.llm_client import LogicalModelClient
     from agent_core.tools.pmdf_tools import PmdfToolClient
 
-    llm_client = LogicalModelClient(base_url=config.model_gateway_url)
+    llm_client = LogicalModelClient(config.model_gateway_url)
     pmdf_client = PmdfToolClient(
-        base_url=config.api_base_url,
+        api_server_url=config.api_base_url,
         auth_token=config.auth_token,
+        agent_name="scheduler",
+        agent_version="v1",
     )
     return await weekly_review(
         product_id=config.product_id,
@@ -168,7 +172,7 @@ def _default_learning_loop_deps() -> LearningLoopDeps:
     from trainer.config import TrainingConfig
 
     config = load_scheduler_config()
-    llm_client = LogicalModelClient(base_url=config.model_gateway_url)
+    llm_client = LogicalModelClient(config.model_gateway_url)
     sandbox = IsolatedSandboxStore()
     production = IsolatedSandboxStore()
 

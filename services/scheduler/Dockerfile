@@ -1,4 +1,4 @@
-# scheduler: E4-4 暫定スケルトン(healthcheck + 空 APScheduler)
+# scheduler: E9-1 定常業務オーケストレーション
 FROM python:3.12-slim-bookworm
 
 RUN apt-get update \
@@ -10,6 +10,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+COPY packages/pmdf packages/pmdf
+COPY services/agent-core services/agent-core
+COPY services/eval-runner services/eval-runner
+COPY services/trainer services/trainer
 COPY services/scheduler services/scheduler
 
 RUN uv sync --frozen --package scheduler --no-dev
