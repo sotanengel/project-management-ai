@@ -1,0 +1,70 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  pinact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Actions are pinned (pinact)
+        uses: step-security/pinact-action@v3
+        with:
+          action: audit
+
+  zizmor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: zizmor workflow audit
+        uses: zizmorcore/zizmor-action@v0.5.6
+        with:
+          format: github
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build api-server image
+        run: docker build -f services/api-server/Dockerfile -t pmai-api-server:scan .
+      - name: Trivy scan (non-blocking)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: pmai-api-server:scan
+          format: table
+          exit-code: "0"
+          severity: CRITICAL,HIGH
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: pip-audit
+        run: |
+          uv sync --all-packages
+          uv export --format requirements-txt -o /tmp/requirements.txt
+          uv tool run pip-audit -r /tmp/requirements.txt || true
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: pnpm audit
+        working-directory: services/web-ui
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm audit --audit-level=high || true
