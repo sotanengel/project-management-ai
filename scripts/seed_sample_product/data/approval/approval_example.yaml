@@ -1,0 +1,12 @@
+pmdf_version: "1.0.0"
+kind: approval
+id: approval-01JZX8APAP01BBBBCCCCDDDABC
+provenance:
+  created_by: "user:vp-hanako"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+target: dec-01JZX3DDDD01BBBBCCCCDDDDEF
+proposer: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF
+approver: stakeholder-01JZX0SSSS01BBBBCCCCDDDDEF
+decision: approved
+reason: "コストとリードタイムのバランスが取れているため承認する"
