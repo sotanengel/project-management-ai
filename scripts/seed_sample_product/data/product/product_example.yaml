@@ -1,0 +1,15 @@
+pmdf_version: "1.0.0"
+kind: product
+id: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+provenance:
+  created_by: "user:pdm-taro"
+  approved_by: null
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+name: "サンプルEC"
+vision: "誰もが安心して使える購買体験を提供する"
+target: "20-40代のオンライン購買者"
+positioning: "信頼と速さを両立するECプラットフォーム"
+lifecycle_stage: growth
+north_star_metric: metric-01JZX0MMMM01BBBBCCCCDDDDEE
+x_notes: "社内メモ"

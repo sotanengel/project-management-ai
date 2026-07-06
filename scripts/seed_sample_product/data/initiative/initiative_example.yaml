@@ -1,0 +1,29 @@
+pmdf_version: "1.0.0"
+kind: initiative
+id: initiative-01JZX6NTNT01BBBBCCCCDDDABC
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+product: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+charter: "非会員購入体験改善プロジェクト憲章"
+approach: hybrid
+wbs:
+  - id: "wbs-1"
+    name: "要件定義"
+    children:
+      - id: "wbs-1-1"
+        name: "非会員フロー調査"
+        children: []
+  - id: "wbs-2"
+    name: "実装"
+    children: []
+schedule:
+  start_date: "2026-07-01"
+  end_date: "2026-09-30"
+evm:
+  planned_value: 1000000
+  earned_value: 400000
+  actual_cost: 450000
+  spi: 0.9
+  cpi: 0.88

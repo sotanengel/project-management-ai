@@ -1,0 +1,15 @@
+pmdf_version: "1.0.0"
+kind: experiment
+id: experiment-01JZX2EEEE01BBBBCCCCDDDDAB
+provenance:
+  created_by: "user:pdm-taro"
+  updated_at: "2026-07-01T09:00:00+09:00"
+attachments: []
+product: prod-01JZX0AAAA01BBBBCCCCDDDDEE
+hypothesis: "履歴リンクを提供すると再訪率が上がる"
+design: "A/Bテスト、対象は非会員購入者の50%"
+success_criteria:
+  - "再訪率が5ポイント以上向上する"
+status: planned
+results: null
+learnings: null

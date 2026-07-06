@@ -25,6 +25,8 @@ coverage/
 # --- Docker volumes / ローカルデータ ---
 docker/volumes/
 data/
+!scripts/seed_sample_product/data/
+!scripts/seed_sample_product/data/**
 *.db
 *.sqlite3
 
