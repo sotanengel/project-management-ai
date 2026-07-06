@@ -8,6 +8,7 @@ import threading
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from scheduler.budget_monitor import register_budget_monitor_job
 from scheduler.config import load_scheduler_config
 from scheduler.health import run_health_server
 from scheduler.jobs import register_scheduled_jobs
@@ -21,6 +22,7 @@ def main() -> None:
 
     scheduler = BackgroundScheduler()
     register_scheduled_jobs(scheduler, config)
+    register_budget_monitor_job(scheduler, config, cron=config.budget_monitor_cron)
     scheduler.start()
     logger.info(
         "scheduler started kpi_cron=%s weekly_cron=%s learning_cron=%s",

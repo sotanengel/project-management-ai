@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     #: チャット指示タスク(E5-9)のファイルベースストアのパス。
     chat_task_store_path: Path = Path("data/chat_tasks.json")
 
+    #: 予算超過時の学習ジョブ停止フラグ(E9-2)。
+    budget_exceeded_path: Path = Path("data/budget_exceeded.json")
+
 
 @lru_cache
 def get_settings() -> Settings:

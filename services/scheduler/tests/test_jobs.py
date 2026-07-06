@@ -42,6 +42,7 @@ def test_register_scheduled_jobs_uses_cron_from_config() -> None:
         weekly_review_cron="10 9 * * 1",
         learning_loop_cron="0 2 * * 0",
         weekly_review_period="2026-W01",
+        budget_monitor_cron="0 * * * *",
     )
 
     register_scheduled_jobs(scheduler, config)

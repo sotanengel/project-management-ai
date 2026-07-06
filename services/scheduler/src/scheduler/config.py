@@ -18,6 +18,7 @@ class SchedulerConfig:
     weekly_review_cron: str
     learning_loop_cron: str
     weekly_review_period: str
+    budget_monitor_cron: str
 
 
 def load_scheduler_config() -> SchedulerConfig:
@@ -33,6 +34,7 @@ def load_scheduler_config() -> SchedulerConfig:
         weekly_review_cron=os.environ.get("SCHEDULER_WEEKLY_REVIEW_CRON", "0 9 * * 1"),
         learning_loop_cron=os.environ.get("SCHEDULER_LEARNING_LOOP_CRON", "0 2 * * 0"),
         weekly_review_period=os.environ.get("SCHEDULER_WEEKLY_REVIEW_PERIOD", "2026-W01"),
+        budget_monitor_cron=os.environ.get("SCHEDULER_BUDGET_MONITOR_CRON", "0 * * * *"),
     )
 
 

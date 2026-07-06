@@ -42,9 +42,26 @@ def trigger_learning_loop(
     *,
     deps: LearningLoopDeps | None = None,
     is_learning_blocked: Callable[[], bool] | None = None,
+    config: SchedulerConfig | None = None,
 ) -> LearningLoopResult:
     """E8-2〜E8-8の各段階を順に呼び出す。途中失敗時は後続を実行しない。"""
-    if is_learning_blocked and is_learning_blocked():
+    cfg = config or load_scheduler_config()
+    if is_learning_blocked is not None:
+        blocked_check = is_learning_blocked
+    elif cfg.auth_token:
+        from scheduler.budget_monitor import check_learning_blocked as _remote_blocked
+
+        def blocked_check() -> bool:
+            return _remote_blocked(
+                api_base_url=cfg.api_base_url,
+                auth_token=cfg.auth_token,
+            )
+    else:
+
+        def blocked_check() -> bool:
+            return False
+
+    if blocked_check():
         logger.warning("learning_loop skipped: monthly budget exceeded")
         return LearningLoopResult(status="skipped", failed_stage="budget_check")
 
