@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import os
 import threading
 
@@ -12,11 +11,12 @@ from scheduler.budget_monitor import register_budget_monitor_job
 from scheduler.config import load_scheduler_config
 from scheduler.health import run_health_server
 from scheduler.jobs import register_scheduled_jobs
-
-logger = logging.getLogger(__name__)
+from scheduler.logging_config import configure_logging, get_logger
 
 
 def main() -> None:
+    configure_logging()
+    logger = get_logger(__name__)
     port = int(os.environ.get("SCHEDULER_HEALTH_PORT", "8082"))
     config = load_scheduler_config()
 
@@ -25,10 +25,10 @@ def main() -> None:
     register_budget_monitor_job(scheduler, config, cron=config.budget_monitor_cron)
     scheduler.start()
     logger.info(
-        "scheduler started kpi_cron=%s weekly_cron=%s learning_cron=%s",
-        config.kpi_cron,
-        config.weekly_review_cron,
-        config.learning_loop_cron,
+        "scheduler started",
+        kpi_cron=config.kpi_cron,
+        weekly_cron=config.weekly_review_cron,
+        learning_cron=config.learning_loop_cron,
     )
 
     health_thread = threading.Thread(

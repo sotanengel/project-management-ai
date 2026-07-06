@@ -50,6 +50,7 @@ dependencies = [
     { name = "pmdf" },
     { name = "pydantic" },
     { name = "qdrant-client" },
+    { name = "structlog" },
 ]
 
 [package.dev-dependencies]
@@ -69,6 +70,7 @@ requires-dist = [
     { name = "pmdf", editable = "packages/pmdf" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "qdrant-client", specifier = ">=1.15.1" },
+    { name = "structlog", specifier = ">=24.0.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -3729,6 +3731,7 @@ dependencies = [
     { name = "apscheduler" },
     { name = "eval-runner" },
     { name = "httpx" },
+    { name = "structlog" },
     { name = "trainer" },
 ]
 
@@ -3744,6 +3747,7 @@ requires-dist = [
     { name = "apscheduler", specifier = ">=3.11.0" },
     { name = "eval-runner", editable = "services/eval-runner" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "structlog", specifier = ">=24.0.0" },
     { name = "trainer", editable = "services/trainer" },
 ]
 
