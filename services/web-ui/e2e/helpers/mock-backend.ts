@@ -1,5 +1,12 @@
 import type { Route } from "@playwright/test";
 import {
+  buildBundlePayload,
+  decodeBundle,
+  encodeBundle,
+  entitiesMatch,
+  extractBundleBytesFromMultipart,
+} from "./bundle-mock";
+import {
   DECISION_ID,
   EXPERIMENT_ID,
   INITIAL_DECISION,
@@ -7,6 +14,7 @@ import {
   INITIAL_PRODUCT,
   INITIAL_RELEASE,
   INITIAL_ROADMAP,
+  INITIAL_STAKEHOLDER,
   INITIAL_STORY,
   PRODUCT_ID,
   RELEASE_ID,
@@ -43,14 +51,11 @@ export class MockPdmBackend {
         kind: "metric",
         id: "metric-01JZX0MMMM01BBBBCCCCDDDDEE",
         name: "月間再訪率",
+        current_value: 0.42,
       },
     },
     stakeholder: {
-      [STAKEHOLDER_ID]: {
-        kind: "stakeholder",
-        id: STAKEHOLDER_ID,
-        name: "VP 花子",
-      },
+      [STAKEHOLDER_ID]: structuredClone(INITIAL_STAKEHOLDER),
     },
     report: {
       [REPORT_ID]: {
@@ -62,10 +67,41 @@ export class MockPdmBackend {
     },
   };
 
+  /** 直近エクスポートしたバンドル(validate フォールバック用)。 */
+  lastExportedBundle: Buffer | null = null;
+
+  /** バンドル import 先(空ストア相当)。 */
+  secondaryEntities: Record<string, EntityMap> = {};
+
   proposals: Proposal[] = [];
   /** L1実行許可: `${kind}:${id}` */
   approvedTargets = new Set<string>();
   taskSeq = 0;
+
+  resetSecondaryStore(): void {
+    this.secondaryEntities = {};
+  }
+
+  bundleMatchesPrimary(): boolean {
+    for (const kindMap of Object.values(this.entities)) {
+      for (const entity of Object.values(kindMap)) {
+        const kind = String(entity.kind);
+        const id = String(entity.id);
+        const imported = this.secondaryEntities[kind]?.[id];
+        if (!imported || !entitiesMatch(entity, imported)) {
+          return false;
+        }
+      }
+    }
+    const bundle = buildBundlePayload(this.entities);
+    for (const [path, hash] of Object.entries(bundle.attachments)) {
+      const importedBundle = buildBundlePayload(this.secondaryEntities);
+      if (importedBundle.attachments[path] !== hash) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   private nextProposalId(): string {
     return `proposal-e2e-${String(this.proposals.length + 1).padStart(2, "0")}`;
@@ -136,11 +172,24 @@ export class MockPdmBackend {
     return this.approvedTargets.has(`${kind}:${id}`);
   }
 
-  handle(method: string, pathname: string, search: URLSearchParams, body: unknown) {
+  handle(
+    method: string,
+    pathname: string,
+    search: URLSearchParams,
+    body: unknown,
+    multipartData: Buffer | null = null,
+    contentType?: string,
+  ) {
     const json = (status: number, payload: unknown) => ({
       status,
       contentType: "application/json",
       body: JSON.stringify(payload),
+    });
+    const binary = (status: number, data: Buffer, headers: Record<string, string> = {}) => ({
+      status,
+      contentType: "application/gzip",
+      body: data,
+      headers,
     });
 
     if (method === "GET" && pathname === "/approvals") {
@@ -345,6 +394,68 @@ export class MockPdmBackend {
       return json(200, []);
     }
 
+    if (method === "POST" && pathname === "/bundles/export") {
+      const req = body as { sanitize_profile?: string | null };
+      const payload = buildBundlePayload(this.entities, {
+        sanitize: req.sanitize_profile === "partner-share-default",
+      });
+      const bytes = encodeBundle(payload);
+      this.lastExportedBundle = bytes;
+      return {
+        status: 200,
+        contentType: "application/gzip",
+        headers: {
+          "Content-Disposition": 'attachment; filename="bundle.pmdf.tar.gz"',
+        },
+        body: bytes.toString("utf-8"),
+      };
+    }
+
+    if (method === "POST" && pathname === "/bundles/import/validate") {
+      let file = extractBundleBytesFromMultipart(multipartData, contentType);
+      if ((!file || file.length === 0) && this.lastExportedBundle) {
+        file = this.lastExportedBundle;
+      }
+      if (!file) {
+        return json(422, { detail: "file が必要です" });
+      }
+      const bundle = decodeBundle(file);
+      const diffs = bundle.entities.map((entity) => ({
+        id: entity.id,
+        kind: entity.kind,
+        diff_type: "new",
+        field_diffs: {},
+        reference_errors: [],
+      }));
+      return json(200, {
+        is_valid: true,
+        manifest: { attachment_count: Object.keys(bundle.attachments).length },
+        diffs,
+      });
+    }
+
+    if (method === "POST" && pathname === "/bundles/import/apply") {
+      let file = extractBundleBytesFromMultipart(multipartData, contentType);
+      if ((!file || file.length === 0) && this.lastExportedBundle) {
+        file = this.lastExportedBundle;
+      }
+      if (!file) {
+        return json(422, { detail: "file が必要です" });
+      }
+      const bundle = decodeBundle(file);
+      const applied: string[] = [];
+      for (const entity of bundle.entities) {
+        const kind = String(entity.kind);
+        const id = String(entity.id);
+        if (!this.secondaryEntities[kind]) {
+          this.secondaryEntities[kind] = {};
+        }
+        this.secondaryEntities[kind][id] = entity;
+        applied.push(id);
+      }
+      return json(200, { applied_ids: applied, skipped_ids: [], dry_run: false });
+    }
+
     return null;
   }
 }
@@ -354,14 +465,27 @@ export async function fulfillRoute(route: Route, backend: MockPdmBackend): Promi
   const url = new URL(request.url());
   const pathname = url.pathname.replace(/\/$/, "") || "/";
   let body: unknown = undefined;
-  if (request.method() !== "GET" && request.method() !== "HEAD") {
+  const multipartData = request.postDataBuffer();
+  const contentType = request.headers()["content-type"];
+  if (
+    request.method() !== "GET" &&
+    request.method() !== "HEAD" &&
+    !(contentType?.includes("multipart/form-data"))
+  ) {
     try {
       body = request.postDataJSON();
     } catch {
       body = undefined;
     }
   }
-  const result = backend.handle(request.method(), pathname, url.searchParams, body);
+  const result = backend.handle(
+    request.method(),
+    pathname,
+    url.searchParams,
+    body,
+    multipartData,
+    contentType,
+  );
   if (result) {
     await route.fulfill(result);
     return;
