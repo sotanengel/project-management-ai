@@ -28,11 +28,20 @@ const SUMMARY_OK = {
   by_day: [],
 };
 
+const LEARNING_STATUS_EMPTY = {
+  has_activity: false,
+  latest_job: null,
+  gate_history: [],
+};
+
 describe("CostAndLearning", () => {
   it("コスト消化率をプログレスバーで表示する", async () => {
     server.use(
       http.get(`${API_BASE_URL}/costs/summary`, () =>
         HttpResponse.json(SUMMARY_OK),
+      ),
+      http.get(`${API_BASE_URL}/learning/status`, () =>
+        HttpResponse.json(LEARNING_STATUS_EMPTY),
       ),
     );
 
@@ -59,6 +68,9 @@ describe("CostAndLearning", () => {
           budget_status: "warning",
         }),
       ),
+      http.get(`${API_BASE_URL}/learning/status`, () =>
+        HttpResponse.json(LEARNING_STATUS_EMPTY),
+      ),
     );
 
     renderPage();
@@ -71,20 +83,62 @@ describe("CostAndLearning", () => {
     });
   });
 
-  it("学習進捗プレースホルダが表示される", async () => {
+  it("学習実績が無い場合は「学習実績なし」を表示し、プレースホルダは表示しない", async () => {
     server.use(
       http.get(`${API_BASE_URL}/costs/summary`, () =>
         HttpResponse.json(SUMMARY_OK),
+      ),
+      http.get(`${API_BASE_URL}/learning/status`, () =>
+        HttpResponse.json(LEARNING_STATUS_EMPTY),
       ),
     );
 
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByTestId("learning-placeholder")).toBeInTheDocument();
+      expect(screen.getByText("学習実績なし")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("learning-placeholder")).toHaveTextContent(
-      /E8/,
+    expect(
+      screen.queryByTestId("learning-placeholder"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("学習実績がある場合は直近ジョブと評価ゲート履歴を表示する", async () => {
+    server.use(
+      http.get(`${API_BASE_URL}/costs/summary`, () =>
+        HttpResponse.json(SUMMARY_OK),
+      ),
+      http.get(`${API_BASE_URL}/learning/status`, () =>
+        HttpResponse.json({
+          has_activity: true,
+          latest_job: {
+            timestamp: "2026-07-02T00:00:00Z",
+            job_type: "eval",
+            status: "completed",
+            metrics: { pdm_delta: 12.0 },
+            decision: "promote",
+          },
+          gate_history: [
+            {
+              timestamp: "2026-07-02T00:00:00Z",
+              job_type: "eval",
+              status: "completed",
+              metrics: { pdm_delta: 12.0 },
+              decision: "promote",
+            },
+          ],
+        }),
+      ),
     );
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText(/eval/)).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByTestId("learning-placeholder"),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText(/promote/).length).toBeGreaterThan(0);
   });
 });

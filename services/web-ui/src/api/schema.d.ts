@@ -92,32 +92,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/audit/records": {
-    parameters: {
-      query?: {
-        actor?: string | null;
-        action?: string | null;
-        kind?: string | null;
-        date_from?: string | null;
-        date_to?: string | null;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List Records
-     * @description 監査ログをフィルタ条件で絞り込み、新しい順に返す。
-     */
-    get: operations["list_records_audit_records_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/approvals": {
     parameters: {
       query?: never;
@@ -147,6 +121,26 @@ export interface paths {
     put?: never;
     /** Decide */
     post: operations["decide_approvals__proposal_id__decide_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/audit/records": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List Records
+     * @description 監査ログをフィルタ条件で絞り込み、新しい順に返す。
+     */
+    get: operations["list_records_audit_records_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -327,9 +321,7 @@ export interface paths {
   };
   "/chat/tasks": {
     parameters: {
-      query?: {
-        status?: string | null;
-      };
+      query?: never;
       header?: never;
       path?: never;
       cookie?: never;
@@ -430,6 +422,50 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/costs/learning-blocked": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Learning Blocked
+     * @description 学習ジョブ停止フラグを返す(scheduler用、E9-2)。
+     */
+    get: operations["get_learning_blocked_costs_learning_blocked_get"];
+    /**
+     * Update Learning Blocked
+     * @description 学習ジョブ停止フラグを更新する(scheduler用、E9-2)。
+     */
+    put: operations["update_learning_blocked_costs_learning_blocked_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/costs/budget-events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish Budget Event
+     * @description 予算警告・超過イベントをWebSocketへ配信する(E9-2)。
+     */
+    post: operations["publish_budget_event_costs_budget_events_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/pmdf/decision/{id}/execute": {
     parameters: {
       query?: never;
@@ -507,6 +543,26 @@ export interface paths {
      *     アクション)はL1として本エンドポイント経由でのみ実行可能とする。
      */
     post: operations["send_stakeholder_message_stakeholder__id__send_message_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/learning/status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Learning Status
+     * @description 自己学習ループの直近ジョブ状況・評価ゲート履歴を返す(閲覧はviewer以上)。
+     */
+    get: operations["get_learning_status_learning_status_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -658,6 +714,28 @@ export interface components {
       /** File */
       file: string;
     };
+    /** BudgetEventRequest */
+    BudgetEventRequest: {
+      /** Event Type */
+      event_type: string;
+      /**
+       * Consumption Ratio
+       * @default 0
+       */
+      consumption_ratio: number;
+      /** Total Spend Jpy */
+      total_spend_jpy?: number | null;
+      /** Budget Monthly Jpy */
+      budget_monthly_jpy?: number | null;
+    };
+    /** BudgetEventResponse */
+    BudgetEventResponse: {
+      /**
+       * Published
+       * @default true
+       */
+      published: boolean;
+    };
     /**
      * ChatTask
      * @description チャットタスク1件分の情報。
@@ -776,6 +854,51 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** LearningBlockedRequest */
+    LearningBlockedRequest: {
+      /** Learning Blocked */
+      learning_blocked: boolean;
+    };
+    /** LearningBlockedResponse */
+    LearningBlockedResponse: {
+      /** Learning Blocked */
+      learning_blocked: boolean;
+    };
+    /**
+     * LearningStatusRecord
+     * @description 1件の学習ジョブ状況レコード。
+     */
+    LearningStatusRecord: {
+      /**
+       * Timestamp
+       * Format: date-time
+       */
+      timestamp: string;
+      /**
+       * Job Type
+       * @enum {string}
+       */
+      job_type: "sft" | "dpo" | "eval";
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "started" | "completed" | "failed";
+      /** Metrics */
+      metrics?: {
+        [key: string]: unknown;
+      };
+      /** Decision */
+      decision?: ("promote" | "reject") | null;
+    };
+    /** LearningStatusResponse */
+    LearningStatusResponse: {
+      /** Has Activity */
+      has_activity: boolean;
+      latest_job?: components["schemas"]["LearningStatusRecord"] | null;
+      /** Gate History */
+      gate_history?: components["schemas"]["LearningStatusRecord"][];
     };
     /** LoginRequest */
     LoginRequest: {
@@ -1090,41 +1213,6 @@ export interface operations {
       };
     };
   };
-  list_records_audit_records_get: {
-    parameters: {
-      query?: {
-        actor?: string | null;
-        action?: string | null;
-        kind?: string | null;
-        date_from?: string | null;
-        date_to?: string | null;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["AuditRecord"][];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   list_proposals_approvals_get: {
     parameters: {
       query?: {
@@ -1211,6 +1299,41 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ProposalResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_records_audit_records_get: {
+    parameters: {
+      query?: {
+        actor?: string | null;
+        action?: string | null;
+        kind?: string | null;
+        date_from?: string | null;
+        date_to?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuditRecord"][];
         };
       };
       /** @description Validation Error */
@@ -1637,6 +1760,92 @@ export interface operations {
       };
     };
   };
+  get_learning_blocked_costs_learning_blocked_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LearningBlockedResponse"];
+        };
+      };
+    };
+  };
+  update_learning_blocked_costs_learning_blocked_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LearningBlockedRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LearningBlockedResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  publish_budget_event_costs_budget_events_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BudgetEventRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BudgetEventResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   execute_decision_pmdf_decision__id__execute_post: {
     parameters: {
       query?: never;
@@ -1765,6 +1974,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_learning_status_learning_status_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["LearningStatusResponse"];
         };
       };
     };

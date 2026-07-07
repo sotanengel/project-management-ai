@@ -320,6 +320,11 @@ export type ChatInstructionRequest =
   paths["/chat/instructions"]["post"]["requestBody"]["content"]["application/json"];
 export type CostSummaryResponse =
   paths["/costs/summary"]["get"]["responses"][200]["content"]["application/json"];
+export type LearningStatusResponse =
+  paths["/learning/status"]["get"]["responses"][200]["content"]["application/json"];
+export type LearningStatusRecord = NonNullable<
+  LearningStatusResponse["latest_job"]
+>;
 
 /** api-serverが定義する11業務種別(FR-PD-01〜11)。 */
 export const BUSINESS_FUNCTIONS = [
@@ -382,4 +387,9 @@ export function sendChatInstruction(
 
 export function getCostSummary(): Promise<CostSummaryResponse> {
   return apiRequest<CostSummaryResponse>("/costs/summary");
+}
+
+// --- 学習状況API ---
+export function getLearningStatus(): Promise<LearningStatusResponse> {
+  return apiRequest<LearningStatusResponse>("/learning/status");
 }
