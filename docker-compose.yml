@@ -85,6 +85,11 @@ services:
       QDRANT_URL: ${QDRANT_URL}
       PMDF_STORE_PATH: ${PMDF_STORE_PATH:-/data/pmdf}
       AGENT_CORE_HEALTH_PORT: "8081"
+      # 常駐ランナー(E9系): チャットタスクのポーリング実行(既定で有効)。
+      API_SERVER_URL: ${API_SERVER_URL:-http://api-server:8000}
+      AGENT_CORE_AUTH_TOKEN: ${AGENT_CORE_AUTH_TOKEN:-}
+      RUNNER_ENABLED: ${RUNNER_ENABLED:-true}
+      RUNNER_POLL_INTERVAL_SEC: ${RUNNER_POLL_INTERVAL_SEC:-5}
     volumes:
       - pmdf-store-data:/data/pmdf
     depends_on:

@@ -99,8 +99,9 @@ async def _default_dispatch(**_kwargs: Any) -> dict[str, Any]:
     )
 
 
-async def handle_chat_instruction(
+async def execute_chat_task(
     *,
+    task_id: str,
     message: str,
     product_id: str,
     actor: str,
@@ -110,23 +111,19 @@ async def handle_chat_instruction(
     auth_token: str,
     dispatch_overrides: dict[GraphKind, DispatchFn] | None = None,
 ) -> TaskHandle:
-    """自然文の指示を受け、意図分類→タスク登録→業務グラフディスパッチまでを行う。
+    """既に`pending`状態で登録済みのチャットタスク(`task_id`)を実行する。
 
-    1. `POST /chat/instructions`でタスクを`pending`状態として登録する。
-    2. LLM(`pdm-main`)による意図分類(`classify_intent`)で対象業務グラフを判定する。
-    3. `POST /chat/tasks/{id}/transition`で`running`へ遷移させる。
-    4. 対象業務グラフのディスパッチ関数(`dispatch_overrides`で注入、
+    1. LLM(`pdm-main`)による意図分類(`classify_intent`)で対象業務グラフを判定する。
+    2. `POST /chat/tasks/{id}/transition`で`running`へ遷移させる。
+    3. 対象業務グラフのディスパッチ関数(`dispatch_overrides`で注入、
        未指定時は`_default_dispatch`)を実行する。
-    5. 成功時は`done`(結果付き)、例外発生時は`failed`(エラー内容付き)へ
+    4. 成功時は`done`(結果付き)、例外発生時は`failed`(エラー内容付き)へ
        遷移させる。
-    """
-    create_response = await pmdf_tool_client.request(
-        "POST",
-        "/chat/instructions",
-        json={"message": message, "product_id": product_id},
-    )
-    task_id = create_response.json()["id"]
 
+    `handle_chat_instruction`(新規指示投入)と常駐ランナー
+    (`agent_core.runner`、既存タスクの実行)の双方から共通利用され、
+    意図分類・ディスパッチのロジックを一箇所に集約する。
+    """
     kind = await classify_intent(message, llm_client=llm_client)
 
     await pmdf_tool_client.request(
@@ -164,11 +161,50 @@ async def handle_chat_instruction(
     return TaskHandle(task_id=task_id, kind=kind)
 
 
+async def handle_chat_instruction(
+    *,
+    message: str,
+    product_id: str,
+    actor: str,
+    llm_client: LogicalModelClient,
+    pmdf_tool_client: PmdfToolClient,
+    api_server_url: str,
+    auth_token: str,
+    dispatch_overrides: dict[GraphKind, DispatchFn] | None = None,
+) -> TaskHandle:
+    """自然文の指示を受け、タスク登録→(`execute_chat_task`による)実行までを行う。
+
+    `POST /chat/instructions`でタスクを`pending`状態として登録した後、
+    実行(意図分類→running→ディスパッチ→done/failed)は`execute_chat_task`に
+    委譲する(常駐ランナーが既存の`pending`タスクを実行する場合と同じ
+    ロジックを共有するため)。
+    """
+    create_response = await pmdf_tool_client.request(
+        "POST",
+        "/chat/instructions",
+        json={"message": message, "product_id": product_id},
+    )
+    task_id = create_response.json()["id"]
+
+    return await execute_chat_task(
+        task_id=task_id,
+        message=message,
+        product_id=product_id,
+        actor=actor,
+        llm_client=llm_client,
+        pmdf_tool_client=pmdf_tool_client,
+        api_server_url=api_server_url,
+        auth_token=auth_token,
+        dispatch_overrides=dispatch_overrides,
+    )
+
+
 __all__ = [
     "GRAPH_KINDS",
     "DispatchFn",
     "GraphKind",
     "TaskHandle",
     "classify_intent",
+    "execute_chat_task",
     "handle_chat_instruction",
 ]
