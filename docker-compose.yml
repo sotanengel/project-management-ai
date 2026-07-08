@@ -15,6 +15,7 @@ volumes:
   mlflow-data:
   ollama-data:
   api-server-data:
+  learning-status:
 
 services:
   # --- 常時稼働サービス(全profile共通) -----------------------------------
@@ -56,9 +57,11 @@ services:
       CHAT_TASK_STORE_PATH: /app/data/chat_tasks.json
       COST_USAGE_LOG_PATH: /app/data/costs/usage.jsonl
       BUDGET_MONTHLY_JPY: ${BUDGET_MONTHLY_JPY:-50000}
+      LEARNING_STATUS_PATH: ${LEARNING_STATUS_PATH:-/data/learning/status.jsonl}
     volumes:
       - pmdf-store-data:/data/pmdf
       - api-server-data:/app/data
+      - learning-status:/data/learning
     depends_on:
       pmdf-store:
         condition: service_healthy
@@ -82,6 +85,11 @@ services:
       QDRANT_URL: ${QDRANT_URL}
       PMDF_STORE_PATH: ${PMDF_STORE_PATH:-/data/pmdf}
       AGENT_CORE_HEALTH_PORT: "8081"
+      # 常駐ランナー(E9系): チャットタスクのポーリング実行(既定で有効)。
+      API_SERVER_URL: ${API_SERVER_URL:-http://api-server:8000}
+      AGENT_CORE_AUTH_TOKEN: ${AGENT_CORE_AUTH_TOKEN:-}
+      RUNNER_ENABLED: ${RUNNER_ENABLED:-true}
+      RUNNER_POLL_INTERVAL_SEC: ${RUNNER_POLL_INTERVAL_SEC:-5}
     volumes:
       - pmdf-store-data:/data/pmdf
     depends_on:
@@ -233,13 +241,17 @@ services:
   # --- train profile: 学習・評価バッチ(常時稼働しない) -----------------------
 
   trainer:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/trainer/Dockerfile
     profiles: ["train"]
     networks: [pmai-net]
     environment:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
       PMDF_STORE_PATH: ${PMDF_STORE_PATH}
+      LEARNING_STATUS_PATH: ${LEARNING_STATUS_PATH:-/data/learning/status.jsonl}
+    volumes:
+      - learning-status:/data/learning
     depends_on:
       mlflow:
         condition: service_healthy
@@ -247,13 +259,17 @@ services:
         condition: service_healthy
 
   eval-runner:
-    image: python:3.12-slim
-    command: ["sleep", "infinity"]
+    build:
+      context: .
+      dockerfile: services/eval-runner/Dockerfile
     profiles: ["train"]
     networks: [pmai-net]
     environment:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI}
       MODEL_GATEWAY_URL: ${MODEL_GATEWAY_URL}
+      LEARNING_STATUS_PATH: ${LEARNING_STATUS_PATH:-/data/learning/status.jsonl}
+    volumes:
+      - learning-status:/data/learning
     depends_on:
       mlflow:
         condition: service_healthy

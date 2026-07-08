@@ -1,250 +1,252 @@
 - id: pdm_knowledge-001
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: RICEスコアリングモデルを構成する4つの要素をそれぞれ説明せよ。
+  expected_answer_criteria: Reach(到達数)・Impact(影響度)・Confidence(確信度)・Effort(工数)の4要素が漏れなく説明され、スコア=(Reach×Impact×Confidence)/Effortの計算式が示されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-002
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: WSJF(Weighted Shortest Job First)におけるCost of Delay(遅延コスト)の構成要素を3つ挙げ、それぞれの意味を説明せよ。
+  expected_answer_criteria:
+    Business Value・Time Criticality・Risk Reduction/Opportunity
+    Enablementの3要素が説明され、WSJFスコア=CoD/Job Sizeの式に触れていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-003
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: OKRにおける「Objective」と「Key Result」の違いを説明せよ。
+  expected_answer_criteria: Objectiveが定性的で野心的な方向性を示すのに対し、Key Resultが測定可能な定量指標であることが述べられ、両者の関係性が明示されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-004
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 良いKey Resultの条件を3つ挙げよ。
+  expected_answer_criteria: 測定可能・期限が明確・アウトカム指向(アウトプットではない)という観点のうち少なくとも3点が具体例とともに述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-005
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Jobs-to-be-Done(JTBD)理論の基本的な考え方を説明せよ。
+  expected_answer_criteria: 顧客は製品ではなく「片付けたい用事(ジョブ)」を解決するために製品を「雇用する」という考え方が説明され、機能軸ではなく状況・動機軸で顧客を理解する点に言及していること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-006
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: JTBDインタビューにおいて避けるべき質問の傾向とその理由を述べよ。
+  expected_answer_criteria: 「欲しい機能は何か」という誘導的・仮説先行の質問を避け、過去の具体的な行動・意思決定の瞬間を聞くべきという点が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-007
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクトマーケットフィット(PMF)とは何か、その定義を説明せよ。
+  expected_answer_criteria: 市場が求める価値を製品が提供できている状態であることが説明され、PMF未達時に成長施策を急ぐことのリスクに触れていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-008
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Sean Ellisテストの内容とPMF判定の目安として使われる閾値を説明せよ。
+  expected_answer_criteria: 「この製品が使えなくなったらどれくらいがっかりするか」という質問に対し「非常にがっかりする」の回答率が40%を超えるとPMFの目安とされる点が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-009
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: デュアルトラックアジャイル(Discovery/Delivery)の考え方を説明せよ。
+  expected_answer_criteria: 発見(何を作るべきかの検証)と提供(実装・出荷)を並行するトラックとして扱う考え方が説明され、両トラックが継続的に情報交換する点に言及していること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-010
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Opportunity Solution Tree(機会ソリューションツリー)の構造を説明せよ。
+  expected_answer_criteria: 頂点にアウトカム、その下に機会(顧客ニーズ・課題)、さらにその下にソリューション、実験という階層構造が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-011
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Kanoモデルにおける「当たり前品質」「一元的品質」「魅力的品質」の違いを説明せよ。
+  expected_answer_criteria: 当たり前品質(欠けると不満だが満たしても満足度は上がらない)、一元的品質(充足度に比例)、魅力的品質(なくても不満はないが満たすと満足度が大きく上がる)の3区分が具体例とともに説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-012
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: North Star Metric(北極星指標)を選定する際に注意すべき点を述べよ。
+  expected_answer_criteria: 事業のバニティメトリクスではなく顧客が得る価値と事業成長の両方に相関する先行指標を選ぶべき点、単一指標に頼りすぎるリスクに触れていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-013
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: インプット指標とアウトプット指標の違いを、具体例を交えて説明せよ。
+  expected_answer_criteria: インプット指標(チームがコントロールできる先行要因)とアウトプット指標(結果指標)の違いが具体例とともに説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-014
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: MoSCoW法における4分類とその優先順位の考え方を説明せよ。
+  expected_answer_criteria: Must have・Should have・Could have・Won't haveの4分類が説明され、スコープ調整時にどの分類から削るべきかの判断基準が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-015
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Impact/Effortマトリクスを使った施策選定の考え方を説明せよ。
+  expected_answer_criteria: 影響度と工数の2軸で施策を4象限に分類し、高影響・低工数(クイックウィン)を優先する考え方が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-016
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Lean StartupにおけるBuild-Measure-Learnループの目的を説明せよ。
+  expected_answer_criteria: 仮説を最小限の実装で検証し、計測結果から学習して次の仮説に反映するサイクルであることが説明され、学習速度の最大化が目的である点に言及していること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-017
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: MVP(Minimum Viable Product)についてよくある誤解を1つ挙げ、正しい理解を説明せよ。
+  expected_answer_criteria: MVPが「機能を削った低品質な製品」ではなく「仮説検証に必要な最小限の学習を得る手段」であるという誤解と正解の対比が明確に述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-018
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクトビジョンとプロダクト戦略の違いを説明せよ。
+  expected_answer_criteria: ビジョンが長期的なありたい姿(Why)を示すのに対し、戦略がそこに至るための選択と資源配分の方針(How)であることが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-019
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ロードマップとバックログの役割の違いを説明せよ。
+  expected_answer_criteria: ロードマップがテーマ・時間軸に基づく方向性のコミュニケーション手段であり、バックログが実装単位の詳細な作業リストであるという違いが述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-020
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: アウトプットとアウトカムの違いを具体例とともに説明せよ。
+  expected_answer_criteria: アウトプット(作ったもの・出荷した機能数など)とアウトカム(それによって生じた顧客・事業の変化)の違いが具体例とともに説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-021
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ユーザーストーリーの基本フォーマット「As a / I want / So that」の各要素が示す内容を説明せよ。
+  expected_answer_criteria: As a(誰が)・I want(何を求めるか)・So that(なぜ・得られる価値)の3要素それぞれの役割が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-022
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 良い受け入れ基準(Acceptance Criteria)の条件を述べよ。
+  expected_answer_criteria: 検証可能・具体的・完了の定義と紐づく、という観点が具体例とともに述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-023
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: A/Bテストにおいて統計的有意性を判断する際に注意すべき点を2つ挙げよ。
+  expected_answer_criteria: サンプルサイズ不足による誤判定、複数指標の同時検定によるp値の多重比較問題などのうち2点以上が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-024
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: コホート分析がプロダクト改善においてどのように役立つかを説明せよ。
+  expected_answer_criteria: 時間軸でユーザー群を区切ることで、施策やリリースが定着率・行動変化に与える影響を切り分けて把握できる点が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-025
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: リテンション(継続率)とチャーン(解約率)の関係、および改善アプローチの違いを説明せよ。
+  expected_answer_criteria: 両者が表裏の関係にあること、リテンション改善はオンボーディングや習慣化施策、チャーン改善は離脱要因の特定・対応という異なるアプローチが必要な点が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-026
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: アクティベーション指標を設計する際の考え方を説明せよ。
+  expected_answer_criteria: ユーザーが製品の中核価値を初めて体験する行動(Aha Moment)を特定し、それを測定可能な指標に落とし込む考え方が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-027
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: AARRR(パイレーツメトリクス)の5段階を挙げ、それぞれ何を測るかを説明せよ。
+  expected_answer_criteria: Acquisition・Activation・Retention・Referral・Revenueの5段階が漏れなく挙げられ、それぞれの測定対象が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-028
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ポジショニングステートメントに含めるべき要素を述べよ。
+  expected_answer_criteria: ターゲット顧客・カテゴリ・差別化ポイント・競合との対比という要素が含まれていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-029
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ペルソナとユーザーセグメントの違いを説明せよ。
+  expected_answer_criteria: ペルソナが具体的な人物像として行動・動機を描写するものであるのに対し、セグメントが定量的な属性・行動データによる集団区分であるという違いが述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-030
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 競合分析でよく使われるフレームワークを1つ挙げ、その概要を説明せよ。
+  expected_answer_criteria: ポジショニングマップ・機能比較表・SWOT分析などのいずれかが挙げられ、その目的と使い方が具体的に説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-031
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクト戦略立案におけるSWOT分析の使い方を説明せよ。
+  expected_answer_criteria: 強み・弱み・機会・脅威を整理した上で、内部要因と外部要因を掛け合わせて戦略オプションを導く使い方が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-032
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ビジネスモデルキャンバスの9つのブロックのうち、プロダクトマネージャーが特に注視すべき3つを挙げ理由を述べよ。
+  expected_answer_criteria: 顧客セグメント・価値提案・収益の流れなど妥当な3ブロックが挙げられ、PdMの意思決定への関連が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-033
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: バリュープロポジションキャンバスにおける「ペインリリーバー」と「ゲインクリエーター」の違いを説明せよ。
+  expected_answer_criteria: ペインリリーバーが顧客の痛み・障害を取り除く要素、ゲインクリエーターが顧客の望む便益を生み出す要素であるという違いが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-034
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: デザインスプリントの5日間のプロセス概要を説明せよ。
+  expected_answer_criteria: 理解・発散・決定・プロトタイプ・検証という大まかな流れが説明されていること(日数配分の多少の幅は許容)。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-035
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Teresa TorresのContinuous Discovery Habitsで提唱される「週次の顧客インタビュー」の狙いを説明せよ。
+  expected_answer_criteria: 意思決定のたびに大規模調査を行うのではなく、継続的に少人数のインタビューを積み重ねることで顧客理解を組織の習慣にする狙いが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-036
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: フィーチャーフラグを用いた段階的ロールアウトのメリットを説明せよ。
+  expected_answer_criteria: リスクを限定した状態で本番環境での検証ができる点、問題発生時に即座にロールバックできる点などが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-037
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 技術的負債への投資判断をプロダクトマネージャーが行う際の考え方を説明せよ。
+  expected_answer_criteria: 短期の機能開発速度と長期の開発生産性・品質のトレードオフを踏まえ、事業インパクトの観点から返済タイミングを判断する考え方が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-038
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクト主導型成長(PLG)とセールス主導型成長の違いを説明せよ。
+  expected_answer_criteria: PLGが製品自体を通じて顧客獲得・拡大・収益化を行うのに対し、セールス主導型が営業活動を主導役とする違いが説明され、それぞれに適した事業特性に触れていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-039
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: バニティメトリクスとは何か、具体例を挙げて説明せよ。
+  expected_answer_criteria: 見栄えは良いが意思決定に直結しない指標(例:累計ダウンロード数)が具体例として挙げられ、アクショナブルな指標との対比が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-040
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: RICEとWSJFはどのような状況でそれぞれ使い分けるべきか説明せよ。
+  expected_answer_criteria: RICEが個別施策の相対比較に向く一方、WSJFが遅延コストを重視するリーン開発環境や複数チーム間の優先順位付けに向くといった使い分けの観点が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-041
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ステークホルダーマネジメントにおいてPdMが行うべき期待値調整の具体的手法を1つ挙げよ。
+  expected_answer_criteria: 定期的なロードマップレビューや意思決定記録(Decision Record)の共有などの具体的手法が挙げられ、その目的が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-042
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクトマネージャーとプロジェクトマネージャーの役割の違いを説明せよ。
+  expected_answer_criteria: PdMが「何を・なぜ作るか」という価値創出に責任を持つのに対し、プロジェクトマネージャーが「決められたスコープをいつまでにどう届けるか」という実行管理に責任を持つという違いが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-043
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクトマネージャーとプロダクトオーナーの役割の違いを説明せよ。
+  expected_answer_criteria: PdMが戦略・市場・顧客洞察を含む幅広い責任を持つのに対し、POがスクラムチーム内のバックログ管理・受け入れ判断に責任を持つ、という違い(組織によって重なる場合もある点)が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-044
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ロードマップにおける「テーマ」と「フィーチャー」の違いを説明せよ。
+  expected_answer_criteria: テーマが解決すべき課題・目的を軸にした大きな括りであるのに対し、フィーチャーが個別の実装単位であるという違いが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-045
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 顧客インタビューで陥りやすいバイアスを1つ挙げ、その対策を説明せよ。
+  expected_answer_criteria: 確証バイアスや誘導質問によるバイアスなどが具体的に挙げられ、オープンクエスチョンの活用や複数人での実施などの対策が述べられていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-046
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 定量調査と定性調査をプロダクト意思決定でどう使い分けるべきか説明せよ。
+  expected_answer_criteria: 定量調査が「何が起きているか」の把握、定性調査が「なぜ起きているか」の理解に適するという使い分けが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-047
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: アンゾフの成長マトリクスの4象限を挙げ、それぞれの成長戦略を説明せよ。
+  expected_answer_criteria: 市場浸透・新市場開拓・新製品開発・多角化の4象限が挙げられ、それぞれの戦略の概要が説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-048
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: プロダクトオペレーション(Product Ops)の役割を説明せよ。
+  expected_answer_criteria: プロダクトチームの意思決定を支えるデータ基盤・プロセス標準化・顧客フィードバック集約などの支援機能であることが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-049
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Definition of Done(完了の定義)をプロダクトチームで明文化する意義を説明せよ。
+  expected_answer_criteria: チーム間で「完了」の認識齟齬を防ぎ、品質基準を一定に保つ効果があることが説明されていること。
   scoring_method: rubric_1_5
 - id: pdm_knowledge-050
   category: pdm_knowledge
-  question: '[pdm_knowledge] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Voice of Customer(VoC)プログラムを運用する際に注意すべき点を述べよ。
+  expected_answer_criteria: 収集したフィードバックを構造化・優先順位付けし、意思決定に実際に反映する仕組みがないと形骸化するリスクに言及していること。
   scoring_method: rubric_1_5

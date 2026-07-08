@@ -1,250 +1,500 @@
 - id: priority_judgment-001
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "会計SaaS「Kaikei Cloud」のバックログに次の2つの候補施策がある。施策A「自動仕訳AI機能」: 到達数(Reach)=1200人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.8, 工数(Effort)=4人月。施策B「多通貨対応」: 到達数(Reach)=400人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.5, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1200×2.0×0.8)/4≈480.0、施策Bのスコア=(400×3.0×0.5)/3≈200.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-002
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "ECプラットフォーム「Shopnia」のバックログに次の2つの候補施策がある。施策A「レコメンドエンジン刷新」: 到達数(Reach)=3001人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。施策B「ワンクリック返品機能」: 到達数(Reach)=1002人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.8, 工数(Effort)=1人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(3001×1.0×0.9)/2≈1350.45、施策Bのスコア=(1002×1.0×0.8)/1≈801.6
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-003
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "採用管理システム「HireBoard」のバックログに次の2つの候補施策がある。施策A「候補者スコアリングAI」: 到達数(Reach)=802人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.6, 工数(Effort)=5人月。施策B「面接日程自動調整」: 到達数(Reach)=2204人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(802×3.0×0.6)/5≈288.72、施策Bのスコア=(2204×0.5×0.9)/2≈495.9
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-004
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "配送管理アプリ「RouteWise」のバックログに次の2つの候補施策がある。施策A「リアルタイム配車最適化」: 到達数(Reach)=5003人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=1.0, 工数(Effort)=3人月。施策B「ドライバー向けチャットサポート」: 到達数(Reach)=706人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(5003×0.5×1.0)/3≈833.83、施策Bのスコア=(706×2.0×0.6)/4≈211.8
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-005
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "医療予約システム「ClinicNow」のバックログに次の2つの候補施策がある。施策A「オンライン問診機能」: 到達数(Reach)=2004人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=6人月。施策B「リマインドSMS通知」: 到達数(Reach)=1808人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=5人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2004×1.5×0.7)/6≈350.7、施策Bのスコア=(1808×1.5×0.7)/5≈379.68
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-006
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "学習管理システム「StudyPath」のバックログに次の2つの候補施策がある。施策A「学習進捗ダッシュボード」: 到達数(Reach)=1505人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.9, 工数(Effort)=8人月。施策B「AI採点機能」: 到達数(Reach)=310人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=1.0, 工数(Effort)=6人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1505×2.0×0.9)/8≈338.62、施策Bのスコア=(310×3.0×1.0)/6≈155.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-007
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "不動産検索サービス「HomeScout」のバックログに次の2つの候補施策がある。施策A「周辺施設情報の地図連携」: 到達数(Reach)=606人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.8, 工数(Effort)=2人月。施策B「内見予約カレンダー」: 到達数(Reach)=5212人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.8, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(606×3.0×0.8)/2≈727.2、施策Bのスコア=(5212×0.5×0.8)/3≈694.93
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-008
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "フードデリバリー「QuickEats」のバックログに次の2つの候補施策がある。施策A「配達員リアルタイム追跡」: 到達数(Reach)=4007人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。施策B「まとめ買い割引機能」: 到達数(Reach)=1314人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(4007×1.0×0.6)/4≈601.05、施策Bのスコア=(1314×1.0×0.9)/2≈591.3
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-009
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "経費精算ツール「ExpenseFlow」のバックログに次の2つの候補施策がある。施策A「領収書OCR読み取り」: 到達数(Reach)=2508人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=1.0, 工数(Effort)=5人月。施策B「承認フロー多段階対応」: 到達数(Reach)=966人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.5, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2508×1.5×1.0)/5≈752.4、施策Bのスコア=(966×2.0×0.5)/4≈241.5
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-010
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "カスタマーサポートツール「HelpDeskPro」のバックログに次の2つの候補施策がある。施策A「チャットボット一次対応」: 到達数(Reach)=909人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.7, 工数(Effort)=3人月。施策B「顧客満足度自動アンケート」: 到達数(Reach)=2618人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.6, 工数(Effort)=7人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(909×2.0×0.7)/3≈424.2、施策Bのスコア=(2618×1.5×0.6)/7≈336.6
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-011
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "会計SaaS「Kaikei Cloud」のバックログに次の2つの候補施策がある。施策A「自動仕訳AI機能」: 到達数(Reach)=1210人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.8, 工数(Effort)=4人月。施策B「多通貨対応」: 到達数(Reach)=420人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.5, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1210×2.0×0.8)/4≈484.0、施策Bのスコア=(420×3.0×0.5)/3≈210.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-012
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "ECプラットフォーム「Shopnia」のバックログに次の2つの候補施策がある。施策A「レコメンドエンジン刷新」: 到達数(Reach)=3011人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。施策B「ワンクリック返品機能」: 到達数(Reach)=1022人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.8, 工数(Effort)=1人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(3011×1.0×0.9)/2≈1354.95、施策Bのスコア=(1022×1.0×0.8)/1≈817.6
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-013
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "採用管理システム「HireBoard」のバックログに次の2つの候補施策がある。施策A「候補者スコアリングAI」: 到達数(Reach)=812人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.6, 工数(Effort)=5人月。施策B「面接日程自動調整」: 到達数(Reach)=2224人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(812×3.0×0.6)/5≈292.32、施策Bのスコア=(2224×0.5×0.9)/2≈500.4
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-014
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "配送管理アプリ「RouteWise」のバックログに次の2つの候補施策がある。施策A「リアルタイム配車最適化」: 到達数(Reach)=5013人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=1.0, 工数(Effort)=3人月。施策B「ドライバー向けチャットサポート」: 到達数(Reach)=726人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(5013×0.5×1.0)/3≈835.5、施策Bのスコア=(726×2.0×0.6)/4≈217.8
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-015
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "医療予約システム「ClinicNow」のバックログに次の2つの候補施策がある。施策A「オンライン問診機能」: 到達数(Reach)=2014人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=6人月。施策B「リマインドSMS通知」: 到達数(Reach)=1828人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=5人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2014×1.5×0.7)/6≈352.45、施策Bのスコア=(1828×1.5×0.7)/5≈383.88
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-016
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "学習管理システム「StudyPath」のバックログに次の2つの候補施策がある。施策A「学習進捗ダッシュボード」: 到達数(Reach)=1515人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.9, 工数(Effort)=8人月。施策B「AI採点機能」: 到達数(Reach)=330人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=1.0, 工数(Effort)=6人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1515×2.0×0.9)/8≈340.88、施策Bのスコア=(330×3.0×1.0)/6≈165.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-017
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "不動産検索サービス「HomeScout」のバックログに次の2つの候補施策がある。施策A「周辺施設情報の地図連携」: 到達数(Reach)=616人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.8, 工数(Effort)=2人月。施策B「内見予約カレンダー」: 到達数(Reach)=5232人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.8, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(616×3.0×0.8)/2≈739.2、施策Bのスコア=(5232×0.5×0.8)/3≈697.6
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-018
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "フードデリバリー「QuickEats」のバックログに次の2つの候補施策がある。施策A「配達員リアルタイム追跡」: 到達数(Reach)=4017人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。施策B「まとめ買い割引機能」: 到達数(Reach)=1334人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(4017×1.0×0.6)/4≈602.55、施策Bのスコア=(1334×1.0×0.9)/2≈600.3
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-019
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "経費精算ツール「ExpenseFlow」のバックログに次の2つの候補施策がある。施策A「領収書OCR読み取り」: 到達数(Reach)=2518人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=1.0, 工数(Effort)=5人月。施策B「承認フロー多段階対応」: 到達数(Reach)=986人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.5, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2518×1.5×1.0)/5≈755.4、施策Bのスコア=(986×2.0×0.5)/4≈246.5
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-020
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "カスタマーサポートツール「HelpDeskPro」のバックログに次の2つの候補施策がある。施策A「チャットボット一次対応」: 到達数(Reach)=919人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.7, 工数(Effort)=3人月。施策B「顧客満足度自動アンケート」: 到達数(Reach)=2638人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.6, 工数(Effort)=7人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(919×2.0×0.7)/3≈428.87、施策Bのスコア=(2638×1.5×0.6)/7≈339.17
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-021
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "会計SaaS「Kaikei Cloud」のバックログに次の2つの候補施策がある。施策A「自動仕訳AI機能」: 到達数(Reach)=1220人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.8, 工数(Effort)=4人月。施策B「多通貨対応」: 到達数(Reach)=440人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.5, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1220×2.0×0.8)/4≈488.0、施策Bのスコア=(440×3.0×0.5)/3≈220.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-022
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "ECプラットフォーム「Shopnia」のバックログに次の2つの候補施策がある。施策A「レコメンドエンジン刷新」: 到達数(Reach)=3021人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。施策B「ワンクリック返品機能」: 到達数(Reach)=1042人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.8, 工数(Effort)=1人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(3021×1.0×0.9)/2≈1359.45、施策Bのスコア=(1042×1.0×0.8)/1≈833.6
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-023
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "採用管理システム「HireBoard」のバックログに次の2つの候補施策がある。施策A「候補者スコアリングAI」: 到達数(Reach)=822人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.6, 工数(Effort)=5人月。施策B「面接日程自動調整」: 到達数(Reach)=2244人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(822×3.0×0.6)/5≈295.92、施策Bのスコア=(2244×0.5×0.9)/2≈504.9
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-024
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "配送管理アプリ「RouteWise」のバックログに次の2つの候補施策がある。施策A「リアルタイム配車最適化」: 到達数(Reach)=5023人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=1.0, 工数(Effort)=3人月。施策B「ドライバー向けチャットサポート」: 到達数(Reach)=746人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(5023×0.5×1.0)/3≈837.17、施策Bのスコア=(746×2.0×0.6)/4≈223.8
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-025
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "医療予約システム「ClinicNow」のバックログに次の2つの候補施策がある。施策A「オンライン問診機能」: 到達数(Reach)=2024人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=6人月。施策B「リマインドSMS通知」: 到達数(Reach)=1848人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.7, 工数(Effort)=5人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2024×1.5×0.7)/6≈354.2、施策Bのスコア=(1848×1.5×0.7)/5≈388.08
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-026
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "学習管理システム「StudyPath」のバックログに次の2つの候補施策がある。施策A「学習進捗ダッシュボード」: 到達数(Reach)=1525人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.9, 工数(Effort)=8人月。施策B「AI採点機能」: 到達数(Reach)=350人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=1.0, 工数(Effort)=6人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(1525×2.0×0.9)/8≈343.12、施策Bのスコア=(350×3.0×1.0)/6≈175.0
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-027
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "不動産検索サービス「HomeScout」のバックログに次の2つの候補施策がある。施策A「周辺施設情報の地図連携」: 到達数(Reach)=626人/四半期,
+    影響度(Impact)=3.0, 確信度(Confidence)=0.8, 工数(Effort)=2人月。施策B「内見予約カレンダー」: 到達数(Reach)=5252人/四半期,
+    影響度(Impact)=0.5, 確信度(Confidence)=0.8, 工数(Effort)=3人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(626×3.0×0.8)/2≈751.2、施策Bのスコア=(5252×0.5×0.8)/3≈700.27
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-028
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "フードデリバリー「QuickEats」のバックログに次の2つの候補施策がある。施策A「配達員リアルタイム追跡」: 到達数(Reach)=4027人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.6, 工数(Effort)=4人月。施策B「まとめ買い割引機能」: 到達数(Reach)=1354人/四半期,
+    影響度(Impact)=1.0, 確信度(Confidence)=0.9, 工数(Effort)=2人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(4027×1.0×0.6)/4≈604.05、施策Bのスコア=(1354×1.0×0.9)/2≈609.3
+    が正しく計算され、スコアの高い方(施策B)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-029
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "経費精算ツール「ExpenseFlow」のバックログに次の2つの候補施策がある。施策A「領収書OCR読み取り」: 到達数(Reach)=2528人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=1.0, 工数(Effort)=5人月。施策B「承認フロー多段階対応」: 到達数(Reach)=1006人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.5, 工数(Effort)=4人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(2528×1.5×1.0)/5≈758.4、施策Bのスコア=(1006×2.0×0.5)/4≈251.5
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-030
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "カスタマーサポートツール「HelpDeskPro」のバックログに次の2つの候補施策がある。施策A「チャットボット一次対応」: 到達数(Reach)=929人/四半期,
+    影響度(Impact)=2.0, 確信度(Confidence)=0.7, 工数(Effort)=3人月。施策B「顧客満足度自動アンケート」: 到達数(Reach)=2658人/四半期,
+    影響度(Impact)=1.5, 確信度(Confidence)=0.6, 工数(Effort)=7人月。それぞれのRICEスコアを計算し、どちらを優先すべきか、採用しなかった施策のトレードオフとともに述べよ。"
+  expected_answer_criteria:
+    施策Aのスコア=(929×2.0×0.7)/3≈433.53、施策Bのスコア=(2658×1.5×0.6)/7≈341.74
+    が正しく計算され、スコアの高い方(施策A)を優先する判断が示され、採用しなかった施策を見送る理由・機会損失が明示的に述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-031
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "配送管理アプリ「RouteWise」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「学習進捗ダッシュボード」:
+    ビジネス価値=8, 時間的制約=5, リスク低減/機会創出=3, ジョブサイズ=4。施策B「AI採点機能」: ビジネス価値=5, 時間的制約=5, リスク低減/機会創出=5,
+    ジョブサイズ=4。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=8+5+3=16, WSJFスコア=16/4≈4.0、施策BのCoD=5+5+5=15, WSJFスコア=15/4≈3.75
+    が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-032
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "医療予約システム「ClinicNow」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「周辺施設情報の地図連携」:
+    ビジネス価値=6, 時間的制約=8, リスク低減/機会創出=2, ジョブサイズ=5。施策B「内見予約カレンダー」: ビジネス価値=10, 時間的制約=1,
+    リスク低減/機会創出=4, ジョブサイズ=7。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=6+8+2=16, WSJFスコア=16/5≈3.2、施策BのCoD=10+1+4=15,
+    WSJFスコア=15/7≈2.14 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-033
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "学習管理システム「StudyPath」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「配達員リアルタイム追跡」:
+    ビジネス価値=12, 時間的制約=3, リスク低減/機会創出=5, ジョブサイズ=6。施策B「まとめ買い割引機能」: ビジネス価値=8, 時間的制約=3,
+    リスク低減/機会創出=8, ジョブサイズ=5。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=12+3+5=20, WSJFスコア=20/6≈3.33、施策BのCoD=8+3+8=19,
+    WSJFスコア=19/5≈3.8 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-034
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "不動産検索サービス「HomeScout」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「領収書OCR読み取り」:
+    ビジネス価値=9, 時間的制約=6, リスク低減/機会創出=4, ジョブサイズ=3。施策B「承認フロー多段階対応」: ビジネス価値=10, 時間的制約=6,
+    リスク低減/機会創出=2, ジョブサイズ=9。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=9+6+4=19, WSJFスコア=19/3≈6.33、施策BのCoD=10+6+2=18,
+    WSJFスコア=18/9≈2.0 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-035
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "フードデリバリー「QuickEats」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「チャットボット一次対応」:
+    ビジネス価値=3, 時間的制約=9, リスク低減/機会創出=1, ジョブサイズ=8。施策B「顧客満足度自動アンケート」: ビジネス価値=5, 時間的制約=4,
+    リスク低減/機会創出=4, ジョブサイズ=2。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=3+9+1=13, WSJFスコア=13/8≈1.62、施策BのCoD=5+4+4=13,
+    WSJFスコア=13/2≈6.5 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-036
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "経費精算ツール「ExpenseFlow」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「自動仕訳AI機能」:
+    ビジネス価値=8, 時間的制約=4, リスク低減/機会創出=6, ジョブサイズ=5。施策B「多通貨対応」: ビジネス価値=7, 時間的制約=5, リスク低減/機会創出=5,
+    ジョブサイズ=4。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=8+4+6=18, WSJFスコア=18/5≈3.6、施策BのCoD=7+5+5=17, WSJFスコア=17/4≈4.25
+    が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-037
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "カスタマーサポートツール「HelpDeskPro」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job
+    First)で優先順位を判断しようとしている。施策A「レコメンドエンジン刷新」: ビジネス価値=11, 時間的制約=2, リスク低減/機会創出=3, ジョブサイズ=2。施策B「ワンクリック返品機能」:
+    ビジネス価値=9, 時間的制約=1, リスク低減/機会創出=4, ジョブサイズ=7。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=11+2+3=16, WSJFスコア=16/2≈8.0、施策BのCoD=9+1+4=14,
+    WSJFスコア=14/7≈2.0 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-038
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "会計SaaS「Kaikei Cloud」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「候補者スコアリングAI」:
+    ビジネス価値=7, 時間的制約=7, リスク低減/機会創出=5, ジョブサイズ=6。施策B「面接日程自動調整」: ビジネス価値=7, 時間的制約=3, リスク低減/機会創出=8,
+    ジョブサイズ=5。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=7+7+5=19, WSJFスコア=19/6≈3.17、施策BのCoD=7+3+8=18,
+    WSJFスコア=18/5≈3.6 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-039
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "ECプラットフォーム「Shopnia」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「リアルタイム配車最適化」:
+    ビジネス価値=8, 時間的制約=8, リスク低減/機会創出=2, ジョブサイズ=10。施策B「ドライバー向けチャットサポート」: ビジネス価値=12, 時間的制約=6,
+    リスク低減/機会創出=2, ジョブサイズ=9。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=8+8+2=18, WSJFスコア=18/10≈1.8、施策BのCoD=12+6+2=20,
+    WSJFスコア=20/9≈2.22 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-040
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "採用管理システム「HireBoard」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「オンライン問診機能」:
+    ビジネス価値=3, 時間的制約=5, リスク低減/機会創出=8, ジョブサイズ=3。施策B「リマインドSMS通知」: ビジネス価値=4, 時間的制約=4,
+    リスク低減/機会創出=4, ジョブサイズ=2。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=3+5+8=16, WSJFスコア=16/3≈5.33、施策BのCoD=4+4+4=12,
+    WSJFスコア=12/2≈6.0 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-041
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "配送管理アプリ「RouteWise」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「学習進捗ダッシュボード」:
+    ビジネス価値=10, 時間的制約=5, リスク低減/機会創出=3, ジョブサイズ=4。施策B「AI採点機能」: ビジネス価値=6, 時間的制約=5, リスク低減/機会創出=5,
+    ジョブサイズ=4。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=10+5+3=18, WSJFスコア=18/4≈4.5、施策BのCoD=6+5+5=16,
+    WSJFスコア=16/4≈4.0 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-042
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "医療予約システム「ClinicNow」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「周辺施設情報の地図連携」:
+    ビジネス価値=8, 時間的制約=8, リスク低減/機会創出=2, ジョブサイズ=5。施策B「内見予約カレンダー」: ビジネス価値=11, 時間的制約=1,
+    リスク低減/機会創出=4, ジョブサイズ=7。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=8+8+2=18, WSJFスコア=18/5≈3.6、施策BのCoD=11+1+4=16,
+    WSJFスコア=16/7≈2.29 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-043
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "学習管理システム「StudyPath」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「配達員リアルタイム追跡」:
+    ビジネス価値=10, 時間的制約=3, リスク低減/機会創出=5, ジョブサイズ=6。施策B「まとめ買い割引機能」: ビジネス価値=6, 時間的制約=3,
+    リスク低減/機会創出=8, ジョブサイズ=5。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=10+3+5=18, WSJFスコア=18/6≈3.0、施策BのCoD=6+3+8=17,
+    WSJFスコア=17/5≈3.4 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-044
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "不動産検索サービス「HomeScout」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「領収書OCR読み取り」:
+    ビジネス価値=7, 時間的制約=6, リスク低減/機会創出=4, ジョブサイズ=3。施策B「承認フロー多段階対応」: ビジネス価値=11, 時間的制約=6,
+    リスク低減/機会創出=2, ジョブサイズ=9。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=7+6+4=17, WSJFスコア=17/3≈5.67、施策BのCoD=11+6+2=19,
+    WSJFスコア=19/9≈2.11 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-045
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "フードデリバリー「QuickEats」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「チャットボット一次対応」:
+    ビジネス価値=5, 時間的制約=9, リスク低減/機会創出=1, ジョブサイズ=8。施策B「顧客満足度自動アンケート」: ビジネス価値=6, 時間的制約=4,
+    リスク低減/機会創出=4, ジョブサイズ=2。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=5+9+1=15, WSJFスコア=15/8≈1.88、施策BのCoD=6+4+4=14,
+    WSJFスコア=14/2≈7.0 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-046
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "経費精算ツール「ExpenseFlow」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「自動仕訳AI機能」:
+    ビジネス価値=10, 時間的制約=4, リスク低減/機会創出=6, ジョブサイズ=5。施策B「多通貨対応」: ビジネス価値=5, 時間的制約=5, リスク低減/機会創出=5,
+    ジョブサイズ=4。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=10+4+6=20, WSJFスコア=20/5≈4.0、施策BのCoD=5+5+5=15,
+    WSJFスコア=15/4≈3.75 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-047
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "カスタマーサポートツール「HelpDeskPro」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job
+    First)で優先順位を判断しようとしている。施策A「レコメンドエンジン刷新」: ビジネス価値=9, 時間的制約=2, リスク低減/機会創出=3, ジョブサイズ=2。施策B「ワンクリック返品機能」:
+    ビジネス価値=10, 時間的制約=1, リスク低減/機会創出=4, ジョブサイズ=7。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=9+2+3=14, WSJFスコア=14/2≈7.0、施策BのCoD=10+1+4=15,
+    WSJFスコア=15/7≈2.14 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-048
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "会計SaaS「Kaikei Cloud」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「候補者スコアリングAI」:
+    ビジネス価値=5, 時間的制約=7, リスク低減/機会創出=5, ジョブサイズ=6。施策B「面接日程自動調整」: ビジネス価値=8, 時間的制約=3, リスク低減/機会創出=8,
+    ジョブサイズ=5。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=5+7+5=17, WSJFスコア=17/6≈2.83、施策BのCoD=8+3+8=19,
+    WSJFスコア=19/5≈3.8 が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-049
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "ECプラットフォーム「Shopnia」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「リアルタイム配車最適化」:
+    ビジネス価値=10, 時間的制約=8, リスク低減/機会創出=2, ジョブサイズ=10。施策B「ドライバー向けチャットサポート」: ビジネス価値=10, 時間的制約=6,
+    リスク低減/機会創出=2, ジョブサイズ=9。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=10+8+2=20, WSJFスコア=20/10≈2.0、施策BのCoD=10+6+2=18,
+    WSJFスコア=18/9≈2.0 が正しく計算され、スコアの高い方(施策A)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5
 - id: priority_judgment-050
   category: priority_judgment
-  question: '[priority_judgment] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "採用管理システム「HireBoard」の開発チームは次の2つの施策についてWSJF(Weighted Shortest Job First)で優先順位を判断しようとしている。施策A「オンライン問診機能」:
+    ビジネス価値=5, 時間的制約=5, リスク低減/機会創出=8, ジョブサイズ=3。施策B「リマインドSMS通知」: ビジネス価値=5, 時間的制約=4,
+    リスク低減/機会創出=4, ジョブサイズ=2。両施策のCost of DelayとWSJFスコアを計算し、優先順位とその根拠を述べよ。"
+  expected_answer_criteria:
+    施策AのCoD=5+5+8=18, WSJFスコア=18/3≈6.0、施策BのCoD=5+4+4=13, WSJFスコア=13/2≈6.5
+    が正しく計算され、スコアの高い方(施策B)を先行させる判断とその根拠・見送る施策のトレードオフが述べられていること。
   scoring_method: rubric_1_5

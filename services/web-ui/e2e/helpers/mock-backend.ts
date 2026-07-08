@@ -185,7 +185,11 @@ export class MockPdmBackend {
       contentType: "application/json",
       body: JSON.stringify(payload),
     });
-    const binary = (status: number, data: Buffer, headers: Record<string, string> = {}) => ({
+    const binary = (
+      status: number,
+      data: Buffer,
+      headers: Record<string, string> = {},
+    ) => ({
       status,
       contentType: "application/gzip",
       body: data,
@@ -342,7 +346,9 @@ export class MockPdmBackend {
       return json(200, { executed: true, target: id });
     }
 
-    const stakeholderSend = pathname.match(/^\/stakeholder\/([^/]+)\/send-message$/);
+    const stakeholderSend = pathname.match(
+      /^\/stakeholder\/([^/]+)\/send-message$/,
+    );
     if (method === "POST" && stakeholderSend) {
       const id = stakeholderSend[1];
       if (!this.hasApproval("stakeholder", id)) {
@@ -362,7 +368,11 @@ export class MockPdmBackend {
         { product_id: PRODUCT_ID, business_function: "vision", level: "L1" },
         { product_id: PRODUCT_ID, business_function: "roadmap", level: "L1" },
         { product_id: PRODUCT_ID, business_function: "backlog", level: "L2" },
-        { product_id: PRODUCT_ID, business_function: "experiment", level: "L2" },
+        {
+          product_id: PRODUCT_ID,
+          business_function: "experiment",
+          level: "L2",
+        },
         { product_id: PRODUCT_ID, business_function: "release", level: "L1" },
         {
           product_id: PRODUCT_ID,
@@ -392,6 +402,14 @@ export class MockPdmBackend {
 
     if (method === "GET" && pathname === "/audit/records") {
       return json(200, []);
+    }
+
+    if (method === "GET" && pathname === "/learning/status") {
+      return json(200, {
+        has_activity: false,
+        latest_job: null,
+        gate_history: [],
+      });
     }
 
     if (method === "POST" && pathname === "/bundles/export") {
@@ -453,14 +471,21 @@ export class MockPdmBackend {
         this.secondaryEntities[kind][id] = entity;
         applied.push(id);
       }
-      return json(200, { applied_ids: applied, skipped_ids: [], dry_run: false });
+      return json(200, {
+        applied_ids: applied,
+        skipped_ids: [],
+        dry_run: false,
+      });
     }
 
     return null;
   }
 }
 
-export async function fulfillRoute(route: Route, backend: MockPdmBackend): Promise<void> {
+export async function fulfillRoute(
+  route: Route,
+  backend: MockPdmBackend,
+): Promise<void> {
   const request = route.request();
   const url = new URL(request.url());
   const pathname = url.pathname.replace(/\/$/, "") || "/";
@@ -470,7 +495,7 @@ export async function fulfillRoute(route: Route, backend: MockPdmBackend): Promi
   if (
     request.method() !== "GET" &&
     request.method() !== "HEAD" &&
-    !(contentType?.includes("multipart/form-data"))
+    !contentType?.includes("multipart/form-data")
   ) {
     try {
       body = request.postDataJSON();
@@ -493,6 +518,8 @@ export async function fulfillRoute(route: Route, backend: MockPdmBackend): Promi
   await route.fulfill({
     status: 404,
     contentType: "application/json",
-    body: JSON.stringify({ detail: `mock: unhandled ${request.method()} ${pathname}` }),
+    body: JSON.stringify({
+      detail: `mock: unhandled ${request.method()} ${pathname}`,
+    }),
   });
 }

@@ -1,8 +1,9 @@
 # model-gateway: LiteLLM Proxy 設定ファイル(E4-1, E4-2, E4-3)
 #
-# AR-01: エージェントコアは論理名(pdm-main / pdm-teacher / pdm-judge / pdm-embed)
-#        でのみモデルを指定する。実モデル名・実バックエンドの対応関係は
-#        本ファイルにのみ記述し、呼び出し側コードにハードコードしない。
+# AR-01: エージェントコアは論理名(pdm-main / pdm-main-local / pdm-main-fallback /
+#        pdm-teacher / pdm-judge / pdm-student / pdm-embed)でのみモデルを指定
+#        する。実モデル名・実バックエンドの対応関係は本ファイルにのみ記述し、
+#        呼び出し側コードにハードコードしない。
 # AR-02: 最低限 Anthropic API・OpenAI API・AWS Bedrock・OpenAI互換ローカル
 #        サーバ(Ollama / vLLM)をサポートする。
 # AR-03: バックエンド障害時のフォールバック、リトライ、タイムアウトを

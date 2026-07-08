@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCostSummary } from "../api/client";
+import { getCostSummary, getLearningStatus } from "../api/client";
 import styles from "./CostAndLearning.module.css";
 
 function formatJpy(value: number): string {
@@ -16,16 +16,25 @@ function progressClass(status: string): string {
   return styles.progressOk;
 }
 
+function formatTimestamp(timestamp: string): string {
+  return new Date(timestamp).toLocaleString("ja-JP");
+}
+
 /**
  * コスト消化率・学習進捗画面(FR-UI-08)。
  *
- * 学習進捗はE8-8完了後に実APIへ接続予定。本イシュー時点では
- * モックデータ表示のみ(E8 API未実装のため)。
+ * 学習進捗は`GET /learning/status`(E8-8)から取得する。自己学習ループが
+ * 未実行の環境では「学習実績なし」の空状態を表示する。
  */
 export function CostAndLearning() {
   const summaryQuery = useQuery({
     queryKey: ["costs", "summary"],
     queryFn: () => getCostSummary(),
+  });
+
+  const learningQuery = useQuery({
+    queryKey: ["learning", "status"],
+    queryFn: () => getLearningStatus(),
   });
 
   const summary = summaryQuery.data;
@@ -93,14 +102,46 @@ export function CostAndLearning() {
         )}
       </section>
 
-      <section className={styles.section}>
+      <section className={styles.section} data-testid="learning-status">
         <h2>自己学習ループ進捗</h2>
-        <div className={styles.placeholder} data-testid="learning-placeholder">
-          E8(自己学習ループ)の評価ゲートAPIは未実装のため、現時点では
-          プレースホルダ表示です。E8-8完了後に実データへ接続します。
-          <br />
-          直近ジョブ: 未実行 / 評価ゲート: —
-        </div>
+        {learningQuery.isError && (
+          <p className={styles.error} role="alert">
+            学習状況の取得に失敗しました
+          </p>
+        )}
+        {learningQuery.data && !learningQuery.data.has_activity && (
+          <p className={styles.placeholder}>学習実績なし</p>
+        )}
+        {learningQuery.data?.latest_job && (
+          <div className={styles.summaryRow}>
+            <span>
+              直近ジョブ: {learningQuery.data.latest_job.job_type} /{" "}
+              {learningQuery.data.latest_job.status}(
+              {formatTimestamp(learningQuery.data.latest_job.timestamp)})
+            </span>
+          </div>
+        )}
+        {learningQuery.data &&
+          (learningQuery.data.gate_history ?? []).length > 0 && (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>日時</th>
+                  <th>判定</th>
+                  <th>指標</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(learningQuery.data.gate_history ?? []).map((entry, index) => (
+                  <tr key={`${entry.timestamp}-${index}`}>
+                    <td>{formatTimestamp(entry.timestamp)}</td>
+                    <td>{entry.decision ?? "—"}</td>
+                    <td>{JSON.stringify(entry.metrics ?? {})}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
       </section>
     </div>
   );

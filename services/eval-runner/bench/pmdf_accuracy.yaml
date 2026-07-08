@@ -1,250 +1,256 @@
 - id: pmdf_accuracy-001
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFの`story`エンティティにおける必須フィールドを全て挙げよ。
+  expected_answer_criteria:
+    kind, title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status(PmdfBase共通のpmdf_version, id, provenanceを含む)が漏れなく挙げられていること。linksは任意である点にも言及があれば良いが必須とはしないこと。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-002
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFの`roadmap_item`エンティティで必須となるフィールドと、それぞれ任意であるフィールドを区別して述べよ。
+  expected_answer_criteria: theme, period, status, objectiveが必須、product, dependenciesが任意(dependenciesはデフォルト空リスト)であることが正しく区別されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-003
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`roadmap_item`のperiodフィールドに`2026-Q5`という値を設定した場合、バリデーションは通るか。理由とともに述べよ。"
+  expected_answer_criteria: periodは`^\d{4}-Q[1-4]$`という正規表現パターンに従う必要があり、Q5は許容される四半期(Q1〜Q4)の範囲外であるためバリデーションエラーになる、という結論と理由が正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-004
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティのoptionsフィールドに0件の配列を渡した場合、バリデーションは通るか。理由とともに述べよ。"
+  expected_answer_criteria: optionsは`min_length=1`が指定されているため、0件では検証エラーになるという結論と根拠が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-005
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティにおいて、採用しなかった選択肢とその理由を記録するフィールドは何か。"
+  expected_answer_criteria: rejected_reasons(RejectedReasonのリスト、option名とreasonを持つ)であることが正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-006
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFの`id`フィールドが従うパターンを説明し、`story-abc`という値が妥当か判定せよ。
+  expected_answer_criteria: IDパターンが`^[a-z]+-[0-9A-HJKMNP-TV-Z]{26}$`(種別プレフィックス+26文字のULID風文字列)であることが説明され、`story-abc`は26文字要件を満たさないため不正である、という判定が正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-007
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: Provenance.created_byフィールドに`system:batch-job`という値を設定した場合、バリデーションは通るか。理由とともに述べよ。
+  expected_answer_criteria: created_byは`^(agent:[^@]+@v.+|user:.+)$`のパターンに従う必要があり、`system:`というプレフィックスは許可されていないためバリデーションエラーになる、という結論と理由が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-008
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFエンティティに`x_`で始まらない未知のフィールド(例:`notes`)を追加した場合の挙動を説明せよ。
+  expected_answer_criteria: PmdfBaseのバリデータが`x_`接頭辞を持たない未知フィールドを拒否するため、ValueError(バリデーションエラー)が発生するという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-009
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFエンティティに`x_internal_note`というフィールドを追加した場合の挙動を、前問の`notes`フィールドの場合と対比して説明せよ。
+  expected_answer_criteria: "`x_`接頭辞を持つフィールドは許可されるため、`x_internal_note`はエラーにならず受理される点が、接頭辞なしの場合との対比とともに正しく述べられていること。"
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-010
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Attachment`エンティティのsha256フィールドが従うパターンを説明し、`ABCDEF...`(64文字だが大文字英字を含む16進数風文字列)を設定した場合の判定を述べよ。"
+  expected_answer_criteria: sha256は`^[0-9a-f]{64}$`(小文字16進数64文字)のパターンに従う必要があり、大文字を含む値は不正であるという判定が理由とともに述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-011
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Priority.confidence`フィールドに1.2という値を設定した場合、バリデーションは通るか。理由とともに述べよ。"
+  expected_answer_criteria: confidenceは`ge=0, le=1`の制約を持つため、1.2はこの範囲を超えておりバリデーションエラーになるという結論と理由が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-012
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティと`report`エンティティの必須フィールドの違いを説明せよ。"
+  expected_answer_criteria: decisionがbackground/options/chosen_option/rationale/rejected_reasons/autonomy_levelを必須とするのに対し、reportがperiod/health_assessment/decisions_neededを必須としsummaryは任意である、という違いが正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-013
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`story`, `roadmap_item`, `decision`, `report`の各エンティティに共通して存在する任意の参照フィールドを1つ挙げよ。"
+  expected_answer_criteria: product(product IDへの参照、いずれのエンティティでもoptionalかつID_PATTERNに従う)が正しく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-014
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`StoryStatus`として許容されるリテラル値を全て挙げよ。"
+  expected_answer_criteria: draft, ready, in_progress, done, droppedの5値が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-015
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`RoadmapStatus`として許容されるリテラル値を全て挙げよ。"
+  expected_answer_criteria: planned, in_progress, done, cancelledの4値が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-016
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`HealthAssessment`(reportエンティティ)として許容されるリテラル値を全て挙げよ。"
+  expected_answer_criteria: green, yellow, redの3値が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-017
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`AutonomyLevel`(decisionエンティティ)として許容されるリテラル値を全て挙げよ。"
+  expected_answer_criteria: L0, L1, L2, L3の4値が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-018
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`PriorityMethod`(storyエンティティ)として許容されるリテラル値を全て挙げよ。"
+  expected_answer_criteria: RICE, WSJF, MoSCoWの3値が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-019
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`roadmap_item`のdependenciesフィールドが参照する対象のエンティティ種別(ref_kind)は何か。"
+  expected_answer_criteria: roadmap_item自身(自己参照、他のroadmap_itemのID)であることが正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-020
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: '`Story`モデルに`kind: "roadmap_item"`という値を設定した場合、バリデーションは通るか。理由とともに述べよ。'
+  expected_answer_criteria: StoryのkindフィールドはLiteral["story"]に固定されているため、"roadmap_item"という値は型不一致でバリデーションエラーになるという結論と理由が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-021
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Provenance.approved_by`フィールドは必須か任意か、根拠とともに述べよ。"
+  expected_answer_criteria: approved_byは`str | None = None`でデフォルトNoneが設定されているため任意であることが正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-022
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Provenance.updated_at`フィールドにはどのような型の値を設定する必要があるか。"
+  expected_answer_criteria: datetime型(ISO 8601形式の日時文字列からパース可能な値)である必要があることが述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-023
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`pmdf_version`フィールドが従うパターンを説明し、`v1.0`という値が妥当か判定せよ。"
+  expected_answer_criteria: pmdf_versionは`^\d+\.\d+\.\d+$`(メジャー.マイナー.パッチのセマンティックバージョニング形式)に従う必要があり、`v1.0`は`v`プレフィックスがありパッチ番号もないため不正である、という判定が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-024
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: '`story`エンティティのpriorityフィールドにmethod="RICE"を指定したがreach/impact/confidence/effortを1つも設定しなかった場合、`Priority`モデル自体のバリデーションは通るか。理由とともに述べよ。'
+  expected_answer_criteria: Priorityモデル上ではreach/impact/confidence/effort/scoreは全てOptionalでデフォルトNoneのため、モデル単体のバリデーションは通る(ただし運用上はRICE計算に必要な値の設定が推奨される)という結論が正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-025
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティのapproverフィールドが参照する対象のエンティティ種別(ref_kind)は何か。"
+  expected_answer_criteria: stakeholder(ステークホルダーエンティティのID)であることが正しく述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-026
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFエンティティのIDに含まれる文字集合について、通常のULID仕様との違い(除外されている文字)を説明せよ。
+  expected_answer_criteria:
+    ID_PATTERNの文字クラス`[0-9A-HJKMNP-TV-Z]`が、視認性の低いI・L・O・Uを除外したCrockford
+    Base32に準じた文字集合になっている点が説明されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-027
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`report`エンティティのdecisions_neededフィールドに空リストを設定した場合、それは「決定が必要な事項がない」ことを意味するか、それとも省略不可のエラーになるか、述べよ。"
+  expected_answer_criteria: decisions_neededは必須フィールドだが型はlist[str]でリスト自体が空であることは許容されるため、空リストは「決定が必要な事項がない」ことを意味し、エラーにはならないという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-028
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 2つのPMDFエンティティのバージョン間差分を比較する際、`provenance.updated_at`が果たす役割を説明せよ。
+  expected_answer_criteria: updated_atが各バージョンの更新日時を記録しており、時系列での変更履歴の追跡や最新版の判定に用いられる点が説明されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-029
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`story`エンティティのlinksフィールドに設定できる参照の種類を全て挙げよ。"
+  expected_answer_criteria: objective(objectiveへの単一参照)とdecisions(decisionへの複数参照リスト)の2種類が漏れなく挙げられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-030
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティのoptionsフィールドに、pros/consを1件も持たないOption(nameのみ)を設定した場合、バリデーションは通るか。"
+  expected_answer_criteria: OptionモデルのPros/consはデフォルト空リストのためname以外未設定でもバリデーションは通る、という結論が理由とともに述べられていること(ただし実務上はpros/consの記載が望ましい旨に触れられていれば加点)。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-031
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: あるstoryエンティティのJSONに`pmdf_version`フィールドが欠落していた場合、バリデーションは通るか。
+  expected_answer_criteria: pmdf_versionはPmdfBaseの必須フィールドであり、デフォルト値もないため欠落時はバリデーションエラーになるという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-032
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Attachment`エンティティがバイナリ本体を含まない設計になっている理由を推測して述べよ。"
+  expected_answer_criteria: PMDFがテキストベースの構造化データを扱う設計であり、バイナリを直接含めると差分管理・バージョン管理が煩雑になるため、パスとハッシュのみを保持し実体は外部ストレージに置く設計になっていると推測されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-033
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`roadmap_item`のobjectiveフィールドが必須である設計上の意図を推測して述べよ。"
+  expected_answer_criteria: ロードマップアイテムが単独で存在するのではなく、常に上位の目的(objective)に紐づくべきという設計思想(アウトプット先行を防ぐ)が読み取れることが述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-034
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`story`エンティティのstatusが`dropped`である場合と`done`である場合の意味の違いを述べよ。"
+  expected_answer_criteria: doneが計画通り完了した状態であるのに対し、droppedは実施しないと判断され打ち切られた状態であるという違いが述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-035
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFエンティティ全体に共通するモデル設定`extra="allow"`と、後段の`model_validator`による未知フィールド拒否が組み合わさっている理由を説明せよ。
+  expected_answer_criteria:
+    'extra="allow"自体はPydanticレベルで未知フィールドを許可するが、model_validatorでx_接頭辞のない未知フィールドのみ拒否することで、JSON
+    Schemaのpatterninvokeoperties(x_接頭辞のみ許可)+additionalProperties: falseと同等の挙動を再現している点が説明されていること。'
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-036
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティのautonomy_levelがL3であることは何を意味すると考えられるか、L0との対比で述べよ。"
+  expected_answer_criteria: L3がエージェントの自律度が最も高い(人間承認なしで実行できる)水準を示し、L0が最も低い(人間の承認が必須)水準を示すといった対比が、根拠となる一般的な自律レベル設計の考え方とともに述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-037
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Story`のacceptance_criteriaフィールドの型はlist[str]である。この型設計が何を意図しているか説明せよ。"
+  expected_answer_criteria: 受け入れ基準を単一の文章ではなく複数の独立した検証可能な項目として管理できるようにする意図が説明されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-038
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: あるroadmap_itemのdependenciesに自分自身のIDを設定した場合、スキーマ上エラーになるか。
+  expected_answer_criteria: dependenciesの型・パターン制約上は自己参照を機械的に禁止していないためスキーマバリデーション自体は通り得るが、循環参照として運用上望ましくない旨が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-039
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`report`のhealth_assessmentが`red`の場合に、decisions_neededフィールドに期待される内容を述べよ。"
+  expected_answer_criteria: 健全性が悪化している状況であるため、対応のために意思決定が必要な具体的な課題・選択肢が記載されていることが期待される、という趣旨が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-040
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`Option`モデルのdescriptionフィールドが任意である理由を推測して述べよ。"
+  expected_answer_criteria: 選択肢名(name)だけで十分に自明な場合もあるため、詳細説明を必須にせず柔軟性を持たせる設計であると推測されることが述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-041
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`story`のproductフィールドが未設定(None)の場合、それはどのような状況を想定していると考えられるか。"
+  expected_answer_criteria: 特定のプロダクトに紐づかない横断的なストーリー、またはプロダクトがまだ確定していない初期段階のストーリーを想定していると考えられる旨が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-042
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: PMDFの`id`パターンにおいて、プレフィックス部分(`[a-z]+`)が果たす役割を説明せよ。
+  expected_answer_criteria: IDだけでエンティティ種別(story, decisionなど)を判別できるようにする役割が説明されていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-043
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティのrationaleフィールドとbackgroundフィールドの役割の違いを説明せよ。"
+  expected_answer_criteria: backgroundが意思決定に至った状況・文脈を説明するのに対し、rationaleが選んだ選択肢を採用した理由・根拠を説明するという役割の違いが述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-044
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: あるstoryのpriorityにmethod="MoSCoW"を指定しscoreフィールドも設定しなかった場合、バリデーションは通るか。
+  expected_answer_criteria: PriorityモデルのscoreはOptionalでデフォルトNoneのため、MoSCoWのように数値スコアを使わない手法ではscore未設定でもバリデーションは通るという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-045
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`report`のsummaryフィールドが任意である一方、decisions_neededが必須である設計上の意図を推測して述べよ。"
+  expected_answer_criteria: 要約は補足情報である一方、意思決定が必要な事項の有無・内容は必ず明示すべきという設計思想が読み取れる旨が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-046
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 2つの異なるstoryエンティティが同じidを持つ場合、PMDFの運用上どのような問題が生じるか説明せよ。
+  expected_answer_criteria: IDが一意の識別子として参照(links等)に使われる前提が壊れ、参照整合性が取れなくなる、あるいはどちらが正の情報か判別できなくなるといった問題が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-047
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`decision`エンティティにおいて、optionsに含めた選択肢の数とrejected_reasonsに含めるべき理由の数の関係について、スキーマ上の制約の有無を説明せよ。"
+  expected_answer_criteria: スキーマ上はoptionsとrejected_reasonsの件数が一致することを強制する制約は存在しないが、chosen_option以外の選択肢については理由を記載することが運用上望ましい、という趣旨が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-048
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "`roadmap_item`のstatusが`cancelled`である場合、objectiveフィールドは削除してよいか、スキーマ上の観点から述べよ。"
+  expected_answer_criteria: objectiveは必須フィールドでありstatusの値に関わらず必須であるため、cancelledであっても省略できないという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-049
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: あるエンティティのJSONに`attachments`フィールドが存在しない場合、バリデーションは通るか。
+  expected_answer_criteria: attachmentsはdefault_factory=listによりデフォルト空リストが設定されているため、フィールド自体が存在しなくてもバリデーションは通るという結論が述べられていること。
   scoring_method: rubric_1_5
 - id: pmdf_accuracy-050
   category: pmdf_accuracy
-  question: '[pmdf_accuracy] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: あるroadmap_itemのstatusを`planned`から`in_progress`に更新する際、スキーマ上どのフィールドの更新が必須になるか述べよ。
+  expected_answer_criteria: RoadmapStatusの値自体を変更するだけであればスキーマ上は他フィールドの更新を強制する制約はないが、provenance.updated_atは運用上更新されるべきである、という趣旨が述べられていること。
   scoring_method: rubric_1_5

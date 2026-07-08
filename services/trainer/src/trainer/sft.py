@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +15,36 @@ from trl import SFTConfig, SFTTrainer
 
 from trainer.bnb_adapter import load_model_4bit, load_model_standard, load_tokenizer
 from trainer.config import TrainingConfig
+
+
+def _write_learning_status(
+    job_type: str,
+    status: str,
+    *,
+    metrics: dict[str, Any] | None = None,
+    decision: str | None = None,
+) -> None:
+    """`LEARNING_STATUS_PATH`が設定されている場合のみ、学習状況をJSONL追記する(E8-8関連)。
+
+    api-server(`GET /learning/status`)が読み取る共通スキーマ(timestamp/job_type/
+    status/metrics/decision)に合わせる。eval-runnerとは別ワークスペースパッケージの
+    ため、api_server.learning.status_storeを直接importせず、同一スキーマのJSONを
+    自前で書き出す。未設定時は既存の学習ジョブ挙動に影響しないよう何もしない。
+    """
+    path = os.environ.get("LEARNING_STATUS_PATH")
+    if not path:
+        return
+    record = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "job_type": job_type,
+        "status": status,
+        "metrics": metrics or {},
+        "decision": decision,
+    }
+    status_path = Path(path)
+    status_path.parent.mkdir(parents=True, exist_ok=True)
+    with status_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record) + "\n")
 
 
 def _configure_mlflow(
@@ -56,6 +88,7 @@ def run_sft(
     else:
         _configure_mlflow(None, output_dir)
     mlflow.set_experiment(config.mlflow_experiment)
+    _write_learning_status("sft", "started")
 
     with mlflow.start_run():
         mlflow.log_params(config.model_dump())
@@ -112,6 +145,14 @@ def run_sft(
         mlflow.log_param("checkpoint_path", str(checkpoint))
         mlflow.log_metric("train_steps", float(train_result.global_step))
 
+    _write_learning_status(
+        "sft",
+        "completed",
+        metrics={
+            "train_steps": train_result.global_step,
+            "checkpoint_path": str(checkpoint),
+        },
+    )
     return checkpoint
 
 

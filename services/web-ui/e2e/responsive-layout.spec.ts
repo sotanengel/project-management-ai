@@ -48,13 +48,16 @@ async function stubAuthenticatedApi(page: Page): Promise<void> {
     });
   });
 
-  await page.route(`${API_BASE}/autonomy/emergency-stop/status`, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ emergency_stopped: false }),
-    });
-  });
+  await page.route(
+    `${API_BASE}/autonomy/emergency-stop/status`,
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ emergency_stopped: false }),
+      });
+    },
+  );
 
   await page.route(`${API_BASE}/autonomy`, async (route) => {
     await route.fulfill({
@@ -113,7 +116,9 @@ test.describe("レスポンシブレイアウト(FR-UI-10)", () => {
   test("エージェント制御画面がビューポート内に収まる", async ({ page }) => {
     await page.getByRole("link", { name: /エージェント制御/ }).click();
     await expect(page).toHaveURL(/\/agent-control/);
-    await expect(page.getByRole("heading", { name: "エージェント制御" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "エージェント制御" }),
+    ).toBeVisible();
     await expect(page.getByTestId("autonomy-matrix")).toBeVisible();
     await expect(page.getByRole("navigation")).toBeVisible();
     await assertNoHorizontalOverflow(page);
@@ -126,7 +131,7 @@ test.describe("レスポンシブレイアウト(FR-UI-10)", () => {
       page.getByRole("heading", { name: "コスト / 学習状況" }),
     ).toBeVisible();
     await expect(page.getByTestId("cost-progress-bar")).toBeVisible();
-    await expect(page.getByTestId("learning-placeholder")).toBeVisible();
+    await expect(page.getByTestId("learning-status")).toBeVisible();
     await expect(page.getByRole("navigation")).toBeVisible();
     await assertNoHorizontalOverflow(page);
   });
