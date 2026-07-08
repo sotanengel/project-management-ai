@@ -1,250 +1,350 @@
 - id: product_project_distinction-001
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「大規模顧客1社向けにカスタムAPI連携機能を、契約上の期限内に1件だけ開発する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「大規模顧客1社向けにカスタムAPI連携機」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-002
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「継続的にA/Bテストを繰り返しながらオンボーディング体験を改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「継続的にA/Bテストを繰り返しながらオン」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-003
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「老朽化した社内経費精算システムを新パッケージに置き換える(移行完了で終了予定)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「老朽化した社内経費精算システムを新パッケ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-004
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「価格ページのコンバージョン率を継続的に最適化し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「価格ページのコンバージョン率を継続的に最」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-005
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「新規海外市場への参入に向けて、期限を区切ったローンチプロジェクトを実行する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「新規海外市場への参入に向けて、期限を区切」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-006
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「個人情報保護法改正への対応として、定められた施行日までにシステムを改修する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「個人情報保護法改正への対応として、定めら」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-007
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「カスタマーサポートの応答品質を継続的にモニタリングし改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「カスタマーサポートの応答品質を継続的にモ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-008
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「オンプレミスのデータセンターをクラウドへ移行する(完了日が定められている)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「オンプレミスのデータセンターをクラウドへ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-009
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「検索結果の関連性アルゴリズムを継続的にチューニングし続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「検索結果の関連性アルゴリズムを継続的にチ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-010
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「新しいオフィスを開設し什器・ネットワークを整備する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「新しいオフィスを開設し什器・ネットワーク」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-011
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「サブスクリプション解約率を下げるための継続的な離脱防止施策を実施し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「サブスクリプション解約率を下げるための継」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-012
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「合併に伴い2社の基幹システムを1つに統合する(統合完了までの有期プロジェクト)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「合併に伴い2社の基幹システムを1つに統合」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-013
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「パーソナライゼーションエンジンの精度を継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「パーソナライゼーションエンジンの精度を継」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-014
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「年次カンファレンスを企画・開催する(開催日をもって終了する)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「年次カンファレンスを企画・開催する(開催」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-015
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「不正利用検知の仕組みを継続的に強化し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「不正利用検知の仕組みを継続的に強化し続け」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-016
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「監督官庁への一度限りの報告書提出システムを、提出期限までに構築する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「監督官庁への一度限りの報告書提出システム」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-017
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「モバイルアプリの機能をWeb版と継続的に同等にしていく」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「モバイルアプリの機能をWeb版と継続的に」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-018
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「全社的なオフィス移転(住所変更・引っ越し)を実施する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「全社的なオフィス移転(住所変更・引っ越し」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-019
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「ある機能を廃止するため、定めた終了日までに移行措置を完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「ある機能を廃止するため、定めた終了日まで」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-020
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「継続的な料金プラン実験(価格・パッケージング)を繰り返し実施する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「継続的な料金プラン実験(価格・パッケージ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-021
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「災害復旧(DR)訓練を年に一度、定めた日程で実施する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「災害復旧(DR)訓練を年に一度、定めた日」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-022
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「プラットフォームのスケーラビリティ向上に継続的に投資し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「プラットフォームのスケーラビリティ向上に」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-023
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「モノリシックなシステムをマイクロサービスへ移行する(完了予定日が設定されている)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「モノリシックなシステムをマイクロサービス」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-024
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「顧客ライフサイクルメールによる離脱防止施策を継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「顧客ライフサイクルメールによる離脱防止施」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-025
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「規制当局向けの一度限りのカスタムレポート機能を、指定期限までに開発する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「規制当局向けの一度限りのカスタムレポート」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-026
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「料金ページの多変量テストを継続的に繰り返す」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「料金ページの多変量テストを継続的に繰り返」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-027
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「新しい決済ゲートウェイとの連携を、提携先との契約発効日までに完成させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「新しい決済ゲートウェイとの連携を、提携先」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-028
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「レガシープロダクトを指定した終了日をもって完全に廃止する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「レガシープロダクトを指定した終了日をもっ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-029
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「セルフサービス化により問い合わせ件数を継続的に削減し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「セルフサービス化により問い合わせ件数を継」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-030
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「社内ハッカソンを企画・実施する(開催期間が定められている)」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「社内ハッカソンを企画・実施する(開催期間」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-031
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「アクセシビリティ対応を、定められた法令遵守期限までに完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「アクセシビリティ対応を、定められた法令遵」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-032
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「顧客健全性スコアの算出モデルを継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「顧客健全性スコアの算出モデルを継続的に改」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-033
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「新規プロダクトラインの立ち上げに向けた発見(ディスカバリー)活動を継続的に行う」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「新規プロダクトラインの立ち上げに向けた発」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-034
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「買収した2つのプロダクトのロードマップを1つに統合する意思決定と移行作業を行う」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「買収した2つのプロダクトのロードマップを」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-035
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「既存顧客向けのオンボーディングフローを継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「既存顧客向けのオンボーディングフローを継」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-036
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「特定パートナー1社との統合のためだけの一時的な連携機能を、契約期限までに開発する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「特定パートナー1社との統合のためだけの一」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-037
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「ウェブサイトの全面リニューアルを、決められたローンチ日までに完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「ウェブサイトの全面リニューアルを、決めら」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-038
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「リニューアル後のウェブサイトのコンバージョン率を継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「リニューアル後のウェブサイトのコンバージ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-039
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「基幹データベースのバージョンアップグレード作業を、メンテナンス期間内に完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「基幹データベースのバージョンアップグレー」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-040
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「継続的な負荷試験とパフォーマンスチューニングを繰り返し実施する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「継続的な負荷試験とパフォーマンスチューニ」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-041
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「四半期ごとの株主向け決算資料作成タスクを、決算発表日までに完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「四半期ごとの株主向け決算資料作成タスクを」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-042
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「顧客の声(VoC)を継続的に収集し、製品改善に反映し続ける仕組みを運用する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「顧客の声(VoC)を継続的に収集し、製品」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-043
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「特定の展示会出展のためだけのデモ環境構築を、開催日までに完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「特定の展示会出展のためだけのデモ環境構築」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-044
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「サブスクリプション課金ロジックの継続的な改善(請求精度向上)を行い続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「サブスクリプション課金ロジックの継続的な」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-045
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「全社員向けの新しい勤怠管理システムを導入し、稼働開始日までに移行を完了させる」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「全社員向けの新しい勤怠管理システムを導入」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-046
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「プロダクトの北極星指標(North Star Metric)をモニタリングし、継続的に改善施策を打ち続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「プロダクトの北極星指標(North St」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-047
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「特定の一時的なキャンペーン(期間限定セール)向けのランディングページを、開始日までに構築する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「特定の一時的なキャンペーン(期間限定セー」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-048
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「APIの後方互換性を保ちながら、継続的にAPIエコシステムを拡張し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「APIの後方互換性を保ちながら、継続的に」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-049
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「システム監査対応として、指摘事項を監査報告期限までに是正する」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    有期限・固定スコープ・完了条件が明確という特徴からプロジェクト活動と判断されており、継続的な価値最大化を目的とするプロダクト活動との違いに言及していること。
+    「システム監査対応として、指摘事項を監査報」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5
 - id: product_project_distinction-050
   category: product_project_distinction
-  question: '[product_project_distinction] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「顧客チャーン予測モデルの精度を継続的に改善し続ける」という活動はプロダクト活動かプロジェクト活動か、理由とともに述べよ。
+  expected_answer_criteria:
+    終了時期が定まらず、継続的に価値を最大化し続けることを目的とする点からプロダクト活動と判断されており、有期限・固定スコープのプロジェクト活動との違いに言及していること。
+    「顧客チャーン予測モデルの精度を継続的に改」という活動固有の内容に即して判断理由が具体的に述べられていること。
   scoring_method: rubric_1_5

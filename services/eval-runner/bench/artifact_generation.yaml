@@ -1,250 +1,441 @@
 - id: artifact_generation-001
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: Kaikei Cloudの経理担当者が、月末に大量の請求書を手作業で仕訳しており時間がかかっている。AIによる自動仕訳機能で作業時間を削減したい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「Kaikei Cloudの経理担当者が、月末に大」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-002
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: Shopnia利用者が、購入後に商品を返品したい際に問い合わせフォームが分かりにくく離脱している。ワンクリックで返品申請できるようにしたい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「Shopnia利用者が、購入後に商品を返品したい」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-003
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: HireBoardの採用担当者が、多数の候補者の面接日程調整をメールで往復しており非効率。候補者が自身でカレンダーから空き枠を選べるようにしたい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「HireBoardの採用担当者が、多数の候補者の」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-004
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: RouteWiseのドライバーが、配送中に道路状況の変化に対応できず遅延が発生している。リアルタイムでルートを再計算する機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「RouteWiseのドライバーが、配送中に道路状」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-005
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: ClinicNowの患者が、予約時間を忘れて無断キャンセルすることが多い。予約前日にリマインドSMSを自動送信したい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「ClinicNowの患者が、予約時間を忘れて無断」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-006
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: StudyPathの学習者が、自分の学習進捗を把握できず途中で挫折しやすい。進捗を可視化するダッシュボードが欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「StudyPathの学習者が、自分の学習進捗を把」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-007
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: HomeScoutの利用者が、物件の周辺環境(学校・スーパー等)を確認する手段がなく判断に迷っている。地図上に周辺施設を表示したい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「HomeScoutの利用者が、物件の周辺環境(学」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-008
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: QuickEatsの利用者が、配達状況が分からず不安になり問い合わせが増えている。配達員の位置をリアルタイムで追跡できるようにしたい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「QuickEatsの利用者が、配達状況が分からず」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-009
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: ExpenseFlowの利用者が、紙の領収書を手入力しておりミスや手間が発生している。OCRで領収書を自動読み取りしたい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「ExpenseFlowの利用者が、紙の領収書を手」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-010
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: HelpDeskProの利用者が、簡単な質問でもオペレーター対応を待たされている。チャットボットによる一次対応を導入したい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatus(draft等)が設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「HelpDeskProの利用者が、簡単な質問でも」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-011
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第2四半期に「請求業務の自動化」をテーマとしたロードマップアイテムを起票する。先行するオンボーディング改善アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第2四半期に「請求業務の自動化」をテー」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-012
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第3四半期に「返品体験の刷新」をテーマとしたロードマップアイテムを起票する。決済基盤刷新のロードマップアイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第3四半期に「返品体験の刷新」をテーマ」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-013
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第1四半期に「採用フロー高速化」をテーマとしたロードマップアイテムを起票する。依存する先行アイテムはない。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第1四半期に「採用フロー高速化」をテー」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-014
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第4四半期に「配送遅延削減」をテーマとしたロードマップアイテムを起票する。地図データ基盤刷新アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第4四半期に「配送遅延削減」をテーマと」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-015
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2027年第1四半期に「患者エンゲージメント向上」をテーマとしたロードマップアイテムを起票する。SMS基盤導入アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2027年第1四半期に「患者エンゲージメント向上」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-016
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: Kaikei Cloudの自動仕訳AIについて、内製開発と外部ベンダーAPI連携のどちらを採用するか意思決定記録(decision)を作成する。外部APIは開発速度が速いがベンダーロックインのリスクがある。内製は柔軟性が高いが開発期間が長い。最終的に外部API連携を採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「Kaikei Cloudの自動仕訳AIについて、」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-017
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: Shopniaの返品機能について、返品理由の入力を必須にするか任意にするかの意思決定記録を作成する。必須にすると離脱率が上がる懸念があるが分析精度が上がる。任意にすると離脱は防げるがデータ品質が下がる。最終的に必須(ただし選択式で3秒以内に入力可能)を採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「Shopniaの返品機能について、返品理由の入力」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-018
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: HireBoardの候補者スコアリングAIについて、自社開発モデルと汎用LLM
+    APIのどちらを採用するかの意思決定記録を作成する。自社開発は精度チューニングが可能だが運用コストが高い。汎用LLM APIは低コストだが説明可能性が低い。最終的に自社開発モデルを採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「HireBoardの候補者スコアリングAIについ」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-019
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: RouteWiseのリアルタイム経路再計算について、自社アルゴリズムと外部地図サービスのどちらを採用するかの意思決定記録を作成する。自社アルゴリズムは差別化になるが精度検証に時間がかかる。外部地図サービスは実績があるが月額コストが高い。最終的に外部地図サービスを採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「RouteWiseのリアルタイム経路再計算につい」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-020
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: ClinicNowのリマインドSMSについて、即時全面展開と段階的ロールアウトのどちらを採用するかの意思決定記録を作成する。即時全面展開は効果を早く得られるがSMS配信トラブル時の影響が大きい。段階的ロールアウトは検証しながら進められるが効果発現が遅い。最終的に段階的ロールアウトを採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「ClinicNowのリマインドSMSについて、即」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-021
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: Kaikei Cloudの2026年第2四半期の進捗として、自動仕訳AIの開発が計画通り進んでいるが外部API連携で1件の技術的課題があり要意思決定である状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「Kaikei Cloudの2026年第2四半期の」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-022
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: Shopniaの2026年第3四半期の進捗として、返品機能のリリースが1週間遅延しており健全性に懸念がある状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「Shopniaの2026年第3四半期の進捗として」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-023
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: HireBoardの2026年第1四半期の進捗として、候補者スコアリングAIが順調にリリースされ健全な状態である状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「HireBoardの2026年第1四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-024
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: RouteWiseの2026年第4四半期の進捗として、外部地図サービス連携のコストが想定を超過しており予算面での意思決定が必要な状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「RouteWiseの2026年第4四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-025
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: ClinicNowの2027年第1四半期の進捗として、リマインドSMSの段階的ロールアウトが遅延なく進んでいる状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「ClinicNowの2027年第1四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-026
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: StudyPathの学習進捗ダッシュボードについて、要件からstoryを起票せよ。学習者がモバイルからでも進捗を確認したいという要望がある。
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と価値を反映し、acceptance_criteriaが検証可能な形で列挙され、priorityとstatusが設定されていること。
+    本件固有の状況(「StudyPathの学習進捗ダッシュボードについ」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-027
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: HomeScoutの内見予約カレンダー機能について、2026年第2四半期のroadmap_itemを起票せよ。先行する物件データ基盤刷新に依存する。
+  expected_answer_criteria:
+    theme・periodが要件と一致し、statusが妥当で、依存関係がdependenciesに正しく反映され、objectiveへの参照が設定されていること。
+    本件固有の状況(「HomeScoutの内見予約カレンダー機能につい」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-028
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: QuickEatsの配達員向けチャット機能について、リリースするかどうかの意思決定記録(decision)を作成せよ。導入すると配達員満足度が上がるが運営コストが増える。見送ると満足度改善が遅れる。最終的に導入することにした。
+  expected_answer_criteria:
+    background・options(pros/cons付き)・chosen_option・rationale・rejected_reasons・autonomy_levelが揃い、採用理由と却下理由が明確であること。
+    本件固有の状況(「QuickEatsの配達員向けチャット機能につい」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-029
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ExpenseFlowの承認フロー多段階対応について、2026年第3四半期のreportを作成せよ。開発は順調だが、法務レビューが1件未完了で意思決定が必要な状態である。
+  expected_answer_criteria:
+    period・health_assessmentが状況と整合し、decisions_neededに未決事項が具体的に列挙され、summaryが簡潔であること。
+    本件固有の状況(「ExpenseFlowの承認フロー多段階対応につ」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-030
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: HelpDeskProの顧客満足度自動アンケート機能について、要件からstoryを起票せよ。サポート担当者が対応後の満足度を手動集計しており負荷が高いという課題がある。
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と価値を反映し、acceptance_criteriaが検証可能な形で列挙され、priorityとstatusが設定されていること。
+    本件固有の状況(「HelpDeskProの顧客満足度自動アンケート」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-031
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: Kaikei Cloudの経理担当者が、月次締め処理の際に承認者が不在で処理が止まることが多い。代理承認者を設定できる機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatusが設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「Kaikei Cloudの経理担当者が、月次締め」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-032
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: Shopniaの出店者が、在庫切れ商品の再入荷通知を手動で顧客に送っており手間がかかっている。自動で再入荷通知を送る機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatusが設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「Shopniaの出店者が、在庫切れ商品の再入荷通」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-033
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: HireBoardの人事担当者が、内定者への連絡をメールで個別に行っており抜け漏れが発生している。内定者向けの一括通知テンプレート機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatusが設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「HireBoardの人事担当者が、内定者への連絡」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-034
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: RouteWiseの配車担当者が、荷物の積載量を手計算でチェックしており計算ミスが起きている。積載量を自動計算する機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatusが設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「RouteWiseの配車担当者が、荷物の積載量を」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-035
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `story` エンティティ(title, as_a, i_want, so_that, acceptance_criteria,
+    priority, status を含む)を起票せよ。要件: ClinicNowの医師が、過去の診療履歴を確認するのに複数画面を行き来しており非効率。診療履歴を1画面に集約表示する機能が欲しい。"
+  expected_answer_criteria:
+    title・as_a・i_want・so_thatが要件の課題と得たい価値を反映しており、acceptance_criteriaが検証可能な形で複数列挙され、priority(method+根拠となる値)とstatusが設定されていること。アウトプットではなく顧客価値(so_that)が明確に言語化されていること。
+    本件固有の状況(「ClinicNowの医師が、過去の診療履歴を確認」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-036
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第2四半期に「承認フロー柔軟化」をテーマとしたロードマップアイテムを起票する。権限管理基盤刷新アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第2四半期に「承認フロー柔軟化」をテー」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-037
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第3四半期に「在庫連携強化」をテーマとしたロードマップアイテムを起票する。依存する先行アイテムはない。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第3四半期に「在庫連携強化」をテーマと」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-038
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2027年第1四半期に「内定者体験向上」をテーマとしたロードマップアイテムを起票する。通知基盤刷新アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2027年第1四半期に「内定者体験向上」をテーマ」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-039
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2026年第4四半期に「積載最適化」をテーマとしたロードマップアイテムを起票する。車両データ連携アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2026年第4四半期に「積載最適化」をテーマとし」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-040
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の要件から PMDF の `roadmap_item` エンティティ(theme, period, status, objective,
+    dependencies を含む)を起票せよ。要件: 2027年第2四半期に「診療記録統合」をテーマとしたロードマップアイテムを起票する。電子カルテ移行アイテムに依存する。"
+  expected_answer_criteria:
+    themeが要件の課題を的確に要約し、periodが`YYYY-Qn`形式で要件の四半期と一致し、statusが妥当な値(planned等)で設定され、依存関係の有無が正しくdependenciesに反映されていること(依存がない場合は空リストとすること)。objectiveへの参照が設定されていること。
+    本件固有の状況(「2027年第2四半期に「診療記録統合」をテーマと」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-041
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: Kaikei Cloudの代理承認機能について、承認権限の委譲を無期限にするか期限付きにするかの意思決定記録を作成する。無期限は運用が楽だが権限の実質的な形骸化リスクがある。期限付きは安全だが再設定の手間が発生する。最終的に期限付き(最大30日)を採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「Kaikei Cloudの代理承認機能について、」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-042
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: Shopniaの再入荷通知について、全顧客に一斉送信するか希望者のみに送るかの意思決定記録を作成する。一斉送信はリーチが広いが不要な通知への苦情が増える懸念がある。希望者のみはクレームが少ないが登録の手間がある。最終的に希望者のみへの送信を採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「Shopniaの再入荷通知について、全顧客に一斉」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-043
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: HireBoardの内定者一括通知について、メール一括送信とチャットツール連携のどちらを採用するかの意思決定記録を作成する。メールは実装が容易だが開封率が低い。チャット連携は開封率が高いが開発コストが高い。最終的にメール一括送信を先行実装することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「HireBoardの内定者一括通知について、メー」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-044
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: RouteWiseの積載量自動計算について、社内独自ロジックと外部物流SaaS連携のどちらを採用するかの意思決定記録を作成する。独自ロジックは柔軟だが精度検証に時間がかかる。外部SaaS連携は実績があるが月額コストが発生する。最終的に独自ロジックを採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「RouteWiseの積載量自動計算について、社内」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-045
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `decision` エンティティ(background, options(2件以上), chosen_option,
+    rationale, rejected_reasons, autonomy_level を含む)を作成せよ。状況: ClinicNowの診療履歴集約表示について、既存の電子カルテシステムを改修するか新規画面を追加開発するかの意思決定記録を作成する。既存改修は導線が自然だが影響範囲が広い。新規画面追加は影響範囲が狭いが導線が増える。最終的に新規画面追加を採用することにした。"
+  expected_answer_criteria:
+    backgroundに意思決定の背景、optionsに検討した選択肢が2件以上pros/consとともに列挙され、chosen_optionが状況と一致し、rationaleに採用理由、rejected_reasonsに却下した選択肢とその理由が明示され、autonomy_level(L0〜L3のいずれか)が妥当な水準で設定されていること。
+    本件固有の状況(「ClinicNowの診療履歴集約表示について、既」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-046
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: Kaikei Cloudの2026年第2四半期の進捗として、代理承認機能の開発が計画通りだが権限設計のレビューで1件要意思決定の論点が残っている状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「Kaikei Cloudの2026年第2四半期の」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-047
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: Shopniaの2026年第3四半期の進捗として、再入荷通知機能がリリース済みで健全に稼働している状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「Shopniaの2026年第3四半期の進捗として」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-048
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: HireBoardの2027年第1四半期の進捗として、内定者一括通知機能の実装がテスト工程で遅延しており健全性に懸念がある状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「HireBoardの2027年第1四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-049
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: RouteWiseの2026年第4四半期の進捗として、積載量自動計算の精度検証が想定より時間がかかっており意思決定(追加検証期間の確保)が必要な状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「RouteWiseの2026年第4四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5
 - id: artifact_generation-050
   category: artifact_generation
-  question: '[artifact_generation] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question:
+    "以下の状況から PMDF の `report` エンティティ(period, health_assessment, decisions_needed,
+    summary を含む)を作成せよ。状況: ClinicNowの2027年第2四半期の進捗として、診療記録統合機能が計画通りリリースされ健全な状態である状況を報告する。"
+  expected_answer_criteria:
+    periodが状況の四半期と一致し、health_assessment(green/yellow/red)が状況の深刻度と整合しており、決定が必要な事項がある場合はdecisions_neededに具体的に列挙され、summaryが状況を簡潔に要約していること。
+    本件固有の状況(「ClinicNowの2027年第2四半期の進捗と」)に即した具体的な言及があること。
   scoring_method: rubric_1_5

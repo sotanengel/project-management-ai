@@ -1,250 +1,250 @@
 - id: general_regression-001
   category: general_regression
-  question: '[general_regression] サンプル問題 1: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 全てのAはBである。全てのBはCである。あるXはAである。このときXはCであるといえるか、論理的に説明せよ。
+  expected_answer_criteria: 三段論法によりA⊆B⊆Cが成り立つため、AであるXは必ずCでもあるという結論が正しく導かれていること。
   scoring_method: rubric_1_5
 - id: general_regression-002
   category: general_regression
-  question: '[general_regression] サンプル問題 2: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 定価1,200円の商品を20%引きで販売し、さらに会員はそこから100円引きになる。会員がこの商品を購入する際の支払い金額を求めよ。
+  expected_answer_criteria: 1,200×0.8=960円、960-100=860円という計算過程と最終的な答え860円が正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-003
   category: general_regression
-  question: '[general_regression] サンプル問題 3: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章を1文で要約せよ:「近年、リモートワークの普及により、企業はオフィススペースの縮小を進める一方、従業員同士のコミュニケーション機会の減少という新たな課題に直面している。」
+  expected_answer_criteria: オフィス縮小とコミュニケーション減少という2つの要点を漏らさず、簡潔に1文でまとめられていること。
   scoring_method: rubric_1_5
 - id: general_regression-004
   category: general_regression
-  question: '[general_regression] サンプル問題 4: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 日本の国会が衆議院と参議院からなる二院制であることについて、両院の主な違いを1つ挙げよ。
+  expected_answer_criteria: 任期の長さ(衆議院4年・参議院6年)、解散の有無(衆議院にはあるが参議院にはない)など、事実として正しい違いが1つ以上述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-005
   category: general_regression
-  question: '[general_regression] サンプル問題 5: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: A, B, Cの3人が身長を比べたところ、AはBより高く、CはAより高かった。3人を身長が高い順に並べよ。
+  expected_answer_criteria: C > A > B という正しい順序が導かれていること。
   scoring_method: rubric_1_5
 - id: general_regression-006
   category: general_regression
-  question: '[general_regression] サンプル問題 6: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 時速60kmで2時間30分走行した場合の走行距離を求めよ。
+  expected_answer_criteria: 60×2.5=150kmという計算過程と答え150kmが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-007
   category: general_regression
-  question: '[general_regression] サンプル問題 7: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の議論の前提となっている暗黙の仮定を指摘せよ:「この製品は売上が伸びているので、顧客満足度も向上しているに違いない。」
+  expected_answer_criteria: 売上の伸びが必ずしも顧客満足度の向上を意味しないという論理の飛躍(相関と因果の混同、あるいは売上増加の他の要因を無視している点)が指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-008
   category: general_regression
-  question: '[general_regression] サンプル問題 8: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 光合成の基本的な化学反応において、植物が取り込む物質と生成する物質をそれぞれ1つずつ挙げよ。
+  expected_answer_criteria: 取り込む物質として二酸化炭素と水、生成する物質として酸素とグルコース(有機物)のうち、それぞれ少なくとも1つが正しく挙げられていること。
   scoring_method: rubric_1_5
 - id: general_regression-009
   category: general_regression
-  question: '[general_regression] サンプル問題 9: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: サイコロを1回振ったとき、偶数の目が出る確率を求めよ。
+  expected_answer_criteria: 偶数の目(2,4,6)が3通り、全体が6通りであるため確率は3/6=1/2であるという計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-010
   category: general_regression
-  question: '[general_regression] サンプル問題 10: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 縦4m、横6mの長方形の部屋の面積を求めよ。
+  expected_answer_criteria: 4×6=24平方メートルという計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-011
   category: general_regression
-  question: '[general_regression] サンプル問題 11: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章を読み、Aさんの意見の要点を1文でまとめよ:「Aさんは、在宅勤務の増加は生産性向上に寄与する一方、若手社員の育成機会の減少という副作用があるため、週2日程度の出社を推奨すると述べた。」
+  expected_answer_criteria: 生産性向上と育成機会減少のトレードオフを踏まえた上で週2日出社を推奨している、という要点が漏れなく1文でまとめられていること。
   scoring_method: rubric_1_5
 - id: general_regression-012
   category: general_regression
-  question: '[general_regression] サンプル問題 12: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 「風が吹けば桶屋が儲かる」ということわざが示す考え方を説明せよ。
+  expected_answer_criteria: 一見無関係に見える出来事が、間接的な因果関係の連鎖を通じて意外な結果につながるという考え方が説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-013
   category: general_regression
-  question: '[general_regression] サンプル問題 13: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 100人にアンケートを取ったところ、80人が製品Xを、60人が製品Yを利用しており、両方利用している人が50人だった。どちらも利用していない人は何人か求めよ。
+  expected_answer_criteria: 包除原理により80+60-50=90人が少なくとも一方を利用しており、100-90=10人がどちらも利用していないという計算過程と答えが示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-014
   category: general_regression
-  question: '[general_regression] サンプル問題 14: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の中で「演繹的推論」の例として適切なものを説明せよ:(a)過去5年間毎年雨が降ったので来年も雨が降るだろう (b)全ての鳥は卵を産む、ペンギンは鳥である、よってペンギンは卵を産む
+  expected_answer_criteria: (b)が前提から必然的に結論を導く演繹的推論であり、(a)が観察の積み重ねから推測する帰納的推論である、という区別が正しく説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-015
   category: general_regression
-  question: '[general_regression] サンプル問題 15: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 摂氏0度は華氏で何度か求めよ。
+  expected_answer_criteria: 華氏=摂氏×9/5+32の公式を用い、0×9/5+32=32°Fという計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-016
   category: general_regression
-  question: '[general_regression] サンプル問題 16: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の短い文章の要約と、そこから読み取れる著者の立場を述べよ:「一部の専門家は人工知能の急速な発展を歓迎する一方、別の専門家は規制の必要性を訴えている。本稿は両者の意見を紹介するにとどめ、特定の立場を取らない。」
+  expected_answer_criteria: 賛成派と規制派の両論を紹介するのみで著者自身は特定の立場を取っていない、という点が正しく読み取られていること。
   scoring_method: rubric_1_5
 - id: general_regression-017
   category: general_regression
-  question: '[general_regression] サンプル問題 17: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 1から100までの整数の総和を求めよ。
+  expected_answer_criteria: 等差数列の和の公式(1+100)×100/2=5050という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-018
   category: general_regression
-  question: '[general_regression] サンプル問題 18: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の推論に誤りがあれば指摘せよ:「この薬を飲んだ人は全員風邪が治った。したがってこの薬には風邪を治す効果がある。」
+  expected_answer_criteria: 対照群(薬を飲まなかった人)との比較がない、自然治癒の可能性を考慮していないといった因果推論上の誤り(相関と因果の混同)が指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-019
   category: general_regression
-  question: '[general_regression] サンプル問題 19: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある商品の原価が800円で、利益率25%(原価に対する割合)を上乗せして販売価格を設定する場合の販売価格を求めよ。
+  expected_answer_criteria: 800×1.25=1,000円という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-020
   category: general_regression
-  question: '[general_regression] サンプル問題 20: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章から、筆者が最も伝えたいメッセージを1文で述べよ:「多くの人は忙しさを理由に読書を後回しにするが、実際には隙間時間の活用次第で読書量は大きく変わる。重要なのは時間の量ではなく使い方である。」
+  expected_answer_criteria: 読書量を左右するのは時間の絶対量ではなく使い方であるという筆者の主張が正しく要約されていること。
   scoring_method: rubric_1_5
 - id: general_regression-021
   category: general_regression
-  question: '[general_regression] サンプル問題 21: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 兄は弟より3歳年上で、2人の年齢の合計は27歳である。弟の年齢を求めよ。
+  expected_answer_criteria: 弟の年齢をxとして(x+3)+x=27を解き、x=12という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-022
   category: general_regression
-  question: '[general_regression] サンプル問題 22: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の中から論理的に妥当な結論を選び理由を述べよ:前提「全ての社員はIDカードを持っている」「田中さんはIDカードを持っていない」から導ける結論は何か。
+  expected_answer_criteria: 対偶を用いて田中さんは社員ではない、という結論が正しく導かれていること。
   scoring_method: rubric_1_5
 - id: general_regression-023
   category: general_regression
-  question: '[general_regression] サンプル問題 23: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 氷が水に浮く理由を科学的に説明せよ。
+  expected_answer_criteria: 氷は水よりも密度が低い(水分子が結晶構造を作ることで体積が増える)ため浮力が働き水に浮く、という趣旨が説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-024
   category: general_regression
-  question: '[general_regression] サンプル問題 24: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある商品が3日間で売上が10%, -5%, 20%と変化した。3日間の複合的な変化率を求めよ(概算でよい)。
+  expected_answer_criteria: 1.10×0.95×1.20≈1.254、すなわち約25.4%の増加という計算過程と概算値が示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-025
   category: general_regression
-  question: '[general_regression] サンプル問題 25: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章の主旨と矛盾する記述を指摘せよ:「この報告書は一貫してコスト削減の重要性を訴えているが、後半では品質向上のための追加investment(投資)を強く推奨しており、一見矛盾するようにも読める。」
+  expected_answer_criteria: コスト削減の主張と追加投資の推奨が表面的に矛盾して見える点が指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-026
   category: general_regression
-  question: '[general_regression] サンプル問題 26: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 三角形の内角の和が180度であることを前提に、2つの角がそれぞれ50度と70度である三角形の残りの角度を求めよ。
+  expected_answer_criteria: 180-50-70=60度という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-027
   category: general_regression
-  question: '[general_regression] サンプル問題 27: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: "次の会話文から、Bさんが本当に伝えたいことを推測せよ:「A: 今日の会議どうだった? B: まあ、時間通りには終わったよ。」"
+  expected_answer_criteria: 「時間通りに終わった」以外の内容(議論の質や結論)には触れていないことから、会議の内容自体には満足していない可能性が示唆される、という推測が妥当な根拠とともに述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-028
   category: general_regression
-  question: '[general_regression] サンプル問題 28: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 消費税率が10%のとき、税込価格2,200円の商品の税抜価格を求めよ。
+  expected_answer_criteria: 2,200÷1.10=2,000円という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-029
   category: general_regression
-  question: '[general_regression] サンプル問題 29: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の主張の反例を1つ考えよ:「値段が高い製品は必ず品質が良い。」
+  expected_answer_criteria: ブランド料や希少性のみで高価格が設定されている製品など、価格と品質が必ずしも比例しない具体例が挙げられていること。
   scoring_method: rubric_1_5
 - id: general_regression-030
   category: general_regression
-  question: '[general_regression] サンプル問題 30: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある会議に出席する5人を円卓に座らせる場合、回転して同じ配置とみなす場合の座り方の総数を求めよ。
+  expected_answer_criteria: 円順列の公式(n-1)!を用いて(5-1)!=24通りという計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-031
   category: general_regression
-  question: '[general_regression] サンプル問題 31: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章を読み、下線部の指示語「それ」が指す内容を答えよ:「新しい制度が導入されたが、多くの現場からそれに対する戸惑いの声が上がった。」
+  expected_answer_criteria: 「それ」が「新しい制度(の導入)」を指しているという指摘が正しく述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-032
   category: general_regression
-  question: '[general_regression] サンプル問題 32: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある工場で機械Aは1時間に60個、機械Bは1時間に40個の製品を作る。両機械を同時に稼働させたとき、1,000個作るのにかかる時間を求めよ。
+  expected_answer_criteria: 60+40=100個/時、1,000÷100=10時間という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-033
   category: general_regression
-  question: '[general_regression] サンプル問題 33: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の主張の論理構造(前提と結論)を整理せよ:「十分な睡眠を取らないと集中力が低下する。集中力が低下すると仕事のミスが増える。したがって睡眠不足は仕事のミスを増やす。」
+  expected_answer_criteria: 睡眠不足→集中力低下→ミス増加という三段論法の連鎖として前提と結論が正しく整理されていること。
   scoring_method: rubric_1_5
 - id: general_regression-034
   category: general_regression
-  question: '[general_regression] サンプル問題 34: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 平年(うるう年でない年)の1年は何日か、またその根拠を簡潔に述べよ。
+  expected_answer_criteria: 365日であり、地球が太陽を1周する公転周期に由来するという趣旨の根拠が述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-035
   category: general_regression
-  question: '[general_regression] サンプル問題 35: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある会社の売上が前年比で1.5倍になった。前年の売上が2,000万円だった場合、今年の売上を求めよ。
+  expected_answer_criteria: 2,000×1.5=3,000万円という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-036
   category: general_regression
-  question: '[general_regression] サンプル問題 36: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章の要約を作成せよ:「調査によると、若年層の間で紙の書籍離れが進む一方、電子書籍やオーディオブックの利用は増加傾向にある。出版業界は媒体の多様化に対応した戦略を求められている。」
+  expected_answer_criteria: 紙の書籍離れと電子・音声媒体の増加という対比、出版業界への示唆が簡潔にまとめられていること。
   scoring_method: rubric_1_5
 - id: general_regression-037
   category: general_regression
-  question: '[general_regression] サンプル問題 37: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 整数nが3でも5でも割り切れる最小の正の整数を求めよ。
+  expected_answer_criteria: 3と5の最小公倍数である15という答えとその根拠が正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-038
   category: general_regression
-  question: '[general_regression] サンプル問題 38: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の推論の妥当性を検討せよ:「テストで満点を取った生徒は全員よく勉強している。山田さんはよく勉強している。したがって山田さんはテストで満点を取るはずだ。」
+  expected_answer_criteria: 前提が逆(満点→よく勉強)であるにもかかわらず、よく勉強している→満点という逆方向の推論をしている論理的誤り(前件肯定の誤用)が指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-039
   category: general_regression
-  question: '[general_regression] サンプル問題 39: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 地球の公転と自転の違いを簡潔に説明せよ。
+  expected_answer_criteria: 公転が地球が太陽の周りを回る運動(1年周期)であり、自転が地球自身が軸を中心に回る運動(1日周期)であるという違いが正しく説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-040
   category: general_regression
-  question: '[general_regression] サンプル問題 40: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある文章中で使われている「彼はその提案に難色を示した」という表現の意味を説明せよ。
+  expected_answer_criteria: 提案に対して否定的・消極的な反応を示した、という意味が正しく説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-041
   category: general_regression
-  question: '[general_regression] サンプル問題 41: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 2つの数の和が20、差が4であるとき、この2つの数を求めよ。
+  expected_answer_criteria: 連立方程式を解き、12と8という2つの答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-042
   category: general_regression
-  question: '[general_regression] サンプル問題 42: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章から矛盾点を指摘せよ:「この計画は予算内で完了する見込みだと報告されているが、同じ報告書の別の箇所では追加予算の申請が必要だと記載されている。」
+  expected_answer_criteria: 予算内で完了する見込みという記述と追加予算が必要という記述が矛盾している点が指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-043
   category: general_regression
-  question: '[general_regression] サンプル問題 43: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 水の沸点が標高の高い場所で低くなる理由を説明せよ。
+  expected_answer_criteria: 標高が高いほど気圧が低くなり、水が沸騰するのに必要な蒸気圧に到達しやすくなるため沸点が下がる、という趣旨が説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-044
   category: general_regression
-  question: '[general_regression] サンプル問題 44: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある本の総ページ数は300ページで、1日20ページずつ読むと何日で読み終えるか求めよ。
+  expected_answer_criteria: 300÷20=15日という計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-045
   category: general_regression
-  question: '[general_regression] サンプル問題 45: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の2つの文の論理的関係(同義・矛盾・無関係)を判定せよ:「彼は毎日運動している」「彼は運動不足だ」
+  expected_answer_criteria: 毎日運動していることと運動不足であることは通常両立しない(矛盾する可能性が高い)という判定が理由とともに述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-046
   category: general_regression
-  question: '[general_regression] サンプル問題 46: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文章を読み、要旨を1文で述べよ:「多くの企業が働き方改革を進めているが、実際に成果を上げている企業は、制度導入だけでなく評価制度や組織文化まで踏み込んで変革している傾向がある。」
+  expected_answer_criteria: 制度導入だけでなく評価制度・組織文化まで踏み込んだ変革が成果につながっている、という要旨が正しく述べられていること。
   scoring_method: rubric_1_5
 - id: general_regression-047
   category: general_regression
-  question: '[general_regression] サンプル問題 47: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: ある正方形の対角線の長さが10cmであるとき、この正方形の面積を求めよ。
+  expected_answer_criteria: 対角線をdとすると面積=d^2/2の関係を用い、10^2/2=50平方センチメートルという計算過程と答えが正しく示されていること。
   scoring_method: rubric_1_5
 - id: general_regression-048
   category: general_regression
-  question: '[general_regression] サンプル問題 48: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の推論における論理的誤りを指摘せよ:「有名な経営者の多くは大学を中退している。したがって大学を中退すれば成功する可能性が高まる。」
+  expected_answer_criteria: 生存者バイアス(成功した中退者にのみ注目し、中退して成功しなかった多数の事例を無視している)という誤りが指摘されていること。
   scoring_method: rubric_1_5
 - id: general_regression-049
   category: general_regression
-  question: '[general_regression] サンプル問題 49: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文中の助動詞「べき」が表すニュアンスを説明せよ:「この問題には早急に対応すべきだ。」
+  expected_answer_criteria: 義務・当為(そうすることが望ましい、あるいは必要である)というニュアンスが説明されていること。
   scoring_method: rubric_1_5
 - id: general_regression-050
   category: general_regression
-  question: '[general_regression] サンプル問題 50: PdM判断を述べよ。'
-  expected_answer_criteria: 価値中心・根拠明示・PMDF整合
+  question: 次の文中の慣用句「油を売る」の意味を説明せよ:「彼は外回り中に油を売っていたようだ。」
+  expected_answer_criteria: 本来の仕事をせず無駄話や怠けをして時間を過ごす、という意味が正しく説明されていること。
   scoring_method: rubric_1_5
