@@ -9,7 +9,7 @@ dependencies = [
     "mlflow>=2.18.0",
     "peft>=0.14.0",
     "pydantic>=2.13.4",
-    "torch>=2.5.0",
+    "torch>=2.13.0",
     "transformers>=4.48.0",
     "trl>=0.15.0",
 ]
